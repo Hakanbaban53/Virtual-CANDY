@@ -1,21 +1,42 @@
-import distro
+import platform
 import json
 from linux_distros.__arch__ import arch_package_installer
 from linux_distros.__debian__ import debian_package_installer
 from linux_distros.__fedora__ import fedora_package_installer
 
 
+
 def get_linux_distribution():
-    """Determine the Linux distribution."""
     try:
-        return distro.id().lower()
+        with open('/etc/os-release', 'r') as f:
+            for line in f:
+                if line.startswith('PRETTY_NAME'):
+                    _, distro_info = line.split('=')
+                    return distro_info.strip().strip('"')
     except FileNotFoundError:
         return None
+
+def identify_distribution():
+    linux_distribution = get_linux_distribution()
+
+    if linux_distribution:
+        if 'fedora' in linux_distribution.lower():
+            return 'fedora'
+        elif 'arch' in linux_distribution.lower():
+            return 'arch'
+        elif 'debian' in linux_distribution.lower():
+            return 'debian'
+        elif 'ubuntu' in linux_distribution.lower():
+            return 'ubuntu'
+        else:
+            return 'Unknown Linux distribution'
+    else:
+        return 'Not running on Linux'
 
 
 def get_linux_package_manager():
 
-    linux_distribution = get_linux_distribution()
+    linux_distribution = identify_distribution()
 
     print(f"{linux_distribution}")
 
