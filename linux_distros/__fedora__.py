@@ -1,3 +1,4 @@
+from os import getenv
 import subprocess
 
 def fedora_package_installer(packages):
@@ -14,6 +15,7 @@ def fedora_package_installer(packages):
             type_of_action(data)
 
 def type_of_action(data):
+    current_user = getenv('USER')
     type = data.get("type", "")
     value = data.get("value", "")
     try:
@@ -38,7 +40,7 @@ def type_of_action(data):
             subprocess.call(['sudo', 'systemctl', 'enable', value])
 
         elif type == "add-group":
-            subprocess.call(['sudo', 'usermod', '-aG', value, '$USER'])
+            subprocess.call(['sudo', 'usermod', '-aG', value, current_user])
 
         elif type == "install-package-flatpak":
             subprocess.call(['sudo', 'flatpak', 'install', '-y', value])
