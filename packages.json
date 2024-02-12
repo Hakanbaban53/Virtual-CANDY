@@ -31,7 +31,7 @@
     {
       "name": "Add User to vboxusers Group",
       "type": "add-group",
-      "value": "usermod -aG vboxusers $USER"
+      "value": "vboxusers"
     },
 
     { "name": "Docker Cli", "type": "install-package", "value": "docker" },
@@ -85,7 +85,7 @@
     {
       "name": "Add User to libvirt Group.",
       "type": "add-group",
-      "value": "usermod -aG libvirt $USER"
+      "value": "libvirt"
     },
 
     { "name": "Virtual Box", "type": "package", "value": "virtualbox" },
@@ -164,7 +164,7 @@
     {
       "name": "Add User to libvirt Group.",
       "type": "add-group",
-      "value": "usermod -aG libvirt $USER" 
+      "value": "libvirt" 
     },
 
     {
@@ -180,7 +180,7 @@
     {
       "name": "Add User to vboxusers Group",
       "type": "add-group",
-      "value": "usermod -aG vboxusers $USER"
+      "value": "vboxusers"
     },
 
     {
