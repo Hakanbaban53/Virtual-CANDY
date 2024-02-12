@@ -2,7 +2,7 @@ import subprocess
 from __pip_install__ import pip_package_installer
 from __get_os_package_manager__ import get_linux_package_manager
 
-dependencies = ["pip"]
+dependencies = ["click"]
 
 
 def check_dependencies():
@@ -11,16 +11,18 @@ def check_dependencies():
     for package in dependencies:
         try:
             # Check if the package is installedY
-            return subprocess.check_call(
+            subprocess.check_call(
                 ["pip", "show", package], stdout=subprocess.PIPE
             )
         except subprocess.CalledProcessError:
             # If an error occurs, the package is not installed, so install it
             return False
+    return True    
 
 
 def get_dependencies():
     dependencies_installed = check_dependencies()
+    print(dependencies_installed)
 
     if dependencies_installed:
         print("All dependencies installed!")
