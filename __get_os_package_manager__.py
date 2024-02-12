@@ -1,4 +1,3 @@
-import platform
 import json
 from linux_distros.__arch__ import arch_package_installer
 from linux_distros.__debian__ import debian_package_installer
