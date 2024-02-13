@@ -2,6 +2,7 @@ from os import getenv
 import subprocess
 
 def debian_package_installer(packages):
+    subprocess.call(['sudo', 'apt', 'update'] )
     for data in packages:
         value = data.get("value", "")
         try:
