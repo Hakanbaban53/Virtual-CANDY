@@ -31,6 +31,7 @@ def type_of_action(data):
     try:
         if type == "install-package":
             subprocess.run(["sudo", "pacman", "-S", value])
+
         elif type == "local-package":
             subprocess.run(
                 [
@@ -38,22 +39,32 @@ def type_of_action(data):
                     "--show-progress",
                     "--progress=bar:force",
                     "-O",
-                    "package.pkg.tar.zst",
+                    f"{target_directory}package.pkg.tar.zst",
                     value,
-                ], cwd=target_directory
+                ]
             )
-            subprocess.run(["sudo", "pacman", "-U", "package.pkg.tar.zst"], cwd=target_directory)
+            subprocess.run(["sudo", "pacman", "-U", f"{target_directory}package.pkg.tar.zst"])
+
+        elif type == "add-repo-flathub":
+            subprocess.call(
+                ["flatpak", "remote-add", "--if-not-exists", "flathub", value]
+            )
+
         elif type == "install-service":
             subprocess.run(["sudo", "systemctl", "restart", value])
             subprocess.run(["sudo", "systemctl", "enable", value])
+
         elif type == "add-group":
             subprocess.run(["sudo", "usermod", "-aG", value, current_user])
+
         elif type == "install-package-flatpak":
             subprocess.run(["flatpak", "install", "-y", value])
+
         elif type == "install-package-AUR-git":
             repository_directory = f'{target_directory}/{value}'
             subprocess.run(["git", "clone", f"https://aur.archlinux.org/{value}.git"], cwd=target_directory)
             subprocess.run(["makepkg", "-si"], cwd=repository_directory)
             subprocess.run(["makepkg", "--clean"], cwd=repository_directory)
+
     except subprocess.CalledProcessError as err:
         print(f"An error occurred: {err}")
