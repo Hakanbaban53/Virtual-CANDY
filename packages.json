@@ -69,7 +69,14 @@
     {
       "name": "Docker Repository",
       "type": "get-keys",
-      "value": ""
+      "script": [
+        "sudo apt-get install ca-certificates curl",
+        "sudo install -d -m 0755 /etc/apt/keyrings",
+        "sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc",
+        "sudo chmod a+r /etc/apt/keyrings/docker.asc",
+        "echo \"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo \"$VERSION_CODENAME\") stable\" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null",
+        "sudo apt-get update"
+      ]
     },
 
     { "name": "Qemu", "type": "install-package", "value": "qemu-system" },
@@ -240,8 +247,7 @@
         "curl -fsSL https://www.virtualbox.org/download/oracle_vbox.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/oracle_vbox.gpg",
         "echo \"deb [arch=amd64] http://download.virtualbox.org/virtualbox/debian $(lsb_release -cs) contrib\" | sudo tee /etc/apt/sources.list.d/virtualbox.list",
         "sudo apt update",
-        "sudo apt install linux-headers-$(uname -r) dkms -y",
-        "sudo apt install virtualbox-7.0 -y"
+        "sudo apt install linux-headers-$(uname -r) dkms -y"
       ]
     },
 
@@ -262,7 +268,7 @@
       "value": "libvirt"
     },
 
-    { "name": "Virtual Box", "type": "install-package", "value": "virtualbox" },
+    { "name": "Virtual Box", "type": "install-package", "value": "virtualbox-7.0" },
     {
       "name": "Add User to vboxusers Group",
       "type": "add-group",

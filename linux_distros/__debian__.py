@@ -1,5 +1,4 @@
 from os import getenv
-import os
 import subprocess
 
 
