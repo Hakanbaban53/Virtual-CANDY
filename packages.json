@@ -64,6 +64,8 @@
   "ubuntu": [
     { "name": "Flatpak", "type": "install-package", "value": "flatpak" },
 
+    { "name": "Flathub", "type": "add-repo-flathub", "value": "https://dl.flathub.org/repo/flathub.flatpakrepo" },
+
     {
       "name": "Docker Repository",
       "type": "get-keys",
