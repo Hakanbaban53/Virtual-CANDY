@@ -83,10 +83,10 @@
       "value": "libvirt"
     },
 
-    { "name": "Virtual Box", "type": "package", "value": "virtualbox" },
+    { "name": "Virtual Box", "type": "install-package", "value": "virtualbox" },
     {
       "name": "Add User to vboxusers Group",
-      "type": "group",
+      "type": "add-group",
       "value": "vboxusers"
     },
 

@@ -34,7 +34,7 @@ def type_of_action(data):
 
             subprocess.run([
                 'bash', '-c',
-                'echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo \"$VERSION_CODENAME\") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null'
+                'echo', '"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo \"$VERSION_CODENAME\") stable"', '|', 'sudo', 'tee', '/etc/apt/sources.list.d/docker.list > /dev/null'
             ])
             subprocess.call(['sudo', 'apt', 'update'] )
 
@@ -47,11 +47,11 @@ def type_of_action(data):
                     "--show-progress",
                     "--progress=bar:force",
                     "-O",
-                    f"{name}package.deb",
+                    f"{name}.package.deb",
                     value,
                 ], cwd=target_directory
             )
-            subprocess.run(["sudo", "apt", "-i", f"{name}package.deb"], cwd=target_directory)
+            subprocess.run(["sudo", "apt-get", "--fix-broken", "install", f"{name}.package.deb"], cwd=target_directory)
 
         elif type == "remove-package":
             packages_to_remove = value.split()  # Split the package names into a list
