@@ -16,6 +16,7 @@ def fedora_package_installer(packages):
 
 def type_of_action(data):
     current_user = getenv('USER')
+    target_directory = f'/home/{current_user}/'
     type = data.get("type", "")
     value = data.get("value", "")
     try:
@@ -27,6 +28,19 @@ def type_of_action(data):
             fedora_version = subprocess.check_output(['rpm', '-E', '%fedora'], text=True).strip()
             value = value.replace("$(rpm -E %fedora)", fedora_version)
             subprocess.call(['sudo', 'dnf', 'install', value])
+
+        elif type == "local-package":
+            subprocess.run(
+                [
+                    "wget",
+                    "--show-progress",
+                    "--progress=bar:force",
+                    "-O",
+                    "local.package.deb",
+                    value,
+                ], cwd=target_directory
+            )
+            subprocess.run(["sudo", "dnf", "install", f"local.package.deb"], cwd=target_directory)
 
         elif type == "remove-package":
             packages_to_remove = value.split()  # Split the package names into a list

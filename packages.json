@@ -190,7 +190,7 @@
     },
     {
       "name": "Docker Desktop",
-      "type": "package-local",
+      "type": "local-package",
       "value": "https://desktop.docker.com/linux/main/amd64/137060/docker-desktop-4.27.2-x86_64.rpm"
     },
     {
