@@ -34,8 +34,8 @@ def type_of_action(data):
     
             if response.status_code == 200:
              # Save the GPG key to /etc/apt/keyrings/docker.asc
-                with open('/etc/apt/keyrings/docker.asc', 'wb') as key_file:
-                    key_file.write(response.content)
+               with subprocess.Popen(['sudo', 'tee', '/etc/apt/keyrings/docker.asc'], stdin=subprocess.PIPE) as key_process:
+                key_process.communicate(response.content)
             
                 subprocess.run(['chmod', 'a+r', '/etc/apt/keyrings/docker.asc'])
                 print("Docker repository keys installed successfully.")
