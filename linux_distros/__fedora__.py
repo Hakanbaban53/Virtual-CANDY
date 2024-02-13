@@ -36,7 +36,7 @@ def type_of_action(data):
                     "--show-progress",
                     "--progress=bar:force",
                     "-O",
-                    "local.package.deb",
+                    "local.package.rpm",
                     value,
                 ], cwd=target_directory
             )
