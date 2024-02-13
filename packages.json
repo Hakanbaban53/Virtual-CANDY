@@ -67,12 +67,7 @@
     {
       "name": "Docker Repository",
       "type": "get-keys",
-      "value": "https://download.docker.com/linux/ubuntu/gpg"
-    },
-    {
-      "name": "Docker Repository",
-      "type": "import-keys",
-      "value": "https://download.docker.com/linux/ubuntu"
+      "value": ""
     },
 
     { "name": "Qemu", "type": "install-package", "value": "qemu-system" },

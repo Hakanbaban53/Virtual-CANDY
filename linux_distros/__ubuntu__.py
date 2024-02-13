@@ -1,4 +1,5 @@
 from os import getenv
+import os
 import subprocess
 
 import requests
@@ -32,28 +33,15 @@ def type_of_action(data):
 
         elif type == "get-keys":
             try:
-                key_url = 'https://download.docker.com/linux/ubuntu/gpg'
-                response = requests.get(key_url)
-        
-                if response.status_code == 200:
-                # Save the GPG key to /etc/apt/keyrings/docker.asc
-                    with subprocess.Popen(['sudo', 'tee', '/etc/apt/keyrings/docker.asc'], stdin=subprocess.PIPE) as key_process:
-                        key_process.communicate(response.content)
-                
-                    subprocess.run(['chmod', 'a+r', '/etc/apt/keyrings/docker.asc'])
-                    print("Docker repository keys installed successfully.")
-                else:
-                    print(f"Failed to fetch Docker repository GPG key. Status code: {response.status_code}")
-
-                subprocess.run(['chmod', 'a+r', '/etc/apt/keyrings/docker.asc'])
-
-                subprocess.run([
-                    'bash', '-c',
-                    'echo', '"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo \"$VERSION_CODENAME\") stable"', '|', 'tee', '/etc/apt/sources.list.d/docker.list > /dev/null'
-                ])
-                subprocess.call(['apt', 'update'] )
-
-                print("Docker repository keys installed successfully.")
+                os.system("sudo apt-get install ca-certificates curl &&
+      sudo install -m 0755 -d /etc/apt/keyrings
+      sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+      sudo chmod a+r /etc/apt/keyrings/docker.asc
+      
+      echo \
+        "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+        $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+        sudo tee /etc/apt/sources.list.d/docker.list > /dev/null"")
             
             except subprocess.CalledProcessError as err:
                 print(err)
