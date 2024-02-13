@@ -2,8 +2,6 @@ from os import getenv
 import os
 import subprocess
 
-import requests
-
 
 def ubuntu_package_installer(packages):
     subprocess.call(["sudo", "apt", "update"])

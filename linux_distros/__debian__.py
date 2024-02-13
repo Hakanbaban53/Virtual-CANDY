@@ -1,56 +1,53 @@
 from os import getenv
+import os
 import subprocess
 
-import requests
 
 def debian_package_installer(packages):
-    subprocess.call(['su'] )
+    subprocess.call(["sudo", "apt", "update"])
     for data in packages:
         value = data.get("value", "")
         try:
             if type == "install-package":
-                subprocess.call(['apt', 'list', 'installed', value])
+                subprocess.call(["sudo", "apt", "list", "installed", value])
             elif type == "install-package-flatpak":
-                subprocess.call(['flatpak', 'list', '|', 'grep', value])
+                subprocess.call(["flatpak", "list", "|", "grep", value])
             else:
                 type_of_action(data)
         except subprocess.CalledProcessError:
             type_of_action(data)
 
+
 def type_of_action(data):
-    current_user = getenv('USER')
-    target_directory = f'/home/{current_user}/'
+    current_user = getenv("USER")
+    target_directory = f"/home/{current_user}/"
     type = data.get("type", "")
     value = data.get("value", "")
     name = data.get("name", "")
     try:
         if type == "install-package":
             packages_to_install = value.split()  # Split the package names into a list
-            subprocess.call(['apt', 'install'] + packages_to_install)
+            subprocess.call(["sudo", "apt", "install"] + packages_to_install)
 
         elif type == "get-keys":
-            key_url = 'https://download.docker.com/linux/ubuntu/gpg'
-            response = requests.get(key_url)
-    
-            if response.status_code == 200:
-             # Save the GPG key to /etc/apt/keyrings/docker.asc
-               with subprocess.Popen(['sudo', 'tee', '/etc/apt/keyrings/docker.asc'], stdin=subprocess.PIPE) as key_process:
-                key_process.communicate(response.content)
-            
-                subprocess.run(['chmod', 'a+r', '/etc/apt/keyrings/docker.asc'])
+            try:
+                script = """
+                    sudo apt-get install ca-certificates curl
+                    sudo install -m 0755 -d /etc/apt/keyrings
+                    sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+                    sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+                    # Add the repository to Apt sources:
+                    echo \
+                    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
+                    $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+                    sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+                    sudo apt-get update
+                """
+                os.system(script)
                 print("Docker repository keys installed successfully.")
-            else:
-                print(f"Failed to fetch Docker repository GPG key. Status code: {response.status_code}")
-
-            subprocess.run(['chmod', 'a+r', '/etc/apt/keyrings/docker.asc'])
-
-            subprocess.run([
-                'bash', '-c',
-                'echo', '"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo \"$VERSION_CODENAME\") stable"', '|', 'tee', '/etc/apt/sources.list.d/docker.list > /dev/null'
-            ])
-            subprocess.call(['apt', 'update'] )
-
-            print("Docker repository keys installed successfully.")
+            except subprocess.CalledProcessError as err:
+                print(f"An error occurred: {err}")
 
         elif type == "local-package":
             subprocess.run(
@@ -59,27 +56,40 @@ def type_of_action(data):
                     "--show-progress",
                     "--progress=bar:force",
                     "-O",
-                    f"{name}.package.deb",
+                    f"{target_directory}local.package.deb",
                     value,
-                ], cwd=target_directory
+                ],
+                check=True,
             )
-            subprocess.run(["apt-get", "--fix-broken", "install", f"{name}.package.deb"], cwd=target_directory)
+            subprocess.run(
+                [
+                    "sudo",
+                    "apt-get",
+                    "--fix-broken",
+                    "install",
+                    f"{target_directory}local.package.deb",
+                ],
+                check=True,
+            )
 
         elif type == "remove-package":
             packages_to_remove = value.split()  # Split the package names into a list
-            subprocess.call(['apt', 'remove'] + packages_to_remove)
+            subprocess.call(["sudo", "apt", "remove"] + packages_to_remove)
 
+        elif type == "add-repo-flathub":
+            subprocess.call(
+                ["flatpak", "remote-add", "--if-not-exists", "flathub", value]
+            )
 
         elif type == "install-service":
-            subprocess.call(['systemctl', 'restart', value])
-            subprocess.call(['systemctl', 'enable', value])
+            subprocess.call(["sudo", "systemctl", "restart", value])
+            subprocess.call(["sudo", "systemctl", "enable", value])
 
         elif type == "add-group":
-            subprocess.call(['usermod', '-aG', value, current_user])
+            subprocess.call(["sudo", "usermod", "-aG", value, current_user])
 
         elif type == "install-package-flatpak":
-            subprocess.call(['flatpak', 'install', '-y', value])
-            
+            subprocess.call(["sudo", "flatpak", "install", "-y", value])
+
     except subprocess.CalledProcessError as err:
         print(f"An error occurred: {err}")
-
