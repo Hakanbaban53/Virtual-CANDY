@@ -67,9 +67,14 @@
     {
       "name": "Docker Repository",
       "type": "get-keys",
-      "value": "curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc && chmod a+r /etc/apt/keyrings/docker.asc"
+      "value": "https://download.docker.com/linux/ubuntu/gpg"
     },
-    
+    {
+      "name": "Docker Repository",
+      "type": "import-keys",
+      "value": "https://download.docker.com/linux/ubuntu"
+    },
+
     { "name": "Qemu", "type": "install-package", "value": "qemu-system" },
     {
       "name": "Qemu-KVM GUI Manager",
@@ -165,13 +170,13 @@
     {
       "name": "Add User to libvirt Group.",
       "type": "add-group",
-      "value": "libvirt" 
+      "value": "libvirt"
     },
 
     {
       "name": "Virtual Box",
       "type": "install-package",
-      "value": "VirtualBox kernel-devel-matched akmod-VirtualBox" 
+      "value": "VirtualBox kernel-devel-matched akmod-VirtualBox"
     },
     {
       "name": "Start and Enable vboxdrv",
@@ -204,6 +209,73 @@
       "type": "install-service",
       "value": "docker"
     },
+    { "name": "Podman Cli", "type": "install-package", "value": "podman" },
+    {
+      "name": "Podman Desktop",
+      "type": "install-package-flatpak",
+      "value": "io.podman_desktop.PodmanDesktop"
+    }
+  ],
+
+  "debian": [
+    { "name": "Flatpak", "type": "install-package", "value": "flatpak" },
+
+    {
+      "name": "Docker Repository",
+      "type": "get-keys",
+      "value": "https://download.docker.com/linux/ubuntu/gpg"
+    },
+
+    { "name": "Qemu", "type": "install-package", "value": "qemu-system" },
+    {
+      "name": "Qemu-KVM GUI Manager",
+      "type": "install-package",
+      "value": "virt-manager"
+    },
+    {
+      "name": "Start and Enable libvirtd.service",
+      "type": "install-service",
+      "value": "libvirtd.service"
+    },
+    {
+      "name": "Add User to libvirt Group.",
+      "type": "add-group",
+      "value": "libvirt"
+    },
+
+    { "name": "Virtual Box", "type": "install-package", "value": "virtualbox" },
+    {
+      "name": "Add User to vboxusers Group",
+      "type": "add-group",
+      "value": "vboxusers"
+    },
+
+    {
+      "name": "Remove Old Docker Cli",
+      "type": "remove-package",
+      "value": "docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc"
+    },
+    {
+      "name": "Install new Docker Cli",
+      "type": "install-package",
+      "value": "docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin"
+    },
+    {
+      "name": "Docker Desktop",
+      "type": "local-package",
+      "value": "https://desktop.docker.com/linux/main/amd64/137060/docker-desktop-4.27.2-amd64.deb"
+    },
+    {
+      "name": "Start and Enable docker.service",
+      "type": "service",
+      "value": "docker.service"
+    },
+    {
+      "name": "Start and Enable docker.socket",
+      "type": "service",
+      "value": "docker.socket"
+    },
+
     { "name": "Podman Cli", "type": "install-package", "value": "podman" },
     {
       "name": "Podman Desktop",

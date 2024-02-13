@@ -2,6 +2,7 @@ import json
 from linux_distros.__arch__ import arch_package_installer
 from linux_distros.__debian__ import debian_package_installer
 from linux_distros.__fedora__ import fedora_package_installer
+from linux_distros.__ubuntu__ import ubuntu_package_installer
 
 
 
@@ -19,12 +20,12 @@ def identify_distribution():
     linux_distribution = get_linux_distribution()
 
     if linux_distribution:
-        if 'fedora' in linux_distribution.lower():
-            return 'fedora'
-        elif 'arch' in linux_distribution.lower():
+        if 'arch' in linux_distribution.lower():
             return 'arch'
         elif 'debian' in linux_distribution.lower():
             return 'debian'
+        elif 'fedora' in linux_distribution.lower():
+            return 'fedora'
         elif 'ubuntu' in linux_distribution.lower():
             return 'ubuntu'
         else:
@@ -45,11 +46,11 @@ def get_linux_package_manager():
     if linux_distribution in instructions_data:
         if linux_distribution == "arch":
             arch_package_installer(instructions_data[linux_distribution])
-        elif linux_distribution == "ubuntu":
+        elif linux_distribution == "debian":
             debian_package_installer(instructions_data[linux_distribution])
         elif linux_distribution == "fedora":
             fedora_package_installer(instructions_data[linux_distribution])
-        else:
-            print("ASD")
+        elif linux_distribution == "ubuntu":
+            ubuntu_package_installer(instructions_data[linux_distribution])
     else:
         print("No installation instructions found for the detected Linux distribution.")
