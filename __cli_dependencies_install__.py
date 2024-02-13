@@ -8,16 +8,20 @@ dependencies = ["click"]
 def check_dependencies():
     """Install required dependencies for the CLI app if not already installed."""
 
+    dependencies = ["pip"]
+
     for package in dependencies:
         try:
-            # Check if the package is installedY
-            subprocess.check_call(
-                ["pip", "show", package], stdout=subprocess.PIPE
-            )
-        except subprocess.CalledProcessError:
-            # If an error occurs, the package is not installed, so install it
-            return False
-    return True    
+            subprocess.check_call(["pip", "show", package], stdout=subprocess.PIPE)
+        except subprocess.CalledProcessError as e:
+            # If an error occurs
+            if "externally-managed-environment" in str(e):
+                print("Error: externally-managed-environment detected. Removing the file and retrying.")
+                subprocess.run(['sudo', 'rm', '/usr/lib/python3.11/EXTERNALLY-MANAGED'])
+                check_dependencies()
+            else:
+                return False
+    return True 
 
 
 def get_dependencies():
