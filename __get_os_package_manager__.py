@@ -45,7 +45,7 @@ def get_linux_package_manager():
     if linux_distribution in instructions_data:
         if linux_distribution == "arch":
             arch_package_installer(instructions_data[linux_distribution])
-        elif linux_distribution == "debian":
+        elif linux_distribution == "ubuntu":
             debian_package_installer(instructions_data[linux_distribution])
         elif linux_distribution == "fedora":
             fedora_package_installer(instructions_data[linux_distribution])

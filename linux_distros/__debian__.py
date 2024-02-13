@@ -36,6 +36,7 @@ def type_of_action(data):
                 'bash', '-c',
                 'echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo \"$VERSION_CODENAME\") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null'
             ])
+            subprocess.call(['sudo', 'apt', 'update'] )
 
             print("Docker repository keys installed successfully.")
 
@@ -50,7 +51,7 @@ def type_of_action(data):
                     value,
                 ], cwd=target_directory
             )
-            subprocess.run(["sudo", "dpkg", "-i", f"{name}package.deb"], cwd=target_directory)
+            subprocess.run(["sudo", "apt", "-i", f"{name}package.deb"], cwd=target_directory)
 
         elif type == "remove-package":
             packages_to_remove = value.split()  # Split the package names into a list
