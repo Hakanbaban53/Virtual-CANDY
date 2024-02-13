@@ -40,7 +40,7 @@ def type_of_action(data):
                     value,
                 ], cwd=target_directory
             )
-            subprocess.run(["sudo", "dnf", "install", f"local.package.deb"], cwd=target_directory)
+            subprocess.run(["sudo", "dnf", "install", f"local.package.rpm"], cwd=target_directory)
 
         elif type == "remove-package":
             packages_to_remove = value.split()  # Split the package names into a list
