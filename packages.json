@@ -1,5 +1,7 @@
 {
   "arch": [
+    { "name": "Flatpak", "type": "install-package", "value": "flatpak" },
+
     { "name": "Qemu", "type": "install-package", "value": "qemu-full" },
     {
       "name": "Qemu-KVM GUI Manager",
@@ -60,6 +62,8 @@
   ],
 
   "ubuntu": [
+    { "name": "Flatpak", "type": "install-package", "value": "flatpak" },
+
     {
       "name": "Docker Repository",
       "type": "get-keys",
@@ -125,6 +129,8 @@
   ],
 
   "fedora": [
+    { "name": "Flatpak", "type": "install-package", "value": "flatpak" },
+
     {
       "name": "Enable RPM Fusion free",
       "type": "install-url-package",
