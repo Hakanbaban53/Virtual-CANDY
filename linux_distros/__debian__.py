@@ -2,12 +2,12 @@ from os import getenv
 import subprocess
 
 def debian_package_installer(packages):
-    subprocess.call(['sudo', 'apt', 'update'] )
+    subprocess.call(['su'] )
     for data in packages:
         value = data.get("value", "")
         try:
             if type == "install-package":
-                subprocess.call(['sudo', 'dnf', 'list', 'installed', value])
+                subprocess.call(['apt', 'list', 'installed', value])
             elif type == "install-package-flatpak":
                 subprocess.call(['flatpak', 'list', '|', 'grep', value])
             else:
@@ -24,20 +24,20 @@ def type_of_action(data):
     try:
         if type == "install-package":
             packages_to_install = value.split()  # Split the package names into a list
-            subprocess.call(['sudo', 'apt', 'install'] + packages_to_install)
+            subprocess.call(['apt', 'install'] + packages_to_install)
 
         elif type == "get-keys":
-            subprocess.run(['sudo', 'install', '-m', '0755', '-d', '/etc/apt/keyrings'])
+            subprocess.run(['install', '-m', '0755', '-d', '/etc/apt/keyrings'])
 
-            subprocess.run(['sudo', 'curl', '-fsSL', 'https://download.docker.com/linux/ubuntu/gpg', '-o', '/etc/apt/keyrings/docker.asc'])
+            subprocess.run(['curl', '-fsSL', 'https://download.docker.com/linux/ubuntu/gpg', '-o', '/etc/apt/keyrings/docker.asc'])
 
-            subprocess.run(['sudo', 'chmod', 'a+r', '/etc/apt/keyrings/docker.asc'])
+            subprocess.run(['chmod', 'a+r', '/etc/apt/keyrings/docker.asc'])
 
             subprocess.run([
                 'bash', '-c',
-                'echo', '"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo \"$VERSION_CODENAME\") stable"', '|', 'sudo', 'tee', '/etc/apt/sources.list.d/docker.list > /dev/null'
+                'echo', '"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo \"$VERSION_CODENAME\") stable"', '|', 'tee', '/etc/apt/sources.list.d/docker.list > /dev/null'
             ])
-            subprocess.call(['sudo', 'apt', 'update'] )
+            subprocess.call(['apt', 'update'] )
 
             print("Docker repository keys installed successfully.")
 
@@ -52,22 +52,22 @@ def type_of_action(data):
                     value,
                 ], cwd=target_directory
             )
-            subprocess.run(["sudo", "apt-get", "--fix-broken", "install", f"{name}.package.deb"], cwd=target_directory)
+            subprocess.run(["apt-get", "--fix-broken", "install", f"{name}.package.deb"], cwd=target_directory)
 
         elif type == "remove-package":
             packages_to_remove = value.split()  # Split the package names into a list
-            subprocess.call(['sudo', 'apt', 'remove'] + packages_to_remove)
+            subprocess.call(['apt', 'remove'] + packages_to_remove)
 
 
         elif type == "install-service":
-            subprocess.call(['sudo', 'systemctl', 'restart', value])
-            subprocess.call(['sudo', 'systemctl', 'enable', value])
+            subprocess.call(['systemctl', 'restart', value])
+            subprocess.call(['systemctl', 'enable', value])
 
         elif type == "add-group":
-            subprocess.call(['sudo', 'usermod', '-aG', value, current_user])
+            subprocess.call(['usermod', '-aG', value, current_user])
 
         elif type == "install-package-flatpak":
-            subprocess.call(['sudo', 'flatpak', 'install', '-y', value])
+            subprocess.call(['flatpak', 'install', '-y', value])
             
     except subprocess.CalledProcessError as err:
         print(f"An error occurred: {err}")

@@ -8,7 +8,7 @@ def ubuntu_package_installer(packages):
         value = data.get("value", "")
         try:
             if type == "install-package":
-                subprocess.call(["sudo", "dnf", "list", "installed", value])
+                subprocess.call(["sudo", "apt", "list", "installed", value])
             elif type == "install-package-flatpak":
                 subprocess.call(["flatpak", "list", "|", "grep", value])
             else:
