@@ -23,42 +23,20 @@ def type_of_action(data):
     target_directory = f"/home/{current_user}/"
     type = data.get("type", "")
     value = data.get("value", "")
-    name = data.get("name", "")
     try:
         if type == "install-package":
             packages_to_install = value.split()  # Split the package names into a list
             subprocess.call(["sudo", "apt", "install"] + packages_to_install)
 
         elif type == "get-keys":
-            try:
-                script = """
-                    sudo apt-get install ca-certificates curl
-                    sudo install -m 0755 -d /etc/apt/keyrings
-                    sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
-                    sudo chmod a+r /etc/apt/keyrings/docker.asc
-
-                    # Add the repository to Apt sources:
-                    echo \
-                    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
-                    $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-                    sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-                    sudo apt-get update
-                """
-                script2 = """
-                    sudo apt install curl wget gnupg2 lsb-release -y
-                    curl -fsSL https://www.virtualbox.org/download/oracle_vbox_2016.asc|sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/vbox.gpg
-                    curl -fsSL https://www.virtualbox.org/download/oracle_vbox.asc|sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/oracle_vbox.gpg
-
-                    echo \
-                    "deb [arch=amd64] http://download.virtualbox.org/virtualbox/debian $(lsb_release -cs) contrib" | sudo tee /etc/apt/sources.list.d/virtualbox.list
-                    sudo apt update
-                    sudo apt install linux-headers-$(uname -r) dkms -y
-                    sudo apt install virtualbox-7.0 -y
-                """
-                os.system(script)
-                print("Docker repository keys installed successfully.")
-            except subprocess.CalledProcessError as err:
-                print(f"An error occurred: {err}")
+            keys = data["script"]
+            for command in keys:
+                try:
+                    subprocess.run(command, shell=True, check=True)
+                    print("Script executed successfully.")
+                except subprocess.CalledProcessError as err:
+                    print(f"An error occurred: {err}")
+            
 
         elif type == "local-package":
             subprocess.run(
