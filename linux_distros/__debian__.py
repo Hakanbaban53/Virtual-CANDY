@@ -1,6 +1,8 @@
 from os import getenv
 import subprocess
 
+import requests
+
 def debian_package_installer(packages):
     subprocess.call(['su'] )
     for data in packages:
@@ -27,9 +29,18 @@ def type_of_action(data):
             subprocess.call(['apt', 'install'] + packages_to_install)
 
         elif type == "get-keys":
-            subprocess.run(['install', '-m', '0755', '-d', '/etc/apt/keyrings'])
-
-            subprocess.run(['curl', '-fsSL', 'https://download.docker.com/linux/ubuntu/gpg', '-o', '/etc/apt/keyrings/docker.asc'])
+            key_url = 'https://download.docker.com/linux/ubuntu/gpg'
+            response = requests.get(key_url)
+    
+            if response.status_code == 200:
+             # Save the GPG key to /etc/apt/keyrings/docker.asc
+                with open('/etc/apt/keyrings/docker.asc', 'wb') as key_file:
+                    key_file.write(response.content)
+            
+                subprocess.run(['chmod', 'a+r', '/etc/apt/keyrings/docker.asc'])
+                print("Docker repository keys installed successfully.")
+            else:
+                print(f"Failed to fetch Docker repository GPG key. Status code: {response.status_code}")
 
             subprocess.run(['chmod', 'a+r', '/etc/apt/keyrings/docker.asc'])
 
