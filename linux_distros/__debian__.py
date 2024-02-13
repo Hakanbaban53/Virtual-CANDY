@@ -26,7 +26,18 @@ def type_of_action(data):
             subprocess.call(['sudo', 'apt', 'install'] + packages_to_install)
 
         elif type == "get-keys":
-            subprocess.run(value, shell=True, check=True)
+            subprocess.run(['sudo', 'install', '-m', '0755', '-d', '/etc/apt/keyrings'])
+
+            subprocess.run(['sudo', 'curl', '-fsSL', 'https://download.docker.com/linux/ubuntu/gpg', '-o', '/etc/apt/keyrings/docker.asc'])
+
+            subprocess.run(['sudo', 'chmod', 'a+r', '/etc/apt/keyrings/docker.asc'])
+
+            subprocess.run([
+                'bash', '-c',
+                'echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo \"$VERSION_CODENAME\") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null'
+            ])
+
+            print("Docker repository keys installed successfully.")
 
         elif type == "local-package":
             subprocess.run(
