@@ -57,27 +57,25 @@ def main(stdscr):
                 stdscr.refresh()
                 confirmation_key = stdscr.getch()
                 if confirmation_key in [89, 121, 10]:  # 'Y', 'y', Enter
-                    stdscr.addstr(len(selected_entities) + 4, 3, "All Aplied! ")
-                    stdscr.refresh()
+                    for idx, entity in enumerate(selected_entities) :
+                        if "Docker & Docker Desktop" in entity:
+                            result = "Docker and Docker Desktop installing"
+                            stdscr.addstr(len(selected_entities) + 4 + idx, 3, "Result of multiplication: {}".format(result))
+                        elif "Podman & Podman Desktop" in entity:
+                            stdscr.addstr(len(selected_entities) + 4 + idx, 3, "Podman and Podman Desktop installing")
+                        elif "Qemu & Virtual Manager" in entity:
+                            stdscr.addstr(len(selected_entities) + 4 + idx, 3, "Qemu & Virtual Manager installing")
+                        elif "Virtual Box" in entity:
+                            stdscr.addstr(len(selected_entities) + 4 + idx, 3, "Virtual Box installing")
+
+                    stdscr.addstr(len(selected_entities) + 6 + idx, 3, "All Aplied!")
+                    stdscr.refresh()    
                     stdscr.getch()
                     break
 
-                # for idx, entity in enumerate(selected_entities) :
-                #     if "Docker & Docker Desktop" in entity:
-                #         result = "Docker and Docker Desktop installing"
-                #         stdscr.addstr(len(statuses) + 4 + idx, 0, "Result of multiplication: {}".format(result))
 
-                #     elif "Podman & Podman Desktop" in entity:
-                #         stdscr.addstr(len(statuses) + 4 + idx, 0, "Podman and Podman Desktop installing")
-                #         stdscr.addstr(len(statuses) + 5 + idx, 0, "Result of multiplication: {}".format(result))
 
-                    # elif "Qemu & Virtual Manager" in entity:
-                    #     stdscr.addstr(len(statuses) + 6 + idx, 0, "Qemu & Virtual Manager installing")
-                    #     stdscr.addstr(len(statuses) + 7 + idx, 0, "Result of multiplication: {}".format(result))
 
-                    # elif "Virtual Box" in entity:
-                    #     stdscr.addstr(len(statuses) + 8 + idx, 0, "Virtual Box installing")
-                    #     stdscr.addstr(len(statuses) + 9 + idx, 0, "Result of multiplication: {}".format(result))
 
 
             print_menu(stdscr, current_row)
