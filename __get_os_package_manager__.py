@@ -20,13 +20,13 @@ def identify_distribution():
     linux_distribution = get_linux_distribution()
 
     if linux_distribution:
-        if 'arch' in linux_distribution.lower():
+        if 'arch' or 'manjaro' in linux_distribution.lower():
             return 'arch'
         elif 'debian' in linux_distribution.lower():
             return 'debian'
-        elif 'fedora' in linux_distribution.lower():
+        elif 'fedora' or 'nobara' in linux_distribution.lower():
             return 'fedora'
-        elif 'ubuntu' in linux_distribution.lower():
+        elif 'ubuntu' or 'linuxmint' in linux_distribution.lower():
             return 'ubuntu'
         else:
             return 'Unknown Linux distribution'
