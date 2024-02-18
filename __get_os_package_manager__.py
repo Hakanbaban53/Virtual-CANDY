@@ -20,13 +20,13 @@ def identify_distribution():
     linux_distribution = get_linux_distribution()
 
     if linux_distribution:
-        if 'arch' or 'manjaro' in linux_distribution.lower():
+        if 'arch' in linux_distribution.lower():
             return 'arch'
         elif 'debian' in linux_distribution.lower():
             return 'debian'
-        elif 'fedora' or 'nobara' in linux_distribution.lower():
+        elif 'fedora' in linux_distribution.lower():
             return 'fedora'
-        elif 'ubuntu' or 'linuxmint' in linux_distribution.lower():
+        elif 'ubuntu' in linux_distribution.lower():
             return 'ubuntu'
         else:
             return 'Unknown Linux distribution'
@@ -34,23 +34,41 @@ def identify_distribution():
         return 'Not running on Linux'
 
 
-def get_linux_package_manager():
+def get_linux_package_manager(linux_distribution, package_name):
 
-    linux_distribution = identify_distribution()
-
-    print(f"{linux_distribution}")
+    #print(f"{linux_distribution}")
 
     with open("packages.json", "r") as json_file:
         instructions_data = json.load(json_file)
 
     if linux_distribution in instructions_data:
         if linux_distribution == "arch":
-            arch_package_installer(instructions_data[linux_distribution])
+            package_data_ref = instructions_data[linux_distribution]
+            for data in package_data_ref:
+                name = data.get("name", "")
+                if name == package_name:
+                    values = data.get("values", [])
+                    arch_package_installer(values)
         elif linux_distribution == "debian":
-            debian_package_installer(instructions_data[linux_distribution])
+            package_data_ref = instructions_data[linux_distribution]
+            for data in package_data_ref:
+                name = data.get("name", "")
+                if name == package_name:
+                    values = data.get("values", [])
+                    debian_package_installer(values)
         elif linux_distribution == "fedora":
-            fedora_package_installer(instructions_data[linux_distribution])
+            package_data_ref = instructions_data[linux_distribution]
+            for data in package_data_ref:
+                name = data.get("name", "")
+                if name == package_name:
+                    values = data.get("values", [])
+                    fedora_package_installer(values)
         elif linux_distribution == "ubuntu":
-            ubuntu_package_installer(instructions_data[linux_distribution])
+            package_data_ref = instructions_data[linux_distribution]
+            for data in package_data_ref:
+                name = data.get("name", "")
+                if name == package_name:
+                    values = data.get("values", [])
+                    ubuntu_package_installer(values)
     else:
         print("No installation instructions found for the detected Linux distribution.")

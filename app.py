@@ -1,4 +1,7 @@
 import curses
+from __get_os_package_manager__ import get_linux_distribution, identify_distribution, get_linux_package_manager
+
+MAX_WRONG_ATTEMPTS = 3
 
 statuses = ["Docker & Docker Desktop", "Podman & Podman Desktop", "Qemu & Virtual Manager", "Virtual Box"]
 selected_status = [False] * len(statuses)
@@ -25,10 +28,58 @@ def get_user_input(stdscr, prompt):
     input_str = stdscr.getstr().decode("utf-8")
     return input_str
 
+def get_linux_distro(stdscr):
+    stdscr.clear()
+    stdscr.addstr(3, 3, "Getting Linux Distro")
+    linux_distribution = get_linux_distribution()
+    linux_distro_id = identify_distribution()
+    stdscr.addstr(4, 3, "Linux Distro : {}\n   Distro id : {}\n   It's true [Y/n]?".format(linux_distribution, linux_distro_id))
+
+    confirmation_key = stdscr.getch()
+
+    if confirmation_key in [89, 121, 10]:  # 'Y', 'y', Enter
+        stdscr.addstr(5, 3, "Now loading the packages...")
+        return linux_distro_id
+    elif confirmation_key in [78, 110]:  # 'N', 'n'
+
+        wrong_attempts = 0
+
+        while True:
+            linux_distribution = get_user_input(stdscr, "Please enter the distro: ")
+            linux_distribution_lower = linux_distribution.lower()
+
+            stdscr.addstr(6, 3, "Entered Linux Distro: {}".format(linux_distribution))
+
+            if 'arch' in linux_distribution_lower or 'manjaro' in linux_distribution_lower:
+                return 'arch'
+            elif 'debian' in linux_distribution_lower:
+                return 'debian'
+            elif 'fedora' in linux_distribution_lower or 'nobara' in linux_distribution_lower:
+                return 'fedora'
+            elif 'ubuntu' in linux_distribution_lower or 'linux mint' in linux_distribution_lower:
+                return 'ubuntu'
+            else:
+                stdscr.clear()
+                stdscr.addstr(8, 3, "Unknown distro! Try again...")
+                wrong_attempts += 1
+
+                if wrong_attempts >= MAX_WRONG_ATTEMPTS:
+                    stdscr.clear()
+                    stdscr.addstr(9, 3, "Too many wrong attempts. Exiting in 3 seconds...")
+                    stdscr.refresh()
+                    curses.delay_output(3000)  # Delay for 3 seconds (3000 milliseconds)
+                    exit(1)
+
+    stdscr.refresh()
+
+
 def main(stdscr):
     try:
         curses.curs_set(0)
         curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_WHITE)
+
+        linux_distribution = get_linux_distro(stdscr)
+
 
         current_row = 0
         print_menu(stdscr, current_row)
@@ -49,6 +100,8 @@ def main(stdscr):
                 stdscr.clear()
                 selected_entities = [status for idx, status in enumerate(statuses) if selected_status[idx]]
                 stdscr.addstr(1, 3, "Selected applications :")
+                stdscr.addstr(0, 0, "{}".format(linux_distribution))
+
 
                 for idx, entity in enumerate(selected_entities):
                     stdscr.addstr(2 + idx, 3, entity)
@@ -59,14 +112,18 @@ def main(stdscr):
                 if confirmation_key in [89, 121, 10]:  # 'Y', 'y', Enter
                     for idx, entity in enumerate(selected_entities) :
                         if "Docker & Docker Desktop" in entity:
-                            result = "Docker and Docker Desktop installing"
-                            stdscr.addstr(len(selected_entities) + 4 + idx, 3, "Result of multiplication: {}".format(result))
+                            stdscr.addstr(len(selected_entities) + 4 + idx, 3, "cker and Docker Desktop installing")
+                            get_linux_package_manager(linux_distribution, "docker")
                         elif "Podman & Podman Desktop" in entity:
                             stdscr.addstr(len(selected_entities) + 4 + idx, 3, "Podman and Podman Desktop installing")
+                            get_linux_package_manager(linux_distribution, "podman")
+
                         elif "Qemu & Virtual Manager" in entity:
                             stdscr.addstr(len(selected_entities) + 4 + idx, 3, "Qemu & Virtual Manager installing")
+                            get_linux_package_manager(linux_distribution, "qemu")
                         elif "Virtual Box" in entity:
                             stdscr.addstr(len(selected_entities) + 4 + idx, 3, "Virtual Box installing")
+                            get_linux_package_manager(linux_distribution, "virtualbox")
 
                     stdscr.addstr(len(selected_entities) + 6 + idx, 3, "All Aplied!")
                     stdscr.refresh()    
