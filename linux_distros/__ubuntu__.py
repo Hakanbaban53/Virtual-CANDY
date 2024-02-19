@@ -25,7 +25,7 @@ def type_of_action(data):
     try:
         if type == "install-package":
             packages_to_install = value.split()  # Split the package names into a list
-            subprocess.call(["sudo", "apt", "install"] + packages_to_install)
+            subprocess.call(["sudo", "apt", "-y", "install"] + packages_to_install)
 
         elif type == "get-keys":
             keys = data["script"]
@@ -53,6 +53,7 @@ def type_of_action(data):
                 [
                     "sudo",
                     "apt-get",
+                    "-y",
                     "--fix-broken",
                     "install",
                     f"{target_directory}local.package.deb",
@@ -62,7 +63,7 @@ def type_of_action(data):
 
         elif type == "remove-package":
             packages_to_remove = value.split()  # Split the package names into a list
-            subprocess.call(["sudo", "apt", "remove"] + packages_to_remove)
+            subprocess.call(["sudo", "apt", "-y", "remove"] + packages_to_remove)
 
         elif type == "add-repo-flathub":
             subprocess.call(
@@ -78,6 +79,11 @@ def type_of_action(data):
 
         elif type == "install-package-flatpak":
             subprocess.call(["sudo", "flatpak", "install", "-y", value])
+
+        elif type == "add-repo-flathub":
+            subprocess.call(
+                ["sudo", "flatpak", "remote-add", "--if-not-exists", "flathub", value]
+            )
 
     except subprocess.CalledProcessError as err:
         print(f"An error occurred: {err}")

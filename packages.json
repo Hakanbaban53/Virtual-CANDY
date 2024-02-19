@@ -144,7 +144,7 @@
           "name": "Docker Repository",
           "type": "get-keys",
           "script": [
-            "sudo apt-get install ca-certificates curl",
+            "sudo apt-get install ca-certificates curl -y",
             "sudo install -d -m 0755 /etc/apt/keyrings",
             "sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc",
             "sudo chmod a+r /etc/apt/keyrings/docker.asc",
@@ -353,7 +353,7 @@
           "name": "Docker Repository",
           "type": "get-keys",
           "script": [
-            "sudo apt-get install ca-certificates curl",
+            "sudo apt-get install ca-certificates curl -y",
             "sudo install -d -m 0755 /etc/apt/keyrings",
             "sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc",
             "sudo chmod a+r /etc/apt/keyrings/docker.asc",
