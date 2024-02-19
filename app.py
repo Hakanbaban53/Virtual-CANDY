@@ -117,14 +117,15 @@ def main(stdscr):
                 for idx, entity in enumerate(selected_entities):
                     stdscr.addstr(2 + idx, 3, entity)
 
-                stdscr.addstr(len(selected_entities) + 3, 3, "Do you want to continue[Y/n]? ")
+                stdscr.addstr(len(selected_entities) + 3, 3, "Do you want to continue[Y/n]? \n")
                 stdscr.refresh()
                 confirmation_key = stdscr.getch()
                 if confirmation_key in [89, 121, 10]:  # 'Y', 'y', Enter
                     for idx, entity in enumerate(selected_entities) :
                         if "Docker & Docker Desktop" in entity:
-                            stdscr.addstr(len(selected_entities) + 4 + idx, 3, "cker and Docker Desktop installing")
+                            stdscr.addstr(len(selected_entities) + 4 + idx, 3, "Docker and Docker Desktop installing\n")
                             get_linux_package_manager(linux_distribution, "docker")
+
                         elif "Podman & Podman Desktop" in entity:
                             stdscr.addstr(len(selected_entities) + 4 + idx, 3, "Podman and Podman Desktop installing")
                             get_linux_package_manager(linux_distribution, "podman")
@@ -132,6 +133,7 @@ def main(stdscr):
                         elif "Qemu & Virtual Manager" in entity:
                             stdscr.addstr(len(selected_entities) + 4 + idx, 3, "Qemu & Virtual Manager installing")
                             get_linux_package_manager(linux_distribution, "qemu")
+
                         elif "Virtual Box" in entity:
                             stdscr.addstr(len(selected_entities) + 4 + idx, 3, "Virtual Box installing")
                             get_linux_package_manager(linux_distribution, "virtualbox")

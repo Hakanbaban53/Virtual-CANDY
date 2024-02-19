@@ -45,17 +45,17 @@ def type_of_action(data):
             )
             subprocess.run(["sudo", "pacman", "-U", f"{target_directory}package.pkg.tar.zst"])
 
-        elif type == "add-repo-flathub":
-            subprocess.call(
-                ["flatpak", "remote-add", "--if-not-exists", "flathub", value]
-            )
-
         elif type == "install-service":
             subprocess.run(["sudo", "systemctl", "restart", value])
             subprocess.run(["sudo", "systemctl", "enable", value])
 
         elif type == "add-group":
             subprocess.run(["sudo", "usermod", "-aG", value, current_user])
+
+        elif type == "add-repo-flathub":
+            subprocess.call(
+                ["flatpak", "remote-add", "--if-not-exists", "flathub", value]
+            )
 
         elif type == "install-package-flatpak":
             subprocess.run(["flatpak", "install", "-y", value])
