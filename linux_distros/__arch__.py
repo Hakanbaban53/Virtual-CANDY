@@ -7,7 +7,7 @@ def arch_package_installer(packages):
         value = data.get("value", "")
         try:
             if type == "install-package":
-                subprocess.run(["sudo", "pacman", "-Q", value])
+                subprocess.run(["sudo", "pacman", "-Q", value, "--noconfirm"])
             elif type_of_action == "install-package-flatpak":
                 result = subprocess.run(
                     ["flatpak", "list"], capture_output=True, text=True
@@ -30,7 +30,7 @@ def type_of_action(data):
     value = data.get("value", "")
     try:
         if type == "install-package":
-            subprocess.run(["sudo", "pacman", "-S", value])
+            subprocess.run(["sudo", "pacman", "-S", value, "--noconfirm"])
 
         elif type == "local-package":
             subprocess.run(
@@ -43,7 +43,7 @@ def type_of_action(data):
                     value,
                 ]
             )
-            subprocess.run(["sudo", "pacman", "-U", f"{target_directory}package.pkg.tar.zst"])
+            subprocess.run(["sudo", "pacman", "-U", f"{target_directory}package.pkg.tar.zst", "--noconfirm"])
 
         elif type == "install-service":
             subprocess.run(["sudo", "systemctl", "restart", value])
@@ -54,7 +54,7 @@ def type_of_action(data):
 
         elif type == "add-repo-flathub":
             subprocess.call(
-                ["flatpak", "remote-add", "--if-not-exists", "flathub", value]
+                ["sudo", "flatpak", "remote-add", "--if-not-exists", "flathub", value]
             )
 
         elif type == "install-package-flatpak":
