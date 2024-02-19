@@ -2,7 +2,7 @@ import subprocess
 from __pip_install__ import pip_package_installer
 from __get_os_package_manager__ import get_linux_package_manager
 
-dependencies = []
+dependencies = ['halo']
 
 
 def check_dependencies():

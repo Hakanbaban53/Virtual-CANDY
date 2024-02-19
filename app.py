@@ -28,6 +28,17 @@ def get_user_input(stdscr, prompt):
     input_str = stdscr.getstr().decode("utf-8")
     return input_str
 
+def spinning_icon(window, pause_event):
+    icons = ['-', '\\', '|', '/']
+    i = 0
+    while not pause_event.is_set():
+        window.addstr(0, 0, f"Installing... {icons[i]}", curses.A_BOLD)
+        window.refresh()
+        i = (i + 1) % len(icons)
+        curses.napms(200)  # Sleep for 200 milliseconds
+    window.addstr(0, 0, "Installation paused... ", curses.A_BOLD)
+    window.refresh()
+
 def get_linux_distro(stdscr):
     stdscr.clear()
     stdscr.addstr(3, 3, "Getting Linux Distro")
@@ -67,7 +78,7 @@ def get_linux_distro(stdscr):
                     stdscr.clear()
                     stdscr.addstr(9, 3, "Too many wrong attempts. Exiting in 3 seconds...")
                     stdscr.refresh()
-                    curses.delay_output(3000)  # Delay for 3 seconds (3000 milliseconds)
+                    curses.delay_output(3000)
                     exit(1)
 
     stdscr.refresh()
