@@ -122,6 +122,9 @@ def main(stdscr):
                 confirmation_key = stdscr.getch()
                 if confirmation_key in [89, 121, 10]:  # 'Y', 'y', Enter
                     for idx, entity in enumerate(selected_entities) :
+                        curses.curs_set(0)  # Hide the cursor
+                        stdscr.clear()
+                        stdscr.refresh()
                         if "Docker & Docker Desktop" in entity:
                             stdscr.addstr(len(selected_entities) + 4 + idx, 3, "Docker and Docker Desktop installing\n")
                             get_linux_package_manager(linux_distribution, "docker")
@@ -137,7 +140,6 @@ def main(stdscr):
                         elif "Virtual Box" in entity:
                             stdscr.addstr(len(selected_entities) + 4 + idx, 3, "Virtual Box installing")
                             get_linux_package_manager(linux_distribution, "virtualbox")
-
                     stdscr.addstr(len(selected_entities) + 6 + idx, 3, "All Aplied!")
                     stdscr.refresh()    
                     stdscr.getch()
