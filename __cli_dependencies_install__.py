@@ -2,7 +2,7 @@ import subprocess
 from __pip_install__ import pip_package_installer
 from __get_os_package_manager__ import get_linux_package_manager
 
-dependencies = ['halo']
+dependencies = ["halo"]
 
 
 def check_dependencies():
@@ -13,7 +13,7 @@ def check_dependencies():
             subprocess.check_call(["pip", "show", package], stdout=subprocess.PIPE)
         except subprocess.CalledProcessError:
             return False
-    return True 
+    return True
 
 
 def get_dependencies():
@@ -24,16 +24,11 @@ def get_dependencies():
         print("All dependencies installed!")
         get_linux_package_manager()
     else:
-        selection = (
-            input(
-                "Dependencies were not satisfied. Would you like to download? (Y/n): "
-            )
-            .strip()
-            .lower()
+        selection = input(
+            "Dependencies were not satisfied. Would you like to download? (Y/n): "
         )
-        if selection.lower() == "y" or not selection:
+        if selection in [89, 121, 10]:  # 'Y', 'y', Enter
             pip_package_installer(dependencies)
-            #get_linux_package_manager()
         elif selection.lower() == "n":
             print("Can you want to continue installing[y/N] ?")
         else:

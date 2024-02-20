@@ -6,6 +6,9 @@ MAX_WRONG_ATTEMPTS = 3
 statuses = ["Docker & Docker Desktop", "Podman & Podman Desktop", "Qemu & Virtual Manager", "Virtual Box"]
 selected_status = [False] * len(statuses)
 
+def clidependencies(stdscr):
+    stdscr.addstr(3, 3, "Detecting CLI dependencies")
+
 def print_menu(stdscr, selected_row):
     stdscr.clear()
     height, width = stdscr.getmaxyx()
@@ -27,6 +30,18 @@ def get_user_input(stdscr, prompt):
     stdscr.refresh()
     input_str = stdscr.getstr().decode("utf-8")
     return input_str
+
+def get_hide_output_choice(window):
+    while True:
+        window.addstr(3, 3,"Do you want to hide package manager output? (Enter H/h for hide, N/n for not hide): ")
+        window.refresh()
+        choice = window.getch()
+        if choice in [ord('H'), ord('h')]:
+            return True
+        elif choice in [ord('N'), ord('n')]:
+            return False
+        else:
+            window.addstr(4, 3,"\nInvalid choice. Please enter H/h or N/n.\n")
 
 def spinning_icon(window, pause_event):
     icons = ['-', '\\', '|', '/']
@@ -89,8 +104,10 @@ def main(stdscr):
         curses.curs_set(0)
         curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_WHITE)
 
+
         linux_distribution = get_linux_distro(stdscr)
 
+        hide_output = get_hide_output_choice(stdscr)
 
         current_row = 0
         print_menu(stdscr, current_row)
@@ -127,19 +144,19 @@ def main(stdscr):
                         stdscr.refresh()
                         if "Docker & Docker Desktop" in entity:
                             stdscr.addstr(len(selected_entities) + 4 + idx, 3, "Docker and Docker Desktop installing\n")
-                            get_linux_package_manager(linux_distribution, "docker")
+                            get_linux_package_manager(linux_distribution, "docker", hide_output)
 
                         elif "Podman & Podman Desktop" in entity:
                             stdscr.addstr(len(selected_entities) + 4 + idx, 3, "Podman and Podman Desktop installing")
-                            get_linux_package_manager(linux_distribution, "podman")
+                            get_linux_package_manager(linux_distribution, "podman", hide_output)
 
                         elif "Qemu & Virtual Manager" in entity:
                             stdscr.addstr(len(selected_entities) + 4 + idx, 3, "Qemu & Virtual Manager installing")
-                            get_linux_package_manager(linux_distribution, "qemu")
+                            get_linux_package_manager(linux_distribution, "qemu", hide_output)
 
                         elif "Virtual Box" in entity:
                             stdscr.addstr(len(selected_entities) + 4 + idx, 3, "Virtual Box installing")
-                            get_linux_package_manager(linux_distribution, "virtualbox")
+                            get_linux_package_manager(linux_distribution, "virtualbox", hide_output)
                     stdscr.addstr(len(selected_entities) + 6 + idx, 3, "All Aplied!")
                     stdscr.refresh()    
                     stdscr.getch()

@@ -1,6 +1,5 @@
 import subprocess
 
-
 def pip_package_installer(packages):
     for package in packages:
         try:

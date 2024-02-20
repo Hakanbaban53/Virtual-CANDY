@@ -34,9 +34,7 @@ def identify_distribution():
         return 'Not running on Linux'
 
 
-def get_linux_package_manager(linux_distribution, package_name):
-
-    #print(f"{linux_distribution}")
+def get_linux_package_manager(linux_distribution, package_name, hide_output):
 
     with open("packages.json", "r") as json_file:
         instructions_data = json.load(json_file)
@@ -62,7 +60,7 @@ def get_linux_package_manager(linux_distribution, package_name):
                 name = data.get("name", "")
                 if name == package_name:
                     values = data.get("values", [])
-                    fedora_package_installer(values)
+                    fedora_package_installer(values, hide_output)
         elif linux_distribution == "ubuntu":
             package_data_ref = instructions_data[linux_distribution]
             for data in package_data_ref:
