@@ -36,6 +36,7 @@ def type_of_action(data, hide_output):
                 ["sudo", "dnf", "install", "-y"] + packages_to_install,
                 check=True,
                 stderr=stderr,
+                stdout=stdout
             )
 
         elif type == "install-url-package":
@@ -48,6 +49,7 @@ def type_of_action(data, hide_output):
                 ["sudo", "dnf", "install", value],
                 check=True,
                 stderr=stderr,
+                stdout=stdout
             )
 
         elif type == "local-package":
@@ -69,6 +71,7 @@ def type_of_action(data, hide_output):
                 cwd=target_directory,
                 check=True,
                 stderr=stderr,
+                stdout=stdout
             )
 
         elif type == "remove-package":
@@ -78,6 +81,7 @@ def type_of_action(data, hide_output):
                 ["sudo", "dnf", "remove", "-y"] + packages_to_remove,
                 check=True,
                 stderr=stderr,
+                stdout=stdout
             )
 
         elif type == "config-manager":
@@ -108,6 +112,7 @@ def type_of_action(data, hide_output):
                 ["sudo", "flatpak", "install", "-y", value],
                 check=True,
                 stderr=stderr,
+                stdout=stdout
             )
 
     except subprocess.runedProcessError as err:
