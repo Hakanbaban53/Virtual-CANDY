@@ -1,50 +1,90 @@
 import curses
-from __get_os_package_manager__ import get_linux_distribution, identify_distribution, get_linux_package_manager
+from __get_os_package_manager__ import (
+    get_linux_distribution,
+    identify_distribution,
+    get_linux_package_manager,
+)
 
 MAX_WRONG_ATTEMPTS = 3
 
-statuses = ["Docker & Docker Desktop", "Podman & Podman Desktop", "Qemu & Virtual Manager", "Virtual Box"]
+statuses = [
+    "Docker & Docker Desktop",
+    "Podman & Podman Desktop",
+    "Qemu & Virtual Manager",
+    "Virtual Box",
+]
 selected_status = [False] * len(statuses)
 
-def clidependencies(stdscr):
-    stdscr.addstr(3, 3, "Detecting CLI dependencies")
 
-def print_menu(stdscr, selected_row):
-    stdscr.clear()
-    height, width = stdscr.getmaxyx()
+def clidependencies(window):
+    window.addstr(3, 3, "Detecting CLI dependencies")
+
+
+def print_menu(window, selected_row):
+    window.clear()
+    height, width = window.getmaxyx()
 
     for idx, status in enumerate(statuses):
         x = width // 2 - len(status) // 2
         y = height // 2 - len(statuses) // 2 + idx
         if idx == selected_row:
-            stdscr.addstr(y, x - 3, "(*)" if selected_status[idx] else "( )")
-            stdscr.addstr(y, x, status, curses.A_REVERSE)
+            window.addstr(y, x - 3, "(*)" if selected_status[idx] else "( )")
+            window.addstr(y, x, status, curses.A_REVERSE)
         else:
-            stdscr.addstr(y, x - 3, "(*)" if selected_status[idx] else "( )")
-            stdscr.addstr(y, x, status)
-    stdscr.refresh()
+            window.addstr(y, x - 3, "(*)" if selected_status[idx] else "( )")
+            window.addstr(y, x, status)
+    window.refresh()
 
-def get_user_input(stdscr, prompt):
+
+def get_user_input_string(window, prompt, y, x):
     curses.echo()
-    stdscr.addstr(len(statuses) + 5, 0, prompt)
-    stdscr.refresh()
-    input_str = stdscr.getstr().decode("utf-8")
+    window.addstr(y, x, prompt)
+    window.refresh()
+    input_str = window.getstr().decode("utf-8")
     return input_str
 
+
+def get_user_input_char(window, prompt, y, x):
+    curses.echo()
+    window.addstr(y, x, prompt)
+    input_char = window.getch()
+    return input_char
+
+
 def get_hide_output_choice(window):
-    while True:
-        window.addstr(3, 3,"Do you want to hide package manager output? (Enter H/h for hide, N/n for not hide): ")
-        window.refresh()
-        choice = window.getch()
-        if choice in [ord('H'), ord('h')]:
-            return True
-        elif choice in [ord('N'), ord('n')]:
-            return False
-        else:
-            window.addstr(4, 3,"\nInvalid choice. Please enter H/h or N/n.\n")
+
+    wrong_attempts = 0
+    window.clear()
+
+    confirmation_key = get_user_input_char(
+        window,
+        "Do you want to hide package manager output[Y/n]?: ",
+        8,
+        3,
+    )
+    if confirmation_key in [89, 121, 10]:  # 'Y', 'y', Enter
+        return True
+    elif confirmation_key in [78, 110]:  # 'N', 'n'
+        return False
+
+    else:
+        window.addstr(9, 3, "Unknown command! Try again...")
+        wrong_attempts += 1
+
+        if wrong_attempts >= MAX_WRONG_ATTEMPTS:
+            window.clear()
+            window.addstr(
+                10, 3, "Too many wrong attempts. Exiting in 3 seconds..."
+            )
+            window.refresh()
+            curses.delay_output(3000)
+            exit(1)
+
+    window.refresh()
+
 
 def spinning_icon(window, pause_event):
-    icons = ['-', '\\', '|', '/']
+    icons = ["-", "\\", "|", "/"]
     i = 0
     while not pause_event.is_set():
         window.addstr(0, 0, f"Installing... {icons[i]}", curses.A_BOLD)
@@ -54,66 +94,84 @@ def spinning_icon(window, pause_event):
     window.addstr(0, 0, "Installation paused... ", curses.A_BOLD)
     window.refresh()
 
-def get_linux_distro(stdscr):
-    stdscr.clear()
-    stdscr.addstr(3, 3, "Getting Linux Distro")
+
+def get_linux_distro(window):
+    window.clear()
+    window.addstr(3, 3, "Getting Linux Distro")
     linux_distribution = get_linux_distribution()
     linux_distro_id = identify_distribution()
-    stdscr.addstr(4, 3, "Linux Distro : {}\n   Distro id : {}\n   It's true [Y/n]?".format(linux_distribution, linux_distro_id))
 
-    confirmation_key = stdscr.getch()
-
+    confirmation_key = get_user_input_char(
+        window,
+        "Linux Distro : {}\n   Distro id : {}\n   It's true [Y/n]?".format(
+            linux_distribution, linux_distro_id
+        ),
+        4,
+        3,
+    )
     if confirmation_key in [89, 121, 10]:  # 'Y', 'y', Enter
-        stdscr.addstr(5, 3, "Now loading the packages...")
         return linux_distro_id
     elif confirmation_key in [78, 110]:  # 'N', 'n'
 
         wrong_attempts = 0
 
         while True:
-            linux_distribution = get_user_input(stdscr, "Please enter the distro: ")
+            linux_distribution = get_user_input_string(
+                window, "Please enter the distro: ", 
+                7,
+                3
+            )
             linux_distribution_lower = linux_distribution.lower()
 
-            stdscr.addstr(6, 3, "Entered Linux Distro: {}".format(linux_distribution))
+            window.addstr(8, 3, "Entered Linux Distro: {}".format(linux_distribution))
 
-            if 'arch' in linux_distribution_lower or 'manjaro' in linux_distribution_lower:
-                return 'arch'
-            elif 'debian' in linux_distribution_lower:
-                return 'debian'
-            elif 'fedora' in linux_distribution_lower or 'nobara' in linux_distribution_lower:
-                return 'fedora'
-            elif 'ubuntu' in linux_distribution_lower or 'linux mint' in linux_distribution_lower:
-                return 'ubuntu'
+            if (
+                "arch" in linux_distribution_lower
+                or "manjaro" in linux_distribution_lower
+            ):
+                return "arch"
+            elif "debian" in linux_distribution_lower:
+                return "debian"
+            elif (
+                "fedora" in linux_distribution_lower
+                or "nobara" in linux_distribution_lower
+            ):
+                return "fedora"
+            elif (
+                "ubuntu" in linux_distribution_lower
+                or "linux mint" in linux_distribution_lower
+            ):
+                return "ubuntu"
             else:
-                stdscr.clear()
-                stdscr.addstr(8, 3, "Unknown distro! Try again...")
+                window.addstr(8, 3, "Unknown distro! Try again...")
                 wrong_attempts += 1
 
                 if wrong_attempts >= MAX_WRONG_ATTEMPTS:
-                    stdscr.clear()
-                    stdscr.addstr(9, 3, "Too many wrong attempts. Exiting in 3 seconds...")
-                    stdscr.refresh()
+                    window.clear()
+                    window.addstr(
+                        9, 3, "Too many wrong attempts. Exiting in 3 seconds..."
+                    )
+                    window.refresh()
                     curses.delay_output(3000)
                     exit(1)
 
-    stdscr.refresh()
+    window.refresh()
 
 
-def main(stdscr):
+def main(window):
     try:
         curses.curs_set(0)
         curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_WHITE)
 
+        linux_distribution = get_linux_distro(window)
 
-        linux_distribution = get_linux_distro(stdscr)
-
-        hide_output = get_hide_output_choice(stdscr)
+        hide_output = get_hide_output_choice(window)
 
         current_row = 0
-        print_menu(stdscr, current_row)
+        print_menu(window, current_row)
 
         while True:
-            key = stdscr.getch()
+            key = window.getch()
 
             if key == curses.KEY_DOWN:
                 current_row = (current_row + 1) % len(statuses)
@@ -125,51 +183,76 @@ def main(stdscr):
                 selected_status[current_row] = not selected_status[current_row]
 
             elif key == 10:  # Enter key
-                stdscr.clear()
-                selected_entities = [status for idx, status in enumerate(statuses) if selected_status[idx]]
-                stdscr.addstr(1, 3, "Selected applications :")
-                stdscr.addstr(0, 0, "{}".format(linux_distribution))
-
+                window.clear()
+                selected_entities = [
+                    status
+                    for idx, status in enumerate(statuses)
+                    if selected_status[idx]
+                ]
+                window.addstr(1, 3, "Selected applications :")
+                window.addstr(0, 0, "{}".format(linux_distribution))
 
                 for idx, entity in enumerate(selected_entities):
-                    stdscr.addstr(2 + idx, 3, entity)
+                    window.addstr(2 + idx, 3, entity)
 
-                stdscr.addstr(len(selected_entities) + 3, 3, "Do you want to continue[Y/n]? \n")
-                stdscr.refresh()
-                confirmation_key = stdscr.getch()
+                window.addstr(
+                    len(selected_entities) + 3, 3, "Do you want to continue[Y/n]? \n"
+                )
+                window.refresh()
+                confirmation_key = window.getch()
                 if confirmation_key in [89, 121, 10]:  # 'Y', 'y', Enter
-                    for idx, entity in enumerate(selected_entities) :
+                    for idx, entity in enumerate(selected_entities):
                         curses.curs_set(0)  # Hide the cursor
-                        stdscr.clear()
-                        stdscr.refresh()
+                        window.clear()
+                        window.refresh()
                         if "Docker & Docker Desktop" in entity:
-                            stdscr.addstr(len(selected_entities) + 4 + idx, 3, "Docker and Docker Desktop installing\n")
-                            get_linux_package_manager(linux_distribution, "docker", hide_output)
+                            window.addstr(
+                                len(selected_entities) + 4 + idx,
+                                3,
+                                "Docker and Docker Desktop installing\n",
+                            )
+                            get_linux_package_manager(
+                                linux_distribution, "docker", hide_output
+                            )
 
                         elif "Podman & Podman Desktop" in entity:
-                            stdscr.addstr(len(selected_entities) + 4 + idx, 3, "Podman and Podman Desktop installing")
-                            get_linux_package_manager(linux_distribution, "podman", hide_output)
+                            window.addstr(
+                                len(selected_entities) + 4 + idx,
+                                3,
+                                "Podman and Podman Desktop installing",
+                            )
+                            get_linux_package_manager(
+                                linux_distribution, "podman", hide_output
+                            )
 
                         elif "Qemu & Virtual Manager" in entity:
-                            stdscr.addstr(len(selected_entities) + 4 + idx, 3, "Qemu & Virtual Manager installing")
-                            get_linux_package_manager(linux_distribution, "qemu", hide_output)
+                            window.addstr(
+                                len(selected_entities) + 4 + idx,
+                                3,
+                                "Qemu & Virtual Manager installing",
+                            )
+                            get_linux_package_manager(
+                                linux_distribution, "qemu", hide_output
+                            )
 
                         elif "Virtual Box" in entity:
-                            stdscr.addstr(len(selected_entities) + 4 + idx, 3, "Virtual Box installing")
-                            get_linux_package_manager(linux_distribution, "virtualbox", hide_output)
-                    stdscr.addstr(len(selected_entities) + 6 + idx, 3, "All Aplied!")
-                    stdscr.refresh()    
-                    stdscr.getch()
+                            window.addstr(
+                                len(selected_entities) + 4 + idx,
+                                3,
+                                "Virtual Box installing",
+                            )
+                            get_linux_package_manager(
+                                linux_distribution, "virtualbox", hide_output
+                            )
+                    window.addstr(len(selected_entities) + 6 + idx, 3, "All Aplied!")
+                    window.refresh()
+                    window.getch()
                     break
 
-
-
-
-
-
-            print_menu(stdscr, current_row)
+            print_menu(window, current_row)
     except KeyboardInterrupt:
         print("\nCtrl + C pressed\n\nBye 👋.")
         exit(1)
+
 
 curses.wrapper(main)
