@@ -7,26 +7,22 @@ from __get_os_package_manager__ import (
 
 MAX_WRONG_ATTEMPTS = 3
 
-statuses = [
+packages = [
     "Docker & Docker Desktop",
     "Podman & Podman Desktop",
     "Qemu & Virtual Manager",
     "Virtual Box",
 ]
-selected_status = [False] * len(statuses)
-
-
-def clidependencies(window):
-    window.addstr(3, 3, "Detecting CLI dependencies")
+selected_status = [False] * len(packages)
 
 
 def print_menu(window, selected_row):
     window.clear()
     height, width = window.getmaxyx()
 
-    for idx, status in enumerate(statuses):
+    for idx, status in enumerate(packages):
         x = width // 2 - len(status) // 2
-        y = height // 2 - len(statuses) // 2 + idx
+        y = height // 2 - len(packages) // 2 + idx
         if idx == selected_row:
             window.addstr(y, x - 3, "(*)" if selected_status[idx] else "( )")
             window.addstr(y, x, status, curses.A_REVERSE)
@@ -40,47 +36,60 @@ def get_user_input_string(window, prompt, y, x):
     curses.echo()
     window.addstr(y, x, prompt)
     window.refresh()
-    input_str = window.getstr().decode("utf-8")
+    try:
+        input_str = window.getstr().decode("utf-8")
+    except curses.error:
+        input_str = ""  # Handle input errors or interruptions
+    curses.noecho()
     return input_str
 
 
 def get_user_input_char(window, prompt, y, x):
     curses.echo()
     window.addstr(y, x, prompt)
+    window.refresh()
     input_char = window.getch()
     return input_char
 
 
 def get_hide_output_choice(window):
-
     wrong_attempts = 0
-    window.clear()
 
-    confirmation_key = get_user_input_char(
-        window,
-        "Do you want to hide package manager output[Y/n]?: ",
-        8,
-        3,
-    )
-    if confirmation_key in [89, 121, 10]:  # 'Y', 'y', Enter
-        return True
-    elif confirmation_key in [78, 110]:  # 'N', 'n'
-        return False
+    while True:
+        confirmation_key = get_user_input_char(
+            window,
+            "Do you want to hide package manager output? [Y/n]: ",
+            curses.LINES // 2 + 5,
+            curses.COLS // 2 - 20,
+        )
 
-    else:
-        window.addstr(9, 3, "Unknown command! Try again...")
-        wrong_attempts += 1
+        if confirmation_key in [89, 121, 10]:  # 'Y', 'y', Enter
+            return True
+        elif confirmation_key in [78, 110]:  # 'N', 'n'
+            return False
+        else:
+            wrong_attempts += 1
 
-        if wrong_attempts >= MAX_WRONG_ATTEMPTS:
-            window.clear()
-            window.addstr(
-                10, 3, "Too many wrong attempts. Exiting in 3 seconds..."
-            )
-            window.refresh()
-            curses.delay_output(3000)
-            exit(1)
+            if wrong_attempts >= MAX_WRONG_ATTEMPTS:
+                window.clear()
+                window.addstr(
+                    curses.LINES // 2 + 1,
+                    curses.COLS // 2 - 20,
+                    "Too many wrong attempts. Exiting in 3 seconds...",
+                )
+                window.refresh()
+                curses.delay_output(3000)
+                exit(1)
+            else:
+                window.addstr(
+                    curses.LINES // 2 + 6,
+                    curses.COLS // 2 - 20,
+                    "Unknown key! Try again (Attempts left: {})".format(
+                        MAX_WRONG_ATTEMPTS - wrong_attempts
+                    ),
+                )
 
-    window.refresh()
+        window.refresh()
 
 
 def spinning_icon(window, pause_event):
@@ -95,67 +104,142 @@ def spinning_icon(window, pause_event):
     window.refresh()
 
 
+    # Inside the get_linux_distro function
 def get_linux_distro(window):
-    window.clear()
-    window.addstr(3, 3, "Getting Linux Distro")
-    linux_distribution = get_linux_distribution()
-    linux_distro_id = identify_distribution()
 
-    confirmation_key = get_user_input_char(
-        window,
-        "Linux Distro : {}\n   Distro id : {}\n   It's true [Y/n]?".format(
-            linux_distribution, linux_distro_id
-        ),
-        4,
-        3,
-    )
-    if confirmation_key in [89, 121, 10]:  # 'Y', 'y', Enter
-        return linux_distro_id
-    elif confirmation_key in [78, 110]:  # 'N', 'n'
-
+    try:    
+        window.clear()
         wrong_attempts = 0
+        warning_line = curses.LINES // 2 + 3  # Line where the warning message is displayed
+
+        window.addstr(curses.LINES // 2 - 2, curses.COLS // 2 - 20, "Getting Linux Distro:")
+        linux_distribution = get_linux_distribution()
+        linux_distro_id = identify_distribution()
+
+        window.addstr(
+            curses.LINES // 2 - 1,
+            curses.COLS // 2 - 20,
+            "Linux Distro: {}".format(linux_distribution),
+        )
+        window.addstr(
+            curses.LINES // 2,
+            curses.COLS // 2 - 20,
+            "Distro ID: {}".format(linux_distro_id),
+        )
 
         while True:
-            linux_distribution = get_user_input_string(
-                window, "Please enter the distro: ", 
-                7,
-                3
+            confirmation_key = get_user_input_char(
+                window,
+                "Is it correct? [Y/n]",
+                curses.LINES // 2 + 1,
+                curses.COLS // 2 - 20,
             )
-            linux_distribution_lower = linux_distribution.lower()
 
-            window.addstr(8, 3, "Entered Linux Distro: {}".format(linux_distribution))
+            if confirmation_key in [89, 121, 10]:  # 'Y', 'y', Enter
+                window.move(warning_line, 0)
+                window.clrtoeol()
+                return linux_distro_id
 
-            if (
-                "arch" in linux_distribution_lower
-                or "manjaro" in linux_distribution_lower
-            ):
-                return "arch"
-            elif "debian" in linux_distribution_lower:
-                return "debian"
-            elif (
-                "fedora" in linux_distribution_lower
-                or "nobara" in linux_distribution_lower
-            ):
-                return "fedora"
-            elif (
-                "ubuntu" in linux_distribution_lower
-                or "linux mint" in linux_distribution_lower
-            ):
-                return "ubuntu"
+            elif confirmation_key in [78, 110]:  # 'N', 'n'
+                while True:
+
+                    linux_distribution = get_user_input_string(
+                        window,
+                        "Please enter the distro: ",
+                        curses.LINES // 2 + 2,
+                        curses.COLS // 2 - 20,
+                    )
+                    linux_distribution_lower = linux_distribution.lower()
+
+                    window.move(curses.LINES // 2 + 4, curses.COLS // 2 - 20)
+                    window.clrtoeol()
+
+                    window.addstr(
+                        curses.LINES // 2 + 4,
+                        curses.COLS // 2 - 20,
+                        "Entered Linux Distro: {}".format(linux_distribution),
+                    )
+
+                    known_distros = {
+                        "arch": ["arch", "manjaro"],
+                        "debian": ["debian"],
+                        "fedora": ["fedora", "nobara"],
+                        "ubuntu": ["ubuntu", "linux mint"],
+                    }
+
+                    for distro, keywords in known_distros.items():
+                        if any(keyword in linux_distribution_lower for keyword in keywords):
+                            # Clear the warning message line when the correct key is entered
+                            window.move(warning_line, 0)
+                            window.clrtoeol()
+                            return distro
+
+                    window.addstr(
+                        curses.LINES // 2 + 8,
+                        curses.COLS // 2 - 20,
+                        "Unknown distro! Try again...",
+                    )
+                    wrong_attempts += 1
+
+                    if wrong_attempts >= MAX_WRONG_ATTEMPTS:
+                        window.clear()
+                        window.addstr(
+                            curses.LINES // 2 + 9,
+                            curses.COLS // 2 - 20,
+                            "Too many wrong attempts. Exiting in 3 seconds...",
+                        )
+                        window.refresh()
+                        curses.delay_output(3000)
+                        exit(1)
+
+                    # Display warning about the unknown key and attempt count
+                    window.addstr(
+                        warning_line,
+                        curses.COLS // 2 - 20,
+                        "Unknown key! Try again (Attempts left: {})".format(
+                            MAX_WRONG_ATTEMPTS - wrong_attempts
+                        ),
+                    )
+                    window.refresh()
+
             else:
-                window.addstr(8, 3, "Unknown distro! Try again...")
                 wrong_attempts += 1
 
                 if wrong_attempts >= MAX_WRONG_ATTEMPTS:
                     window.clear()
                     window.addstr(
-                        9, 3, "Too many wrong attempts. Exiting in 3 seconds..."
+                        curses.LINES // 2 + 1,
+                        curses.COLS // 2 - 20,
+                        "Too many wrong attempts. Exiting in 3 seconds...",
                     )
                     window.refresh()
                     curses.delay_output(3000)
                     exit(1)
+                else:
+                    # Clear the line before displaying the warning about the unknown key and attempt count
+                    window.move(curses.LINES // 2 + 6, curses.COLS // 2 - 20)
+                    window.clrtoeol()
 
-    window.refresh()
+                    # Display warning about the unknown key and attempt count
+                    window.addstr(
+                        warning_line,
+                        curses.COLS // 2 - 20,
+                        "Unknown command! Try again... (Attempts left: {})".format(
+                            MAX_WRONG_ATTEMPTS - wrong_attempts
+                        ),
+                    )
+                    window.refresh()
+
+    except curses.error:
+        window.clear()
+        window.addstr(
+            curses.LINES // 2,
+            curses.COLS // 2 - 20,
+            "Error: Terminal size is too small. Please resize and try again.",
+        )
+        window.refresh()
+        curses.delay_output(3000)
+        exit(1)
 
 
 def main(window):
@@ -164,7 +248,7 @@ def main(window):
         curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_WHITE)
 
         linux_distribution = get_linux_distro(window)
-
+        window.getch()
         hide_output = get_hide_output_choice(window)
 
         current_row = 0
@@ -174,10 +258,10 @@ def main(window):
             key = window.getch()
 
             if key == curses.KEY_DOWN:
-                current_row = (current_row + 1) % len(statuses)
+                current_row = (current_row + 1) % len(packages)
 
             elif key == curses.KEY_UP:
-                current_row = (current_row - 1) % len(statuses)
+                current_row = (current_row - 1) % len(packages)
 
             elif key == 9:  # TAB key
                 selected_status[current_row] = not selected_status[current_row]
@@ -186,11 +270,11 @@ def main(window):
                 window.clear()
                 selected_entities = [
                     status
-                    for idx, status in enumerate(statuses)
+                    for idx, status in enumerate(packages)
                     if selected_status[idx]
                 ]
                 window.addstr(1, 3, "Selected applications :")
-                window.addstr(0, 0, "{}".format(linux_distribution))
+                window.addstr(0, 0, "{}".format(hide_output))
 
                 for idx, entity in enumerate(selected_entities):
                     window.addstr(2 + idx, 3, entity)
@@ -244,14 +328,26 @@ def main(window):
                             get_linux_package_manager(
                                 linux_distribution, "virtualbox", hide_output
                             )
-                    window.addstr(len(selected_entities) + 6 + idx, 3, "All Aplied!")
+                    window.addstr(len(selected_entities) + 6 + idx, 3, "All Applied!")
                     window.refresh()
                     window.getch()
                     break
 
             print_menu(window, current_row)
     except KeyboardInterrupt:
-        print("\nCtrl + C pressed\n\nBye 👋.")
+        window.clear()
+        window.addstr(
+            curses.LINES // 2,
+            curses.COLS // 2 - 20,
+            "Ctrl + C pressed. Exiting...",
+        )
+        window.addstr(
+            curses.LINES // 2 + 2,
+            curses.COLS // 2 - 5,
+            "Bye 👋",
+        )
+        window.refresh()
+        curses.delay_output(3000)
         exit(1)
 
 
