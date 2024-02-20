@@ -23,13 +23,19 @@ def type_of_action(data, hide_output):
     type = data.get("type", "")
     value = data.get("value", "")
     try:
+        if hide_output:
+            devnull = open('/dev/null', 'w')
+            stdout = stderr = devnull
+        else:
+            stdout = stderr = None
+            
         if type == "install-package":
             print(f"{name} Package(s) insalling")
             packages_to_install = value.split()
             subprocess.run(
                 ["sudo", "dnf", "install", "-y"] + packages_to_install,
                 check=True,
-                stdout=None if hide_output else subprocess.PIPE,
+                stderr=stderr,
             )
 
         elif type == "install-url-package":
@@ -41,7 +47,7 @@ def type_of_action(data, hide_output):
             subprocess.run(
                 ["sudo", "dnf", "install", value],
                 check=True,
-                stdout=None if hide_output else subprocess.PIPE,
+                stderr=stderr,
             )
 
         elif type == "local-package":
@@ -62,7 +68,7 @@ def type_of_action(data, hide_output):
                 ["sudo", "dnf", "install", "-y", f"local.package.rpm"],
                 cwd=target_directory,
                 check=True,
-                stdout=None if hide_output else subprocess.PIPE,
+                stderr=stderr,
             )
 
         elif type == "remove-package":
@@ -71,7 +77,7 @@ def type_of_action(data, hide_output):
             subprocess.run(
                 ["sudo", "dnf", "remove", "-y"] + packages_to_remove,
                 check=True,
-                stdout=None if hide_output else subprocess.PIPE,
+                stderr=stderr,
             )
 
         elif type == "config-manager":
@@ -101,7 +107,7 @@ def type_of_action(data, hide_output):
             subprocess.run(
                 ["sudo", "flatpak", "install", "-y", value],
                 check=True,
-                stdout=None if hide_output else subprocess.PIPE,
+                stderr=stderr,
             )
 
     except subprocess.runedProcessError as err:
