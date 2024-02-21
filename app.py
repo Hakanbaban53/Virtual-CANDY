@@ -145,7 +145,7 @@ def get_linux_distro(window):
         while True:
             confirmation_key = get_user_input_char(
                 window,
-                "Is it correct? [Y/n]",
+                "Is it correct? [Y/n]: ",
                 curses.LINES // 2 + 1,
                 curses.COLS // 2 - 20,
             )
