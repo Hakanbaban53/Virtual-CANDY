@@ -18,12 +18,16 @@ def fedora_package_installer(packages, hide_output):
 
 
 def type_of_action(data, hide_output):
+    
     current_user = getenv("USER")
     target_directory = f"/home/{current_user}/"
     name = data.get("name", "")
     type = data.get("type", "")
     value = data.get("value", "")
     try:
+        text = "Installing {}...".format(name)
+        x = 20 // 2 - len(text) // 2
+        y = 20 // 2
         if hide_output:
             devnull = open('/dev/null', 'w')
             stdout = stderr = devnull
@@ -31,7 +35,7 @@ def type_of_action(data, hide_output):
             stdout = stderr = None
             
         if type == "install-package":
-            print(f"\n{name} Package(s) insalling")
+            print("\033[{};{}H{}".format(y, x, text))
             packages_to_install = value.split()
             subprocess.run(
                 ["sudo", "dnf", "install", "-y"] + packages_to_install,
@@ -41,7 +45,7 @@ def type_of_action(data, hide_output):
             )
 
         elif type == "install-url-package":
-            print(f"\n{name} Package(s) insalling")
+            print("\033[{};{}H{}".format(y, x, text))
             fedora_version = subprocess.check_output(
                 ["rpm", "-E", "%fedora"], text=True
             ).strip()
@@ -54,7 +58,7 @@ def type_of_action(data, hide_output):
             )
 
         elif type == "local-package":
-            print(f"\n{name} Package(s) insalling")
+            print("\033[{};{}H{}".format(y, x, text))
             subprocess.run(
                 [
                     "wget",
@@ -76,7 +80,7 @@ def type_of_action(data, hide_output):
             )
 
         elif type == "remove-package":
-            print(f"\n{name} Package(s) removing.")
+            print("\033[{};{}H{}".format(y, x, text))
             packages_to_remove = value.split()  # Split the package types into a list
             subprocess.run(
                 ["sudo", "dnf", "remove", "-y"] + packages_to_remove,
@@ -86,29 +90,29 @@ def type_of_action(data, hide_output):
             )
 
         elif type == "config-manager":
-            print(f"\n{name} repo adding.")
+            print("\033[{};{}H{}".format(y, x, text))
             subprocess.run(
                 ["sudo", "dnf", "config-manager", "--add-repo", value], check=True
             )
 
         elif type == "install-service":
-            print(f"\n\n{name}  service installing...")
+            print("\033[{};{}H{}".format(y, x, text))
             subprocess.run(["sudo", "systemctl", "restart", value], check=True)
             subprocess.run(["sudo", "systemctl", "enable", value], check=True)
 
         elif type == "add-group":
-            print(f"\n{name} adding to group")
+            print("\033[{};{}H{}".format(y, x, text))
             subprocess.run(["sudo", "usermod", "-aG", value, current_user], check=True)
 
         elif type == "add-repo-flathub":
-            print(f"\n{name} repo adding to flatpak")
+            print("\033[{};{}H{}".format(y, x, text))
             subprocess.run(
                 ["sudo", "flatpak", "remote-add", "--if-not-exists", "flathub", value],
                 check=True,
             )
 
         elif type == "install-package-flatpak":
-            print(f"\n{name} flatpak Package(s) insalling")
+            print("\033[{};{}H{}".format(y, x, text))
             subprocess.run(
                 ["sudo", "flatpak", "install", "-y", value],
                 check=True,

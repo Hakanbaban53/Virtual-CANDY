@@ -12,23 +12,38 @@ packages = [
     "Podman & Podman Desktop",
     "Qemu & Virtual Manager",
     "Virtual Box",
+    "Package 5",
+    "Package 6",
+    # Add more packages as needed
 ]
 selected_status = [False] * len(packages)
-
+max_displayed_packages = 3  # Maximum number of packages to display at a time
 
 def print_menu(window, selected_row):
     window.clear()
     height, width = window.getmaxyx()
 
-    for idx, status in enumerate(packages):
+    start_idx = max(0, selected_row - max_displayed_packages + 1)
+    end_idx = min(len(packages), start_idx + max_displayed_packages)
+
+    for idx in range(start_idx, end_idx):
+        status = packages[idx]
         x = width // 2 - len(status) // 2
-        y = height // 2 - len(packages) // 2 + idx
+        y = height // 2 - max_displayed_packages // 2 + idx - start_idx
+
         if idx == selected_row:
             window.addstr(y, x - 3, "(*)" if selected_status[idx] else "( )")
             window.addstr(y, x, status, curses.A_REVERSE)
         else:
             window.addstr(y, x - 3, "(*)" if selected_status[idx] else "( )")
             window.addstr(y, x, status)
+
+    # Display scrollbar or arrow if there are more packages
+    if start_idx > 0:
+        window.addstr(height // 2 - max_displayed_packages // 2 - 1, width // 2 - 6, '---- 🡅  ----')
+    if end_idx < len(packages):
+        window.addstr(height // 2 + max_displayed_packages // 2 + 1, width // 2 - 6, '---- 🡇  ----')
+
     window.refresh()
 
 
