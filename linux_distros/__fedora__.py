@@ -1,3 +1,4 @@
+import curses
 from os import getenv
 import subprocess
 
@@ -117,3 +118,5 @@ def type_of_action(data, hide_output):
 
     except subprocess.runedProcessError as err:
         print(f"An error occurred: {err}")
+
+curses.wrapper(fedora_package_installer)
