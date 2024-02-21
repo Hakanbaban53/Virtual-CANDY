@@ -46,14 +46,14 @@ def get_linux_package_manager(linux_distribution, package_name, hide_output):
                 name = data.get("name", "")
                 if name == package_name:
                     values = data.get("values", [])
-                    arch_package_installer(values)
+                    arch_package_installer(values, hide_output)
         elif linux_distribution == "debian":
             package_data_ref = instructions_data[linux_distribution]
             for data in package_data_ref:
                 name = data.get("name", "")
                 if name == package_name:
                     values = data.get("values", [])
-                    debian_package_installer(values)
+                    debian_package_installer(values, hide_output)
         elif linux_distribution == "fedora":
             package_data_ref = instructions_data[linux_distribution]
             for data in package_data_ref:
@@ -67,6 +67,6 @@ def get_linux_package_manager(linux_distribution, package_name, hide_output):
                 name = data.get("name", "")
                 if name == package_name:
                     values = data.get("values", [])
-                    ubuntu_package_installer(values)
+                    ubuntu_package_installer(values, hide_output)
     else:
         print("No installation instructions found for the detected Linux distribution.")

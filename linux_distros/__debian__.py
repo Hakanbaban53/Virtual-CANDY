@@ -3,14 +3,14 @@ import subprocess
 
 
 def debian_package_installer(packages):
-    subprocess.call(["sudo", "apt", "update"])
+    subprocess.run(["sudo", "apt", "update"])
     for data in packages:
         value = data.get("value", "")
         try:
             if type == "install-package":
-                subprocess.call(["sudo", "apt", "list", "installed", value])
+                subprocess.run(["sudo", "apt", "list", "installed", value])
             elif type == "install-package-flatpak":
-                subprocess.call(["flatpak", "list", "|", "grep", value])
+                subprocess.run(["flatpak", "list", "|", "grep", value])
             else:
                 type_of_action(data)
         except subprocess.CalledProcessError:
@@ -25,7 +25,7 @@ def type_of_action(data):
     try:
         if type == "install-package":
             packages_to_install = value.split()  # Split the package names into a list
-            subprocess.call(["sudo", "apt", "install", "-y"] + packages_to_install)
+            subprocess.run(["sudo", "apt", "install", "-y"] + packages_to_install)
 
         elif type == "get-keys":
             keys = data["script"]
@@ -33,7 +33,7 @@ def type_of_action(data):
                 try:
                     subprocess.run(command, shell=True, check=True)
                     print("Script executed successfully.")
-                except subprocess.CalledProcessError as err:
+                except subprocess.runedProcessError as err:
                     print(f"An error occurred: {err}")
             
 
@@ -63,20 +63,20 @@ def type_of_action(data):
 
         elif type == "remove-package":
             packages_to_remove = value.split()  # Split the package names into a list
-            subprocess.call(["sudo", "apt", "remove", "-y"] + packages_to_remove)
+            subprocess.run(["sudo", "apt", "remove", "-y"] + packages_to_remove)
 
         elif type == "install-service":
-            subprocess.call(["sudo", "systemctl", "restart", value])
-            subprocess.call(["sudo", "systemctl", "enable", value])
+            subprocess.run(["sudo", "systemctl", "restart", value])
+            subprocess.run(["sudo", "systemctl", "enable", value])
 
         elif type == "add-group":
-            subprocess.call(["sudo", "usermod", "-aG", value, current_user])
+            subprocess.run(["sudo", "usermod", "-aG", value, current_user])
 
         elif type == "install-package-flatpak":
-            subprocess.call(["sudo", "flatpak", "install", "-y", value])
+            subprocess.run(["sudo", "flatpak", "install", "-y", value])
 
         elif type == "add-repo-flathub":
-            subprocess.call(
+            subprocess.run(
                 ["sudo", "flatpak", "remote-add", "--if-not-exists", "flathub", value]
             )
 

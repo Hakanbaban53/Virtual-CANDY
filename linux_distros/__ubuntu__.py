@@ -46,11 +46,11 @@ def type_of_action(data, hide_output):
                     subprocess.run(
                         command, shell=True, check=True, stderr=stderr, stdout=stdout
                     )
-                    print("Script executed successfully.")
                 except subprocess.CalledProcessError as err:
                     print(f"An error occurred: {err}")
 
         elif type == "local-package":
+            print(f"\n{name} Package(s) insalling\n")
             subprocess.run(
                 [
                     "wget",
@@ -77,6 +77,7 @@ def type_of_action(data, hide_output):
             )
 
         elif type == "remove-package":
+            print(f"\n{name} Package(s) removing.\n")
             packages_to_remove = value.split()  # Split the package names into a list
             subprocess.run(
                 ["sudo", "apt", "-y", "remove"] + packages_to_remove,
@@ -85,24 +86,23 @@ def type_of_action(data, hide_output):
                 stdout=stdout,
             )
 
-        elif type == "add-repo-flathub":
-            subprocess.run(
-                ["flatpak", "remote-add", "--if-not-exists", "flathub", value]
-            )
-
         elif type == "install-service":
+            print(f"\n{name}  service installing...\n")
             subprocess.run(["sudo", "systemctl", "restart", value])
             subprocess.run(["sudo", "systemctl", "enable", value])
 
         elif type == "add-group":
+            print(f"\n{name} adding to group")
             subprocess.run(["sudo", "usermod", "-aG", value, current_user])
 
         elif type == "add-repo-flathub":
+            print(f"\n{name} repo adding to flatpak\n")
             subprocess.run(
                 ["sudo", "flatpak", "remote-add", "--if-not-exists", "flathub", value]
             )
 
         elif type == "install-package-flatpak":
+            print(f"\n{name} flatpak Package(s) insalling\n")
             subprocess.run(
                 ["sudo", "flatpak", "install", "-y", value],
                 check=True,

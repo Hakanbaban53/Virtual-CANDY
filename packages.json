@@ -211,11 +211,17 @@
             "sudo dnf install kernel-headers kernel-devel dkms -y",
             "wget -q https://www.virtualbox.org/download/oracle_vbox.asc",
             "sudo rpm --import oracle_vbox.asc",
-            "",
-            "sudo apt-get update"
+            "echo '[VirtualBox]' | sudo tee /etc/yum.repos.d/virtualbox.repo",
+            "echo 'name=Fedora $releasever - $basearch - VirtualBox' | sudo tee -a /etc/yum.repos.d/virtualbox.repo",
+            "echo 'baseurl=http://download.virtualbox.org/virtualbox/rpm/fedora/$releasever/$basearch' | sudo tee -a /etc/yum.repos.d/virtualbox.repo",
+            "echo 'enabled=1' | sudo tee -a /etc/yum.repos.d/virtualbox.repo",
+            "echo 'gpgcheck=1' | sudo tee -a /etc/yum.repos.d/virtualbox.repo",
+            "echo 'repo_gpgcheck=1' | sudo tee -a /etc/yum.repos.d/virtualbox.repo",
+            "echo 'gpgkey=https://www.virtualbox.org/download/oracle_vbox.asc' | sudo tee -a /etc/yum.repos.d/virtualbox.repo",
+            "sudo dnf makecache"
           ]
         },
-  
+
         {
           "name": "Virtual Box",
           "type": "install-package",
@@ -307,12 +313,14 @@
   ],
 
   "ubuntu": [
-
     {
       "name": "virtualbox",
       "values": [
-
-        { "name": "Virtual Box", "type": "install-package", "value": "virtualbox" },
+        {
+          "name": "Virtual Box",
+          "type": "install-package",
+          "value": "virtualbox"
+        },
         {
           "name": "Add User to vboxusers Group",
           "type": "add-group",
@@ -403,6 +411,5 @@
         }
       ]
     }
-
   ]
 }

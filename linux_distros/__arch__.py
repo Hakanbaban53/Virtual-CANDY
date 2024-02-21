@@ -53,7 +53,7 @@ def type_of_action(data):
             subprocess.run(["sudo", "usermod", "-aG", value, current_user])
 
         elif type == "add-repo-flathub":
-            subprocess.call(
+            subprocess.run(
                 ["sudo", "flatpak", "remote-add", "--if-not-exists", "flathub", value]
             )
 

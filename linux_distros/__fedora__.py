@@ -13,7 +13,7 @@ def fedora_package_installer(packages, hide_output):
                 subprocess.run(["flatpak", "list", "|", "grep", value])
             else:
                 type_of_action(data, hide_output)
-        except subprocess.runedProcessError:
+        except subprocess.CalledProcessError:
             type_of_action(data, hide_output)
 
 
@@ -41,18 +41,28 @@ def type_of_action(data, hide_output):
                 stdout=stdout
             )
 
-        elif type == "install-url-package":
-            print(f"\n{name} Package(s) insalling")
-            fedora_version = subprocess.check_output(
-                ["rpm", "-E", "%fedora"], text=True
-            ).strip()
-            value = value.replace("$(rpm -E %fedora)", fedora_version)
-            subprocess.run(
-                ["sudo", "dnf", "install", value],
-                check=True,
-                stderr=stderr,
-                stdout=stdout
-            )
+        elif type == "get-keys":
+            keys = data["script"]
+            for command in keys:
+                try:
+                    subprocess.run(
+                        command, shell=True, check=True, stderr=stderr, stdout=stdout
+                    )
+                except subprocess.CalledProcessError as err:
+                    print(f"An error occurred: {err}")
+
+        # elif type == "install-url-package":
+        #     print(f"\n{name} Package(s) insalling")
+        #     fedora_version = subprocess.check_output(
+        #         ["rpm", "-E", "%fedora"], text=True
+        #     ).strip()
+        #     value = value.replace("$(rpm -E %fedora)", fedora_version)
+        #     subprocess.run(
+        #         ["sudo", "dnf", "install", value],
+        #         check=True,
+        #         stderr=stderr,
+        #         stdout=stdout
+        #     )
 
         elif type == "local-package":
             print(f"\n{name} Package(s) insalling")
@@ -117,5 +127,5 @@ def type_of_action(data, hide_output):
                 stdout=stdout
             )
 
-    except subprocess.runedProcessError as err:
+    except subprocess.CalledProcessError as err:
         print(f"An error occurred: {err}")
