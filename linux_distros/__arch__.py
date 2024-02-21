@@ -2,7 +2,7 @@ from os import getenv
 import subprocess
 
 
-def arch_package_installer(packages):
+def arch_package_installer(packages, hide_output):
     for data in packages:
         value = data.get("value", "")
         try:
@@ -16,21 +16,33 @@ def arch_package_installer(packages):
                     print(f"{value} is already installed.")
                 else:
                     print(f"{value} is not installed. Installing now...")
-                    type_of_action(data)
+                    type_of_action(data, hide_output)
             else:
-                type_of_action(data)
+                type_of_action(data, hide_output)
         except subprocess.CalledProcessError:
-            type_of_action(data)
+            type_of_action(data, hide_output)
 
 
-def type_of_action(data):
-    current_user = getenv('USER')
-    target_directory = f'/home/{current_user}/'
+def type_of_action(data, hide_output):
+    current_user = getenv("USER")
+    target_directory = f"/home/{current_user}/"
+    name = data.get("name", "")
     type = data.get("type", "")
     value = data.get("value", "")
     try:
+        if hide_output:
+            devnull = open("/dev/null", "w")
+            stdout = stderr = devnull
+        else:
+            stdout = stderr = None
+
         if type == "install-package":
-            subprocess.run(["sudo", "pacman", "-S", value, "--noconfirm"])
+            subprocess.run(
+                ["sudo", "pacman", "-S", value, "--noconfirm"],
+                check=True,
+                stderr=stderr,
+                stdout=stdout,
+            )
 
         elif type == "local-package":
             subprocess.run(
@@ -43,7 +55,18 @@ def type_of_action(data):
                     value,
                 ]
             )
-            subprocess.run(["sudo", "pacman", "-U", f"{target_directory}package.pkg.tar.zst", "--noconfirm"])
+            subprocess.run(
+                [
+                    "sudo",
+                    "pacman",
+                    "-U",
+                    f"{target_directory}package.pkg.tar.zst",
+                    "--noconfirm",
+                ],
+                check=True,
+                stderr=stderr,
+                stdout=stdout,
+            )
 
         elif type == "install-service":
             subprocess.run(["sudo", "systemctl", "restart", value])
@@ -61,9 +84,18 @@ def type_of_action(data):
             subprocess.run(["flatpak", "install", "-y", value])
 
         elif type == "install-package-AUR-git":
-            repository_directory = f'{target_directory}/{value}'
-            subprocess.run(["git", "clone", f"https://aur.archlinux.org/{value}.git"], cwd=target_directory)
-            subprocess.run(["makepkg", "-si"], cwd=repository_directory)
+            repository_directory = f"{target_directory}/{value}"
+            subprocess.run(
+                ["git", "clone", f"https://aur.archlinux.org/{value}.git"],
+                cwd=target_directory,
+            )
+            subprocess.run(
+                ["makepkg", "-si", "--noconfirm"],
+                cwd=repository_directory,
+                check=True,
+                stderr=stderr,
+                stdout=stdout,
+            )
             subprocess.run(["makepkg", "--clean"], cwd=repository_directory)
 
     except subprocess.CalledProcessError as err:

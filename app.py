@@ -265,6 +265,7 @@ def main(window):
         linux_distribution = get_linux_distro(window)
         window.getch()
         hide_output = get_hide_output_choice(window)
+        window.getch()
 
         current_row = 0
         print_menu(window, current_row)
@@ -301,7 +302,6 @@ def main(window):
                 confirmation_key = window.getch()
                 if confirmation_key in [89, 121, 10]:  # 'Y', 'y', Enter
                     for idx, entity in enumerate(selected_entities):
-                        curses.curs_set(0)  # Hide the cursor
                         window.clear()
                         window.refresh()
                         if "Docker & Docker Desktop" in entity:
