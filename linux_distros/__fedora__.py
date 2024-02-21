@@ -13,7 +13,7 @@ def fedora_package_installer(packages, hide_output):
                 subprocess.run(["flatpak", "list", "|", "grep", value])
             else:
                 type_of_action(data, hide_output)
-        except subprocess.runedProcessError:
+        except subprocess.CalledProcessError:
             type_of_action(data, hide_output)
 
 
@@ -47,7 +47,7 @@ def type_of_action(data, hide_output):
             ).strip()
             value = value.replace("$(rpm -E %fedora)", fedora_version)
             subprocess.run(
-                ["sudo", "dnf", "install", value],
+                ["sudo", "dnf", "install", "-y", value],
                 check=True,
                 stderr=stderr,
                 stdout=stdout
@@ -116,5 +116,5 @@ def type_of_action(data, hide_output):
                 stdout=stdout
             )
 
-    except subprocess.runedProcessError as err:
+    except subprocess.CalledProcessError as err:
         print(f"An error occurred: {err}")
