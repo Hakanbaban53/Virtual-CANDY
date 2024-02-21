@@ -13,7 +13,7 @@ def fedora_package_installer(packages, hide_output):
                 subprocess.run(["flatpak", "list", "|", "grep", value])
             else:
                 type_of_action(data, hide_output)
-        except subprocess.CalledProcessError:
+        except subprocess.runedProcessError:
             type_of_action(data, hide_output)
 
 
@@ -25,9 +25,6 @@ def type_of_action(data, hide_output):
     type = data.get("type", "")
     value = data.get("value", "")
     try:
-        text = "Installing {}...".format(name)
-        x = 20 // 2 - len(text) // 2
-        y = 20 // 2
         if hide_output:
             devnull = open('/dev/null', 'w')
             stdout = stderr = devnull
@@ -35,7 +32,7 @@ def type_of_action(data, hide_output):
             stdout = stderr = None
             
         if type == "install-package":
-            print("\033[{};{}H{}".format(y, x, text))
+            print(f"\n{name} Package(s) insalling")
             packages_to_install = value.split()
             subprocess.run(
                 ["sudo", "dnf", "install", "-y"] + packages_to_install,
@@ -45,20 +42,20 @@ def type_of_action(data, hide_output):
             )
 
         elif type == "install-url-package":
-            print("\033[{};{}H{}".format(y, x, text))
+            print(f"\n{name} Package(s) insalling")
             fedora_version = subprocess.check_output(
                 ["rpm", "-E", "%fedora"], text=True
             ).strip()
             value = value.replace("$(rpm -E %fedora)", fedora_version)
             subprocess.run(
-                ["sudo", "dnf", "install", "-y", value],
+                ["sudo", "dnf", "install", value],
                 check=True,
                 stderr=stderr,
                 stdout=stdout
             )
 
         elif type == "local-package":
-            print("\033[{};{}H{}".format(y, x, text))
+            print(f"\n{name} Package(s) insalling")
             subprocess.run(
                 [
                     "wget",
@@ -80,7 +77,7 @@ def type_of_action(data, hide_output):
             )
 
         elif type == "remove-package":
-            print("\033[{};{}H{}".format(y, x, text))
+            print(f"\n{name} Package(s) removing.")
             packages_to_remove = value.split()  # Split the package types into a list
             subprocess.run(
                 ["sudo", "dnf", "remove", "-y"] + packages_to_remove,
@@ -90,29 +87,29 @@ def type_of_action(data, hide_output):
             )
 
         elif type == "config-manager":
-            print("\033[{};{}H{}".format(y, x, text))
+            print(f"\n{name} repo adding.")
             subprocess.run(
                 ["sudo", "dnf", "config-manager", "--add-repo", value], check=True
             )
 
         elif type == "install-service":
-            print("\033[{};{}H{}".format(y, x, text))
+            print(f"\n\n{name}  service installing...")
             subprocess.run(["sudo", "systemctl", "restart", value], check=True)
             subprocess.run(["sudo", "systemctl", "enable", value], check=True)
 
         elif type == "add-group":
-            print("\033[{};{}H{}".format(y, x, text))
+            print(f"\n{name} adding to group")
             subprocess.run(["sudo", "usermod", "-aG", value, current_user], check=True)
 
         elif type == "add-repo-flathub":
-            print("\033[{};{}H{}".format(y, x, text))
+            print(f"\n{name} repo adding to flatpak")
             subprocess.run(
                 ["sudo", "flatpak", "remote-add", "--if-not-exists", "flathub", value],
                 check=True,
             )
 
         elif type == "install-package-flatpak":
-            print("\033[{};{}H{}".format(y, x, text))
+            print(f"\n{name} flatpak Package(s) insalling")
             subprocess.run(
                 ["sudo", "flatpak", "install", "-y", value],
                 check=True,
@@ -120,5 +117,5 @@ def type_of_action(data, hide_output):
                 stdout=stdout
             )
 
-    except subprocess.CalledProcessError as err:
+    except subprocess.runedProcessError as err:
         print(f"An error occurred: {err}")
