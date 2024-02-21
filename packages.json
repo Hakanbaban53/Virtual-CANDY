@@ -207,10 +207,10 @@
           "name": "Virtual Box Repository",
           "type": "get-keys",
           "script": [
-            "sudo dnf -y install @development-tools",
-            "sudo dnf install kernel-headers kernel-devel dkms -y",
+            "sudo dnf --assumeyes install @development-tools",
+            "sudo dnf install kernel-headers kernel-devel dkms --assumeyes",
             "wget -q https://www.virtualbox.org/download/oracle_vbox.asc",
-            "sudo rpm --import oracle_vbox.asc",
+            "sudo rpm --import --assumeyes oracle_vbox.asc",
             "echo '[VirtualBox]' | sudo tee /etc/yum.repos.d/virtualbox.repo",
             "echo 'name=Fedora $releasever - $basearch - VirtualBox' | sudo tee -a /etc/yum.repos.d/virtualbox.repo",
             "echo 'baseurl=http://download.virtualbox.org/virtualbox/rpm/fedora/$releasever/$basearch' | sudo tee -a /etc/yum.repos.d/virtualbox.repo",
