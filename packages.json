@@ -208,7 +208,7 @@
           "type": "get-keys",
           "script": [
             "sudo dnf -y install @development-tools",
-            "sudo dnf install kernel-headers kernel-devel dkms -y",
+            "sudo dnf -y install kernel-devel kernel-headers dkms qt5-qtx11extras elfutils-libelf-devel zlib-devel",
             "sudo wget http://download.virtualbox.org/virtualbox/rpm/fedora/virtualbox.repo -P /etc/yum.repos.d/",
             "sudo dnf makecache -y"
           ]
@@ -228,7 +228,17 @@
           "name": "Add User to vboxusers Group",
           "type": "add-group",
           "value": "vboxusers"
+        },
+
+        {
+          "name": "Virtual Box Extensions",
+          "type": "get-keys",
+          "script": [
+            "wget https://download.virtualbox.org/virtualbox/7.0.14/Oracle_VM_VirtualBox_Extension_Pack-7.0.14.vbox-extpack",
+            "sudo vboxmanage extpack install Oracle_VM_VirtualBox_Extension_Pack-7.0.14.vbox-extpack"
+          ]
         }
+
       ]
     },
 
