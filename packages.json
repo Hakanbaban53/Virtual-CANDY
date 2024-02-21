@@ -209,15 +209,7 @@
           "script": [
             "sudo dnf -y install @development-tools",
             "sudo dnf install kernel-headers kernel-devel dkms -y",
-            "wget -q https://www.virtualbox.org/download/oracle_vbox.asc",
-            "sudo rpm --import -y oracle_vbox.asc",
-            "echo '[VirtualBox]' | sudo tee /etc/yum.repos.d/virtualbox.repo",
-            "echo 'name=Fedora $releasever - $basearch - VirtualBox' | sudo tee -a /etc/yum.repos.d/virtualbox.repo",
-            "echo 'baseurl=http://download.virtualbox.org/virtualbox/rpm/fedora/$releasever/$basearch' | sudo tee -a /etc/yum.repos.d/virtualbox.repo",
-            "echo 'enabled=1' | sudo tee -a /etc/yum.repos.d/virtualbox.repo",
-            "echo 'gpgcheck=1' | sudo tee -a /etc/yum.repos.d/virtualbox.repo",
-            "echo 'repo_gpgcheck=1' | sudo tee -a /etc/yum.repos.d/virtualbox.repo",
-            "echo 'gpgkey=https://www.virtualbox.org/download/oracle_vbox.asc' | sudo tee -a /etc/yum.repos.d/virtualbox.repo",
+            "sudo wget http://download.virtualbox.org/virtualbox/rpm/fedora/virtualbox.repo -P /etc/yum.repos.d/",
             "sudo dnf makecache -y"
           ]
         },
@@ -225,7 +217,7 @@
         {
           "name": "Virtual Box",
           "type": "install-package",
-          "value": "VirtualBox"
+          "value": "VirtualBox-7.0"
         },
         {
           "name": "Start and Enable vboxdrv",
