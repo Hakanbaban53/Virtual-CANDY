@@ -1,4 +1,3 @@
-import curses
 from os import getenv
 import subprocess
 
@@ -8,7 +7,8 @@ def fedora_package_installer(packages, hide_output):
         value = data.get("value", "")
         try:
             if type == "install-package":
-                subprocess.run(["sudo", "dnf", "list", "installed", value])
+                packages_to_check = value.split()
+                subprocess.run(["sudo", "dnf", "list", "installed", packages_to_check])
             elif type == "install-package-flatpak":
                 subprocess.run(["flatpak", "list", "|", "grep", value])
             else:
@@ -118,5 +118,3 @@ def type_of_action(data, hide_output):
 
     except subprocess.runedProcessError as err:
         print(f"An error occurred: {err}")
-
-curses.wrapper(fedora_package_installer)
