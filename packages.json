@@ -204,25 +204,22 @@
       "name": "virtualbox",
       "values": [
         {
-          "name": "DNF repository manager",
-          "type": "install-package",
-          "value": "dnf-plugins-core"
+          "name": "Virtual Box Repository",
+          "type": "get-keys",
+          "script": [
+            "sudo dnf -y install @development-tools",
+            "sudo dnf install kernel-headers kernel-devel dkms -y",
+            "wget -q https://www.virtualbox.org/download/oracle_vbox.asc",
+            "sudo rpm --import oracle_vbox.asc",
+            "",
+            "sudo apt-get update"
+          ]
         },
-        {
-          "name": "Enable RPM Fusion free",
-          "type": "install-url-package",
-          "value": "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm"
-        },
-        {
-          "name": "Enable RPM Fusion non-free",
-          "type": "install-url-package",
-          "value": "https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm"
-        },
-
+  
         {
           "name": "Virtual Box",
           "type": "install-package",
-          "value": "VirtualBox kernel-devel-matched akmod-VirtualBox"
+          "value": "VirtualBox"
         },
         {
           "name": "Start and Enable vboxdrv",
