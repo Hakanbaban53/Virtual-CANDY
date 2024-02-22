@@ -4,12 +4,7 @@ from linux_distros.__debian__ import debian_package_installer
 from linux_distros.__fedora__ import fedora_package_installer
 from linux_distros.__ubuntu__ import ubuntu_package_installer
 
-known_distros = {
-    "arch": ["arch", "manjaro"],
-    "debian": ["debian"],
-    "fedora": ["fedora", "nobara"],
-    "ubuntu": ["ubuntu", "linux mint"],
-}
+
 
 def get_linux_distribution():
     try:
@@ -25,13 +20,16 @@ def identify_distribution():
     linux_distribution = get_linux_distribution()
 
     if linux_distribution:
-        for distro, keywords in known_distros.items():
-            if any(
-                keyword in linux_distribution for keyword in keywords
-            ):
-                return distro
-            else:
-                return 'Unknown Linux distribution'
+        if 'arch' in linux_distribution.lower() or 'manjaro' in linux_distribution.lower():
+            return 'arch'
+        elif 'debian' in linux_distribution.lower():
+            return 'debian'
+        elif 'fedora' in linux_distribution.lower() or 'manjaro' in linux_distribution.lower():
+            return 'fedora'
+        elif 'ubuntu' in linux_distribution.lower() or 'linuxmint' in linux_distribution.lower():
+            return 'ubuntu'
+        else:
+            return 'Unknown Linux distribution'
     else:
         return 'Not running on Linux'
 
