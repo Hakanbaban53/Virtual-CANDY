@@ -347,7 +347,7 @@ def main(window):
                 )
                 window.refresh()
                 confirmation_key = window.getch()
-                if confirmation_key in [89, 121, 13]:  # 'Y', 'y', Carriage Return
+                if confirmation_key in [89, 121, 10, 13]:  # 'Y', 'y', Enter, Carriage Return
                     for idx, entity in enumerate(selected_entities):
                         window.clear()
                         window.refresh()
@@ -360,47 +360,19 @@ def main(window):
                             get_linux_package_manager(
                                 linux_distribution, entity, hide_output
                             )
-                        # if "Docker & Docker Desktop" in entity:
-                        #     window.addstr(
-                        #         len(selected_entities) + 4 + idx,
-                        #         3,
-                        #         "Docker and Docker Desktop installing\n",
-                        #     )
-                        #     get_linux_package_manager(
-                        #         linux_distribution, entity, hide_output
-                        #     )
 
-                        # elif "Podman & Podman Desktop" in entity:
-                        #     window.addstr(
-                        #         len(selected_entities) + 4 + idx,
-                        #         3,
-                        #         "Podman and Podman Desktop installing",
-                        #     )
-                        #     get_linux_package_manager(
-                        #         linux_distribution, entity, hide_output
-                        #     )
-
-                        # elif "Qemu & Virtual Manager" in entity:
-                        #     window.addstr(
-                        #         len(selected_entities) + 4 + idx,
-                        #         3,
-                        #         "Qemu & Virtual Manager installing",
-                        #     )
-                        #     get_linux_package_manager(
-                        #         linux_distribution, entity, hide_output
-                        #     )
-
-                        # elif "Virtual Box" in entity:
-                        #     window.addstr(
-                        #         len(selected_entities) + 4 + idx,
-                        #         3,
-                        #         "Virtual Box installing",
-                        #     )
-                        #     get_linux_package_manager(
-                        #         linux_distribution, entity, hide_output
-                        #     )
-                    window.addstr(len(selected_entities) + 6 + idx, 3, "All Applied!")
+                    window.clear()
                     window.refresh()
+                    window.addstr(
+                        curses.LINES // 2,
+                        curses.COLS // 2 - 21,
+                        "The selected options have been implemented!",
+                    )
+                    window.addstr(
+                        curses.LINES // 2 + 1,
+                        curses.COLS // 2 - 37,
+                        "Reboot for the installed Apps to appear in the App menu and work properly!",
+                    )
                     window.getch()
                     break
 
@@ -418,7 +390,7 @@ def main(window):
             "Bye 👋",
         )
         window.refresh()
-        curses.delay_output(1000)
+        curses.delay_output(1500)
         exit(1)
 
 
