@@ -159,12 +159,7 @@ def spinning_icon(window, entity):
     icons = ["-", "\\", "|", "/"]
     i = 0
     while True:
-        window.addstr(
-            0,
-            0,
-            f"Installing {entity}... {icons[i]}",
-            curses.A_BOLD
-        )
+        window.addstr(0, 0, f"Installing {entity}... {icons[i]}", curses.A_BOLD)
         window.refresh()
         i = (i + 1) % len(icons)
         curses.napms(200)  # Sleep for 200 milliseconds
@@ -351,15 +346,26 @@ def main(window):
                 )
                 window.refresh()
                 confirmation_key = window.getch()
-                if confirmation_key in [89, 121, 10, 13]:  # 'Y', 'y', Enter, Carriage Return
+                if confirmation_key in [
+                    89,
+                    121,
+                    10,
+                    13,
+                ]:  # 'Y', 'y', Enter, Carriage Return
                     for idx, entity in enumerate(selected_entities):
                         window.clear()
                         window.refresh()
                         if entity in selected_entities:
-                            spinning_icon(window, entity)
-                            get_linux_package_manager(
-                                linux_distribution, entity, hide_output
-                            )
+                            if hide_output:
+                                spinning_icon(window, entity)
+                                get_linux_package_manager(
+                                    linux_distribution, entity, hide_output
+                                )
+                            else:
+                                window.addstr(0, 0, "{} installing...\n".format(entity),)
+                                get_linux_package_manager(
+                                    linux_distribution, entity, hide_output
+                                )
                     break
 
             print_menu(window, current_row, relevant_packages, selected_status_array)
