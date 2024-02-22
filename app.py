@@ -1,5 +1,6 @@
 import curses
 import json
+import os
 from __get_os_package_manager__ import (
     get_linux_distribution,
     identify_distribution,
@@ -11,15 +12,18 @@ max_displayed_packages = 3  # Maximum number of packages to display at a time
 selected_status_array = []
 
 known_distros = {
-    "arch": ["arch", "manjaro"],
+    "arch": ["arch"],
     "debian": ["debian"],
-    "fedora": ["fedora", "nobara"],
-    "ubuntu": ["ubuntu", "linux mint"],
+    "fedora": ["fedora"],
+    "ubuntu": ["ubuntu"],
 }
 
 
 def packages(linux_distro):
-    with open("packages.json", "r") as json_file:
+    current_directory = os.path.dirname(os.path.abspath(__file__))
+    json_file_path = os.path.join(current_directory, "packages.json")
+
+    with open(json_file_path, "r") as json_file:
         instructions_data = json.load(json_file)
 
     if linux_distro in instructions_data:
@@ -61,11 +65,11 @@ def print_menu(window, selected_row, relevant_packages, selected_status):
     # Display scrollbar or arrow if there are more packages
     if start_idx > 0:
         window.addstr(
-            height // 2 - max_displayed_packages // 2 - 1, width // 2 - 6, "---- 🡅 ----"
+            height // 2 - max_displayed_packages // 2 - 1, width // 2 - 6, "---- ^ ----"
         )
     if end_idx < len(relevant_packages):
         window.addstr(
-            height // 2 + max_displayed_packages // 2 + 1, width // 2 - 6, "---- 🡇 ----"
+            height // 2 + max_displayed_packages // 2 + 1, width // 2 - 6, "---- v ----"
         )
 
     window.refresh()
@@ -151,18 +155,19 @@ def get_hide_output_choice(window):
         window.refresh()
 
 
-def spinning_icon(window, pause_event):
+def spinning_icon(window, entity):
     icons = ["-", "\\", "|", "/"]
     i = 0
-    while not pause_event.is_set():
-        window.addstr(0, 0, f"Installing... {icons[i]}", curses.A_BOLD)
+    while True:
+        window.addstr(
+            0,
+            0,
+            f"Installing {entity}... {icons[i]}",
+            curses.A_BOLD
+        )
         window.refresh()
         i = (i + 1) % len(icons)
         curses.napms(200)  # Sleep for 200 milliseconds
-    window.addstr(0, 0, "Installation paused... ", curses.A_BOLD)
-    window.refresh()
-
-    # Inside the get_linux_distro function
 
 
 def get_linux_distro(window):
@@ -302,7 +307,6 @@ def get_linux_distro(window):
 
 def main(window):
     try:
-
         linux_distribution = get_linux_distro(window)
         hide_output = get_hide_output_choice(window)
 
@@ -352,28 +356,10 @@ def main(window):
                         window.clear()
                         window.refresh()
                         if entity in selected_entities:
-                            window.addstr(
-                                len(selected_entities) + 4 + idx,
-                                3,
-                                "{} installing\n".format(entity),
-                            )
+                            spinning_icon(window, entity)
                             get_linux_package_manager(
                                 linux_distribution, entity, hide_output
                             )
-
-                    window.clear()
-                    window.refresh()
-                    window.addstr(
-                        curses.LINES // 2,
-                        curses.COLS // 2 - 21,
-                        "The selected options have been implemented!",
-                    )
-                    window.addstr(
-                        curses.LINES // 2 + 1,
-                        curses.COLS // 2 - 37,
-                        "Reboot for the installed Apps to appear in the App menu and work properly!",
-                    )
-                    window.getch()
                     break
 
             print_menu(window, current_row, relevant_packages, selected_status_array)
@@ -381,17 +367,32 @@ def main(window):
         window.clear()
         window.addstr(
             curses.LINES // 2,
-            curses.COLS // 2 - 20,
+            curses.COLS // 2 - 14,
             "Ctrl + C pressed. Exiting...",
         )
         window.addstr(
             curses.LINES // 2 + 2,
-            curses.COLS // 2 - 5,
+            curses.COLS // 2 - 3,
             "Bye 👋",
         )
         window.refresh()
         curses.delay_output(1500)
         exit(1)
+
+    finally:
+        window.clear()
+        window.refresh()
+        window.addstr(
+            curses.LINES // 2,
+            curses.COLS // 2 - 21,
+            "The selected options have been implemented!",
+        )
+        window.addstr(
+            curses.LINES // 2 + 1,
+            curses.COLS // 2 - 37,
+            "Reboot for the installed Apps to appear in the App menu and work properly!",
+        )
+        window.getch()
 
 
 curses.wrapper(main)

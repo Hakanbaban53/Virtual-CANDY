@@ -1,4 +1,5 @@
 import json
+import os
 from linux_distros.__arch__ import arch_package_installer
 from linux_distros.__debian__ import debian_package_installer
 from linux_distros.__fedora__ import fedora_package_installer
@@ -20,13 +21,13 @@ def identify_distribution():
     linux_distribution = get_linux_distribution()
 
     if linux_distribution:
-        if 'arch' in linux_distribution.lower() or 'manjaro' in linux_distribution.lower():
+        if 'arch' in linux_distribution.lower():
             return 'arch'
         elif 'debian' in linux_distribution.lower():
             return 'debian'
-        elif 'fedora' in linux_distribution.lower() or 'manjaro' in linux_distribution.lower():
+        elif 'fedora' in linux_distribution.lower():
             return 'fedora'
-        elif 'ubuntu' in linux_distribution.lower() or 'linuxmint' in linux_distribution.lower():
+        elif 'ubuntu' in linux_distribution.lower():
             return 'ubuntu'
         else:
             return 'Unknown Linux distribution'
@@ -36,7 +37,10 @@ def identify_distribution():
 
 def get_linux_package_manager(linux_distribution, package_name, hide_output):
 
-    with open("packages.json", "r") as json_file:
+    current_directory = os.path.dirname(os.path.abspath(__file__))
+    json_file_path = os.path.join(current_directory, "packages.json")
+
+    with open(json_file_path, "r") as json_file:
         instructions_data = json.load(json_file)
 
     if linux_distribution in instructions_data:
