@@ -1,7 +1,6 @@
 import curses
 import json
 import os
-import threading
 from __get_os_package_manager__ import (
     get_linux_distribution,
     identify_distribution,
@@ -154,15 +153,6 @@ def get_hide_output_choice(window):
                 )
 
         window.refresh()
-
-
-def spinning_icon(window, entity):
-    icons = ["-", "\\", "|", "/"]
-    i = 0
-    while not threading.Event().wait(0.2):  # Run every 200 milliseconds
-        window.addstr(0, 0, f"Installing {entity}... {icons[i]}", curses.A_BOLD)
-        window.refresh()
-        i = (i + 1) % len(icons)
 
 
 def get_linux_distro(window):
@@ -356,19 +346,14 @@ def main(window):
                         window.clear()
                         window.refresh()
                         if entity in selected_entities:
-                            if hide_output:
-                                icon_thread = threading.Thread(target=spinning_icon, args=(window, entity))
-                                icon_thread.start()
-                                spinning_icon(window, entity)
-                                get_linux_package_manager(
-                                    linux_distribution, entity, hide_output
-                                )
-                                icon_thread.join()
-                            else:
-                                window.addstr(0, 0, "{} installing...\n".format(entity),)
-                                get_linux_package_manager(
-                                    linux_distribution, entity, hide_output
-                                )
+                            window.addstr(
+                                0,
+                                0,
+                                "{} installing...\n".format(entity),
+                            )
+                            get_linux_package_manager(
+                                linux_distribution, entity, hide_output
+                            )
                     break
 
             print_menu(window, current_row, relevant_packages, selected_status_array)

@@ -86,6 +86,8 @@ def type_of_action(data, hide):
                 ],
                 cwd=target_directory,
                 check=True,
+                stderr=hide,
+                stdout=hide
             )
             subprocess.run(
                 ["sudo", "dnf", "install", "-y", f"local.package.rpm"],
@@ -108,23 +110,37 @@ def type_of_action(data, hide):
         elif type == "config-manager":
             print(f"\n{name} repo adding.")
             subprocess.run(
-                ["sudo", "dnf", "config-manager", "--add-repo", value], check=True
+                ["sudo", "dnf", "config-manager", "--add-repo", value],
+                check=True,
+                stderr=hide,
+                stdout=hide
             )
 
         elif type == "install-service":
             print(f"\n\n{name}  service installing...")
-            subprocess.run(["sudo", "systemctl", "restart", value], check=True)
-            subprocess.run(["sudo", "systemctl", "enable", value], check=True)
+            subprocess.run(["sudo", "systemctl", "restart", value],
+                check=True,
+                stderr=hide,
+                stdout=hide)
+            subprocess.run(["sudo", "systemctl", "enable", value],
+                check=True,
+                stderr=hide,
+                stdout=hide)
 
         elif type == "add-group":
             print(f"\n{name} adding to group")
-            subprocess.run(["sudo", "usermod", "-aG", value, current_user], check=True)
+            subprocess.run(["sudo", "usermod", "-aG", value, current_user],
+                check=True,
+                stderr=hide,
+                stdout=hide)
 
         elif type == "add-repo-flathub":
             print(f"\n{name} repo adding to flatpak")
             subprocess.run(
                 ["sudo", "flatpak", "remote-add", "--if-not-exists", "flathub", value],
                 check=True,
+                stderr=hide,
+                stdout=hide
             )
 
         elif type == "install-package-flatpak":
