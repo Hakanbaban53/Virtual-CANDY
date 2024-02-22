@@ -347,13 +347,26 @@ def main(window):
                         window.refresh()
                         if entity in selected_entities:
                             window.addstr(
-                                0,
-                                0,
-                                "{} installing...\n".format(entity),
+                                len(selected_entities) + 4 + idx,
+                                3,
+                                "{} installing\n".format(entity),
                             )
                             get_linux_package_manager(
                                 linux_distribution, entity, hide_output
                             )
+                    window.clear()
+                    window.refresh()
+                    window.addstr(
+                        curses.LINES // 2,
+                        curses.COLS // 2 - 21,
+                        "The selected options have been implemented!",
+                    )
+                    window.addstr(
+                        curses.LINES // 2 + 1,
+                        curses.COLS // 2 - 37,
+                        "Reboot for the installed Apps to appear in the App menu and work properly!",
+                    )
+                    window.getch()
                     break
 
             print_menu(window, current_row, relevant_packages, selected_status_array)
@@ -372,21 +385,6 @@ def main(window):
         window.refresh()
         curses.delay_output(1500)
         exit(1)
-
-    finally:
-        window.clear()
-        window.refresh()
-        window.addstr(
-            curses.LINES // 2,
-            curses.COLS // 2 - 21,
-            "The selected options have been implemented!",
-        )
-        window.addstr(
-            curses.LINES // 2 + 1,
-            curses.COLS // 2 - 37,
-            "Reboot for the installed Apps to appear in the App menu and work properly!",
-        )
-        window.getch()
 
 
 curses.wrapper(main)
