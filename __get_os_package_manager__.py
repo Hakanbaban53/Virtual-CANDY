@@ -35,7 +35,7 @@ def identify_distribution():
         return 'Not running on Linux'
 
 
-def get_linux_package_manager(linux_distribution, package_name, hide_output):
+def get_linux_package_manager(linux_distribution, package_name, hide_output, sudo_password):
 
     current_directory = os.path.dirname(os.path.abspath(__file__))
     json_file_path = os.path.join(current_directory, "packages.json")
@@ -50,27 +50,27 @@ def get_linux_package_manager(linux_distribution, package_name, hide_output):
                 name = data.get("name", "")
                 if name == package_name:
                     values = data.get("values", [])
-                    arch_package_installer(values, hide_output)
+                    arch_package_installer(values, hide_output, sudo_password)
         elif linux_distribution == "debian":
             package_data_ref = instructions_data[linux_distribution]
             for data in package_data_ref:
                 name = data.get("name", "")
                 if name == package_name:
                     values = data.get("values", [])
-                    debian_package_installer(values, hide_output)
+                    debian_package_installer(values, hide_output, sudo_password)
         elif linux_distribution == "fedora":
             package_data_ref = instructions_data[linux_distribution]
             for data in package_data_ref:
                 name = data.get("name", "")
                 if name == package_name:
                     values = data.get("values", [])
-                    fedora_package_installer(values, hide_output)
+                    fedora_package_installer(values, hide_output, sudo_password)
         elif linux_distribution == "ubuntu":
             package_data_ref = instructions_data[linux_distribution]
             for data in package_data_ref:
                 name = data.get("name", "")
                 if name == package_name:
                     values = data.get("values", [])
-                    ubuntu_package_installer(values, hide_output)
+                    ubuntu_package_installer(values, hide_output, sudo_password)
     else:
         print("No installation instructions found for the detected Linux distribution.")

@@ -298,6 +298,9 @@ def main(window):
         relevant_packages = packages(linux_distribution)
         selected_status_array = initialize_selected_status(len(relevant_packages))
 
+
+        sudo_password = get_user_input_string(window, "Enter Sudo Password : ", 0, 0)
+
         curses.curs_set(0)
         curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_WHITE)
 
@@ -352,7 +355,7 @@ def main(window):
                                 "{} installing\n".format(entity),
                             )
                             get_linux_package_manager(
-                                linux_distribution, entity, hide_output
+                                linux_distribution, entity, hide_output, sudo_password
                             )
                     window.clear()
                     window.refresh()
