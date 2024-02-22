@@ -4,6 +4,8 @@ import subprocess
 
 def fedora_package_installer(packages, hide_output):
 
+    sudo_password = input("Sudo şifrenizi girin: ")
+
     if hide_output:
         devnull = open('/dev/null', 'w')
         hide = devnull
@@ -24,14 +26,14 @@ def fedora_package_installer(packages, hide_output):
                 subprocess.run(["flatpak", "list", "|", "grep", value])
 
             else:
-                type_of_action(data, hide)
+                type_of_action(data, hide, sudo_password)
 
 
         except subprocess.CalledProcessError:
-            type_of_action(data, hide)
+            type_of_action(data, hide, sudo_password)
 
 
-def type_of_action(data, hide):
+def type_of_action(data, hide, sudo_password):
     
     current_user = getenv("USER")
     target_directory = f"/home/{current_user}/"
@@ -46,6 +48,7 @@ def type_of_action(data, hide):
             subprocess.run(
                 ["sudo", "dnf", "install", "-y"] + packages_to_install,
                 check=True,
+                input=sudo_password,
                 stderr=hide,
                 stdout=hide
             )
@@ -55,7 +58,7 @@ def type_of_action(data, hide):
             for command in keys:
                 try:
                     subprocess.run(
-                        command, shell=True, check=True, stderr=hide, stdout=hide
+                        command, shell=True, check=True, stderr=hide, input=sudo_password, stdout=hide
                     )
                 except subprocess.CalledProcessError as err:
                     print(f"An error occurred: {err}")
@@ -85,6 +88,7 @@ def type_of_action(data, hide):
                     value,
                 ],
                 cwd=target_directory,
+                input=sudo_password,
                 check=True,
                 stderr=hide,
                 stdout=hide
@@ -92,6 +96,7 @@ def type_of_action(data, hide):
             subprocess.run(
                 ["sudo", "dnf", "install", "-y", f"local.package.rpm"],
                 cwd=target_directory,
+                input=sudo_password,
                 check=True,
                 stderr=hide,
                 stdout=hide
@@ -104,6 +109,7 @@ def type_of_action(data, hide):
                 ["sudo", "dnf", "remove", "-y"] + packages_to_remove,
                 check=True,
                 stderr=hide,
+                input=sudo_password,
                 stdout=hide
             )
 
@@ -113,6 +119,7 @@ def type_of_action(data, hide):
                 ["sudo", "dnf", "config-manager", "--add-repo", value],
                 check=True,
                 stderr=hide,
+                input=sudo_password,
                 stdout=hide
             )
 
@@ -121,9 +128,11 @@ def type_of_action(data, hide):
             subprocess.run(["sudo", "systemctl", "restart", value],
                 check=True,
                 stderr=hide,
+                input=sudo_password,
                 stdout=hide)
             subprocess.run(["sudo", "systemctl", "enable", value],
                 check=True,
+                input=sudo_password,
                 stderr=hide,
                 stdout=hide)
 
@@ -132,6 +141,7 @@ def type_of_action(data, hide):
             subprocess.run(["sudo", "usermod", "-aG", value, current_user],
                 check=True,
                 stderr=hide,
+                input=sudo_password,
                 stdout=hide)
 
         elif type == "add-repo-flathub":
@@ -140,6 +150,7 @@ def type_of_action(data, hide):
                 ["sudo", "flatpak", "remote-add", "--if-not-exists", "flathub", value],
                 check=True,
                 stderr=hide,
+                input=sudo_password,
                 stdout=hide
             )
 
@@ -149,6 +160,7 @@ def type_of_action(data, hide):
                 ["sudo", "flatpak", "install", "-y", value],
                 check=True,
                 stderr=hide,
+                input=sudo_password,
                 stdout=hide
             )
 
