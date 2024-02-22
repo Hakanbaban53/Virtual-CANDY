@@ -94,12 +94,12 @@
           "name": "VirtualBox Repository",
           "type": "get-keys",
           "script": [
-            "apt install wget gnupg2 lsb-release -y",
-            "curl -fsSL https://www.virtualbox.org/download/oracle_vbox_2016.asc | gpg --dearmor -o /etc/apt/trusted.gpg.d/vbox.gpg",
-            "curl -fsSL https://www.virtualbox.org/download/oracle_vbox.asc | gpg --dearmor -o /etc/apt/trusted.gpg.d/oracle_vbox.gpg",
-            "echo \"deb [arch=amd64] http://download.virtualbox.org/virtualbox/debian $(lsb_release -cs) contrib\" | tee /etc/apt/sources.list.d/virtualbox.list",
-            "apt update",
-            "apt install linux-headers-$(uname -r) dkms -y"
+            "sudo apt install wget gnupg2 lsb-release -y",
+            "curl -fsSL https://www.virtualbox.org/download/oracle_vbox_2016.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/vbox.gpg",
+            "curl -fsSL https://www.virtualbox.org/download/oracle_vbox.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/oracle_vbox.gpg",
+            "echo \"deb [arch=amd64] http://download.virtualbox.org/virtualbox/debian $(lsb_release -cs) contrib\" | sudo tee /etc/apt/sources.list.d/virtualbox.list",
+            "sudo apt update",
+            "sudo apt install linux-headers-$(uname -r) dkms -y"
           ]
         },
         {
@@ -144,12 +144,12 @@
           "name": "Docker Repository",
           "type": "get-keys",
           "script": [
-            "apt-get install ca-certificates curl -y",
-            "install -d -m 0755 /etc/apt/keyrings",
-            "curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc",
-            "chmod a+r /etc/apt/keyrings/docker.asc",
-            "echo \"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian $(. /etc/os-release && echo \"$VERSION_CODENAME\") stable\" | tee /etc/apt/sources.list.d/docker.list > /dev/null",
-            "apt-get update"
+            "sudo apt-get install ca-certificates curl -y",
+            "sudo install -d -m 0755 /etc/apt/keyrings",
+            "sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc",
+            "sudo chmod a+r /etc/apt/keyrings/docker.asc",
+            "echo \"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian $(. /etc/os-release && echo \"$VERSION_CODENAME\") stable\" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null",
+            "sudo apt-get update"
           ]
         },
         {
@@ -207,10 +207,10 @@
           "name": "Virtual Box Repository",
           "type": "get-keys",
           "script": [
-            "dnf -y install @development-tools",
-            "dnf -y install kernel-devel kernel-headers dkms qt5-qtx11extras elfutils-libelf-devel zlib-devel",
-            "wget http://download.virtualbox.org/virtualbox/rpm/fedora/virtualbox.repo -P /etc/yum.repos.d/",
-            "dnf makecache -y"
+            "sudo dnf -y install @development-tools",
+            "sudo dnf -y install kernel-devel kernel-headers dkms qt5-qtx11extras elfutils-libelf-devel zlib-devel",
+            "sudo wget http://download.virtualbox.org/virtualbox/rpm/fedora/virtualbox.repo -P /etc/yum.repos.d/",
+            "sudo dnf makecache -y"
           ]
         },
 
@@ -235,7 +235,7 @@
           "type": "get-keys",
           "script": [
             "wget https://download.virtualbox.org/virtualbox/7.0.14/Oracle_VM_VirtualBox_Extension_Pack-7.0.14.vbox-extpack",
-            "echo 'y' | vboxmanage extpack install Oracle_VM_VirtualBox_Extension_Pack-7.0.14.vbox-extpack"
+            "echo 'y' | sudo vboxmanage extpack install Oracle_VM_VirtualBox_Extension_Pack-7.0.14.vbox-extpack"
           ]
         }
 
@@ -322,12 +322,12 @@
           "name": "VirtualBox Repository",
           "type": "get-keys",
           "script": [
-            "apt install wget gnupg2 lsb-release -y",
-            "curl -fsSL https://www.virtualbox.org/download/oracle_vbox_2016.asc | gpg --dearmor -o /etc/apt/trusted.gpg.d/vbox.gpg",
-            "curl -fsSL https://www.virtualbox.org/download/oracle_vbox.asc | gpg --dearmor -o /etc/apt/trusted.gpg.d/oracle_vbox.gpg",
-            "echo \"deb [arch=amd64] http://download.virtualbox.org/virtualbox/debian $(lsb_release -cs) contrib\" | tee /etc/apt/sources.list.d/virtualbox.list",
-            "apt update",
-            "apt install linux-headers-$(uname -r) dkms -y"
+            "sudo apt install wget gnupg2 lsb-release -y",
+            "curl -fsSL https://www.virtualbox.org/download/oracle_vbox_2016.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/vbox.gpg",
+            "curl -fsSL https://www.virtualbox.org/download/oracle_vbox.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/oracle_vbox.gpg",
+            "echo \"deb [arch=amd64] http://download.virtualbox.org/virtualbox/debian $(lsb_release -cs) contrib\" | sudo tee /etc/apt/sources.list.d/virtualbox.list",
+            "sudo apt update",
+            "sudo apt install linux-headers-$(uname -r) dkms -y"
           ]
         },
         {
@@ -372,12 +372,12 @@
           "name": "Docker Repository",
           "type": "get-keys",
           "script": [
-            "apt-get install ca-certificates curl -y",
-            "install -d -m 0755 /etc/apt/keyrings",
-            "curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc",
-            "chmod a+r /etc/apt/keyrings/docker.asc",
-            "echo \"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo \"$VERSION_CODENAME\") stable\" | tee /etc/apt/sources.list.d/docker.list > /dev/null",
-            "apt-get update"
+            "sudo apt-get install ca-certificates curl -y",
+            "sudo install -d -m 0755 /etc/apt/keyrings",
+            "sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc",
+            "sudo chmod a+r /etc/apt/keyrings/docker.asc",
+            "echo \"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo \"$VERSION_CODENAME\") stable\" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null",
+            "sudo apt-get update"
           ]
         },
         {
