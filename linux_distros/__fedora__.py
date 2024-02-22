@@ -18,7 +18,7 @@ def fedora_package_installer(packages, hide_output):
         try:
             if type == "install-package":
                 packages_to_check = value.split()
-                subprocess.run(["sudo", "dnf", "list", "installed", packages_to_check])
+                subprocess.run(["dnf", "list", "installed", packages_to_check])
 
             elif type == "install-package-flatpak":
                 subprocess.run(["flatpak", "list", "|", "grep", value])
@@ -44,7 +44,7 @@ def type_of_action(data, hide):
             print(f"\n{name} Package(s) insalling")
             packages_to_install = value.split()
             subprocess.run(
-                ["sudo", "dnf", "install", "-y"] + packages_to_install,
+                ["dnf", "install", "-y"] + packages_to_install,
                 check=True,
                 stderr=hide,
                 stdout=hide
@@ -67,7 +67,7 @@ def type_of_action(data, hide):
         #     ).strip()
         #     value = value.replace("$(rpm -E %fedora)", fedora_version)
         #     subprocess.run(
-        #         ["sudo", "dnf", "install", value],
+        #         ["dnf", "install", value],
         #         check=True,
         #         stderr=hide,
         #         stdout=hide
@@ -90,7 +90,7 @@ def type_of_action(data, hide):
                 stdout=hide
             )
             subprocess.run(
-                ["sudo", "dnf", "install", "-y", f"local.package.rpm"],
+                ["dnf", "install", "-y", f"local.package.rpm"],
                 cwd=target_directory,
                 check=True,
                 stderr=hide,
@@ -101,7 +101,7 @@ def type_of_action(data, hide):
             print(f"\n{name} Package(s) removing.")
             packages_to_remove = value.split()  # Split the package types into a list
             subprocess.run(
-                ["sudo", "dnf", "remove", "-y"] + packages_to_remove,
+                ["dnf", "remove", "-y"] + packages_to_remove,
                 check=True,
                 stderr=hide,
                 stdout=hide
@@ -110,7 +110,7 @@ def type_of_action(data, hide):
         elif type == "config-manager":
             print(f"\n{name} repo adding.")
             subprocess.run(
-                ["sudo", "dnf", "config-manager", "--add-repo", value],
+                ["dnf", "config-manager", "--add-repo", value],
                 check=True,
                 stderr=hide,
                 stdout=hide
@@ -118,18 +118,18 @@ def type_of_action(data, hide):
 
         elif type == "install-service":
             print(f"\n\n{name}  service installing...")
-            subprocess.run(["sudo", "systemctl", "restart", value],
+            subprocess.run(["systemctl", "restart", value],
                 check=True,
                 stderr=hide,
                 stdout=hide)
-            subprocess.run(["sudo", "systemctl", "enable", value],
+            subprocess.run(["systemctl", "enable", value],
                 check=True,
                 stderr=hide,
                 stdout=hide)
 
         elif type == "add-group":
             print(f"\n{name} adding to group")
-            subprocess.run(["sudo", "usermod", "-aG", value, current_user],
+            subprocess.run(["usermod", "-aG", value, current_user],
                 check=True,
                 stderr=hide,
                 stdout=hide)
@@ -137,7 +137,7 @@ def type_of_action(data, hide):
         elif type == "add-repo-flathub":
             print(f"\n{name} repo adding to flatpak")
             subprocess.run(
-                ["sudo", "flatpak", "remote-add", "--if-not-exists", "flathub", value],
+                ["flatpak", "remote-add", "--if-not-exists", "flathub", value],
                 check=True,
                 stderr=hide,
                 stdout=hide
@@ -146,7 +146,7 @@ def type_of_action(data, hide):
         elif type == "install-package-flatpak":
             print(f"\n{name} flatpak Package(s) insalling")
             subprocess.run(
-                ["sudo", "flatpak", "install", "-y", value],
+                ["flatpak", "install", "-y", value],
                 check=True,
                 stderr=hide,
                 stdout=hide

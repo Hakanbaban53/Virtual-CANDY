@@ -3,13 +3,13 @@ import subprocess
 
 
 def ubuntu_package_installer(packages, hide_output):
-    subprocess.run(["sudo", "apt", "update"])
+    subprocess.run(["apt", "update"])
     for data in packages:
         value = data.get("value", "")
         try:
             if type == "install-package":
                 packages_to_check = value.split()
-                subprocess.run(["sudo", "apt", "list", "installed", packages_to_check])
+                subprocess.run(["apt", "list", "installed", packages_to_check])
             elif type == "install-package-flatpak":
                 subprocess.run(["flatpak", "list", "|", "grep", value])
             else:
@@ -33,7 +33,7 @@ def type_of_action(data, hide_output):
         if type == "install-package":
             packages_to_install = value.split()  # Split the package names into a list
             subprocess.run(
-                ["sudo", "apt", "-y", "install"] + packages_to_install,
+                ["apt", "-y", "install"] + packages_to_install,
                 check=True,
                 stderr=stderr,
                 stdout=stdout,
@@ -80,7 +80,7 @@ def type_of_action(data, hide_output):
             print(f"\n{name} Package(s) removing.\n")
             packages_to_remove = value.split()  # Split the package names into a list
             subprocess.run(
-                ["sudo", "apt", "-y", "remove"] + packages_to_remove,
+                ["apt", "-y", "remove"] + packages_to_remove,
                 check=True,
                 stderr=stderr,
                 stdout=stdout,
@@ -88,23 +88,23 @@ def type_of_action(data, hide_output):
 
         elif type == "install-service":
             print(f"\n{name}  service installing...\n")
-            subprocess.run(["sudo", "systemctl", "restart", value])
-            subprocess.run(["sudo", "systemctl", "enable", value])
+            subprocess.run(["systemctl", "restart", value])
+            subprocess.run(["systemctl", "enable", value])
 
         elif type == "add-group":
             print(f"\n{name} adding to group")
-            subprocess.run(["sudo", "usermod", "-aG", value, current_user])
+            subprocess.run(["usermod", "-aG", value, current_user])
 
         elif type == "add-repo-flathub":
             print(f"\n{name} repo adding to flatpak\n")
             subprocess.run(
-                ["sudo", "flatpak", "remote-add", "--if-not-exists", "flathub", value]
+                ["flatpak", "remote-add", "--if-not-exists", "flathub", value]
             )
 
         elif type == "install-package-flatpak":
             print(f"\n{name} flatpak Package(s) insalling\n")
             subprocess.run(
-                ["sudo", "flatpak", "install", "-y", value],
+                ["flatpak", "install", "-y", value],
                 check=True,
                 stderr=stderr,
                 stdout=stdout,

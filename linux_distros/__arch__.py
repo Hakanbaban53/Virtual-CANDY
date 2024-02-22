@@ -7,7 +7,7 @@ def arch_package_installer(packages, hide_output):
         value = data.get("value", "")
         try:
             if type == "install-package":
-                subprocess.run(["sudo", "pacman", "-Q", value, "--noconfirm"])
+                subprocess.run(["pacman", "-Q", value, "--noconfirm"])
             elif type_of_action == "install-package-flatpak":
                 result = subprocess.run(
                     ["flatpak", "list"], capture_output=True, text=True
@@ -38,7 +38,7 @@ def type_of_action(data, hide_output):
 
         if type == "install-package":
             subprocess.run(
-                ["sudo", "pacman", "-S", value, "--noconfirm"],
+                ["pacman", "-S", value, "--noconfirm"],
                 check=True,
                 stderr=stderr,
                 stdout=stdout,
@@ -69,15 +69,15 @@ def type_of_action(data, hide_output):
             )
 
         elif type == "install-service":
-            subprocess.run(["sudo", "systemctl", "restart", value])
-            subprocess.run(["sudo", "systemctl", "enable", value])
+            subprocess.run(["systemctl", "restart", value])
+            subprocess.run(["systemctl", "enable", value])
 
         elif type == "add-group":
-            subprocess.run(["sudo", "usermod", "-aG", value, current_user])
+            subprocess.run(["usermod", "-aG", value, current_user])
 
         elif type == "add-repo-flathub":
             subprocess.run(
-                ["sudo", "flatpak", "remote-add", "--if-not-exists", "flathub", value]
+                ["flatpak", "remote-add", "--if-not-exists", "flathub", value]
             )
 
         elif type == "install-package-flatpak":
