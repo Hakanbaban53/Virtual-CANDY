@@ -34,7 +34,7 @@ def type_of_action(data, hide_output):
         if type == "install-package":
             packages_to_install = value.split()  # Split the package names into a list
             subprocess.run(
-                ["apt", "install", "-y"] + packages_to_install,
+                ["sudo", "apt", "install", "-y"] + packages_to_install,
                 check=True,
                 stderr=stderr,
                 stdout=stdout,
@@ -80,30 +80,30 @@ def type_of_action(data, hide_output):
         elif type == "remove-package":
             packages_to_remove = value.split()  # Split the package names into a list
             subprocess.run(
-                ["apt", "remove", "-y"] + packages_to_remove,
+                ["sudo", "apt", "remove", "-y"] + packages_to_remove,
                 check=True,
                 stderr=stderr,
                 stdout=stdout,
             )
 
         elif type == "install-service":
-            subprocess.run(["systemctl", "restart", value])
-            subprocess.run(["systemctl", "enable", value])
+            subprocess.run(["sudo", "systemctl", "restart", value])
+            subprocess.run(["sudo", "systemctl", "enable", value])
 
         elif type == "add-group":
-            subprocess.run(["usermod", "-aG", value, current_user])
+            subprocess.run(["sudo", "usermod", "-aG", value, current_user])
 
         elif type == "add-repo-flathub":
             print(f"\n{name} repo adding to flatpak")
             subprocess.run(
-                ["flatpak", "remote-add", "--if-not-exists", "flathub", value],
+                ["sudo", "flatpak", "remote-add", "--if-not-exists", "flathub", value],
                 check=True,
             )
 
         elif type == "install-package-flatpak":
             print(f"\n{name} flatpak Package(s) insalling")
             subprocess.run(
-                ["flatpak", "install", "-y", value],
+                ["sudo", "flatpak", "install", "-y", value],
                 check=True,
                 stderr=stderr,
                 stdout=stdout,

@@ -19,32 +19,6 @@ known_distros = {
     "ubuntu": ["ubuntu"],
 }
 
-def check_sudo(window):
-    try:
-        if os.getuid() != 0:
-            raise PermissionError("Please run the program with sudo.")
-    except PermissionError as e:
-        window.clear()
-        window.addstr(
-            curses.LINES // 2,
-            curses.COLS // 2 - 20,
-            "Error : {}".format(e),
-        )
-
-        window.refresh()
-        curses.delay_output(3000)
-        sys.exit(1)
-    except Exception as e:
-        window.clear()
-        window.addstr(
-            curses.LINES // 2,
-            curses.COLS // 2 - 14,
-            "Unexpected error : {}".format(e),
-        )
-
-        window.refresh()
-        curses.delay_output(3000)
-        sys.exit(1)
 
 def packages(linux_distro):
     current_directory = os.path.dirname(os.path.abspath(__file__))
@@ -319,7 +293,6 @@ def get_linux_distro(window):
 
 def main(window):
     try:
-        check_sudo(window)
 
         linux_distribution = get_linux_distro(window)
         hide_output = get_hide_output_choice(window)

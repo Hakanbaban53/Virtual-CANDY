@@ -38,7 +38,7 @@ def type_of_action(data, hide_output):
 
         if type == "install-package":
             subprocess.run(
-                ["pacman", "-S", value, "--noconfirm"],
+                ["sudo", "pacman", "-S", value, "--noconfirm"],
                 check=True,
                 stderr=stderr,
                 stdout=stdout,
@@ -69,19 +69,19 @@ def type_of_action(data, hide_output):
             )
 
         elif type == "install-service":
-            subprocess.run(["systemctl", "restart", value])
-            subprocess.run(["systemctl", "enable", value])
+            subprocess.run(["sudo", "systemctl", "restart", value])
+            subprocess.run(["sudo", "systemctl", "enable", value])
 
         elif type == "add-group":
-            subprocess.run(["usermod", "-aG", value, current_user])
+            subprocess.run(["sudo", "usermod", "-aG", value, current_user])
 
         elif type == "add-repo-flathub":
             subprocess.run(
-                ["flatpak", "remote-add", "--if-not-exists", "flathub", value]
+                ["sudo", "flatpak", "remote-add", "--if-not-exists", "flathub", value]
             )
 
         elif type == "install-package-flatpak":
-            subprocess.run(["flatpak", "install", "-y", value])
+            subprocess.run(["sudo", "flatpak", "install", "-y", value])
 
         elif type == "install-package-AUR-git":
             repository_directory = f"{target_directory}/{value}"
