@@ -201,6 +201,61 @@
 
   "fedora": [
     {
+      "name": "Enable Rpm Fusion",
+      "values": [
+        {
+          "name": "DNF repository manager",
+          "type": "install-package",
+          "value": "dnf-plugins-core"
+        },
+        {
+          "name": "Enable RPM Fusion free",
+          "type": "install-url-package",
+          "value": "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm"
+        },
+        {
+          "name": "Enable RPM Fusion non-free",
+          "type": "install-url-package",
+          "value": "https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm"
+        }
+      ]
+    },
+    {
+      "name": "My Apps",
+      "values": [
+        {
+          "name":"Nvidia akmod",
+          "type": "install-package",
+          "value": "akmod-nvidia"
+        },
+        {
+          "name":"Nvidia CUDA",
+          "type": "install-package",
+          "value": "xorg-x11-drv-nvidia-cuda"
+        },
+        {
+          "name":"Discord",
+          "type": "install-package",
+          "value": "discord"
+        },
+        {
+          "name":"Google Chrome Stable",
+          "type": "install-package",
+          "value": "google-chrome-stable"
+        },
+        {
+          "name":"Steam",
+          "type": "install-package",
+          "value": "steam"
+        },
+        {
+          "name":"Easyeffects",
+          "type": "install-package",
+          "value": "easyeffects"
+        }
+      ]
+    },
+    {
       "name": "Virtual Box 7.0",
       "values": [
         {

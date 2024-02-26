@@ -60,18 +60,18 @@ def type_of_action(data, hide):
                 except subprocess.CalledProcessError as err:
                     print(f"An error occurred: {err}")
 
-        # elif type == "install-url-package":
-        #     print(f"\n{name} Package(s) insalling")
-        #     fedora_version = subprocess.check_output(
-        #         ["rpm", "-E", "%fedora"], text=True
-        #     ).strip()
-        #     value = value.replace("$(rpm -E %fedora)", fedora_version)
-        #     subprocess.run(
-        #         ["sudo", "dnf", "install", value],
-        #         check=True,
-        #         stderr=hide,
-        #         stdout=hide
-        #     )
+        elif type == "install-url-package":
+            print(f"\n{name} Package(s) insalling")
+            fedora_version = subprocess.check_output(
+                ["rpm", "-E", "%fedora"], text=True
+            ).strip()
+            value = value.replace("$(rpm -E %fedora)", fedora_version)
+            subprocess.run(
+                ["sudo", "dnf", "install", value],
+                check=True,
+                stderr=hide,
+                stdout=hide
+            )
 
         elif type == "local-package":
             print(f"\n{name} Package(s) insalling")
