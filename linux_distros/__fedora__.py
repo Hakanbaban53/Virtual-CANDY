@@ -67,7 +67,7 @@ def type_of_action(data, hide):
             ).strip()
             value = value.replace("$(rpm -E %fedora)", fedora_version)
             subprocess.run(
-                ["sudo", "dnf", "install", value],
+                ["sudo", "dnf", "install", "-y", value],
                 check=True,
                 stderr=hide,
                 stdout=hide
