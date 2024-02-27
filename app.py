@@ -348,6 +348,7 @@ def main(window):
                         window.clear()
                         window.refresh()
                         if entity in selected_entities:
+                            curses.reset_shell_mode()
                             window.addstr(
                                 len(selected_entities) + 4 + idx,
                                 3,
@@ -356,6 +357,7 @@ def main(window):
                             get_linux_package_manager(
                                 linux_distribution, entity, hide_output
                             )
+                    curses.reset_prog_mode()
                     window.clear()
                     window.refresh()
                     window.addstr(
