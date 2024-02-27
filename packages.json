@@ -1,6 +1,21 @@
 {
   "arch": [
     {
+      "name": "My Apps",
+      "values": [
+        {
+          "name": "Visual Studio Code",
+          "type": "install-package-AUR-git",
+          "value": "visual-studio-code-bin"
+        },
+        {
+          "name": "Github Desktop",
+          "type": "install-package-AUR-git",
+          "value": "github-desktop-bin"
+        }
+      ]
+    },
+    {
       "name": "Virtual Box 7.0",
       "values": [
         { "name": "Virtual Box", "type": "package", "value": "virtualbox" },
@@ -87,6 +102,42 @@
   ],
 
   "debian": [
+    {
+      "name":"My Apps",
+      "values":[
+        {
+          "name": "Visual Studio Code Repository",
+          "type": "get-keys",
+          "script": [
+            "sudo apt-get install wget gpg",
+            "wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg",
+            "sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg",
+            "sudo sh -c 'echo \"deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main\" > /etc/apt/sources.list.d/vscode.list'",
+            "rm -f packages.microsoft.gpg"
+          ]
+        },
+        {
+          "name":"Visual Studio Code",
+          "type": "install-package",
+          "value": "code"
+        },
+        {
+          "name": "GitHub Desktop Repository",
+          "type": "get-keys",
+          "script": [
+            "sudo apt install wget software-properties-common",
+            "wget -qO - https://apt.packages.shiftkey.dev/gpg.key | gpg --dearmor | sudo tee /usr/share/keyrings/shiftkey-packages.gpg > /dev/null",
+            "sudo sh -c 'echo \"deb [arch=amd64 signed-by=/usr/share/keyrings/shiftkey-packages.gpg] https://apt.packages.shiftkey.dev/ubuntu/ any main\" > /etc/apt/sources.list.d/shiftkey-packages-desktop.list'"
+          ]
+        },
+        {
+          "name":"Github Desktop",
+          "type": "install-package",
+          "value": "github-desktop"
+        }
+        
+      ]
+    },
     {
       "name": "Virtual Box 7.0",
       "values": [
@@ -252,7 +303,34 @@
           "name":"Easyeffects",
           "type": "install-package",
           "value": "easyeffects"
+        },
+        {
+          "name": "Visual Studio Code Repository",
+          "type": "get-keys",
+          "script": [
+            "sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc",
+            "sudo sh -c 'echo -e \"[code]\\nname=Visual Studio Code\\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\\nenabled=1\\ngpgcheck=1\\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc\" > /etc/yum.repos.d/vscode.repo'"
+          ]
+        },
+        {
+          "name":"Visual Studio Code",
+          "type": "install-package",
+          "value": "code"
+        },
+        {
+          "name": "GitHub Desktop Repository",
+          "type": "get-keys",
+          "script": [
+            "sudo rpm --import https://rpm.packages.shiftkey.dev/gpg.key",
+            "sudo sh -c 'echo -e \"[shiftkey-packages]\\nname=GitHub Desktop\\nbaseurl=https://rpm.packages.shiftkey.dev/rpm/\\nenabled=1\\ngpgcheck=1\\nrepo_gpgcheck=1\\ngpgkey=https://rpm.packages.shiftkey.dev/gpg.key\" > /etc/yum.repos.d/shiftkey-packages.repo'"
+          ]
+        },
+        {
+          "name":"Github Desktop",
+          "type": "install-package",
+          "value": "github-desktop"
         }
+        
       ]
     },
     {
@@ -370,6 +448,42 @@
   ],
 
   "ubuntu": [
+    {
+      "name":"My Apps",
+      "values":[
+        {
+          "name": "Visual Studio Code Repository",
+          "type": "get-keys",
+          "script": [
+            "sudo apt-get install wget gpg",
+            "wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg",
+            "sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg",
+            "sudo sh -c 'echo \"deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main\" > /etc/apt/sources.list.d/vscode.list'",
+            "rm -f packages.microsoft.gpg"
+          ]
+        },
+        {
+          "name":"Visual Studio Code",
+          "type": "install-package",
+          "value": "code"
+        },
+        {
+          "name": "GitHub Desktop Repository",
+          "type": "get-keys",
+          "script": [
+            "sudo apt install wget software-properties-common",
+            "wget -qO - https://apt.packages.shiftkey.dev/gpg.key | gpg --dearmor | sudo tee /usr/share/keyrings/shiftkey-packages.gpg > /dev/null",
+            "sudo sh -c 'echo \"deb [arch=amd64 signed-by=/usr/share/keyrings/shiftkey-packages.gpg] https://apt.packages.shiftkey.dev/ubuntu/ any main\" > /etc/apt/sources.list.d/shiftkey-packages-desktop.list'"
+          ]
+        },
+        {
+          "name":"Github Desktop",
+          "type": "install-package",
+          "value": "github-desktop"
+        }
+        
+      ]
+    },
     {
       "name": "Virtual Box 7.0",
       "values": [
