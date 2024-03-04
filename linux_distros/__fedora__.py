@@ -3,43 +3,65 @@ import subprocess
 
 
 def fedora_package_installer(packages, hide_output):
-
     if hide_output:
-        devnull = open('/dev/null', 'w')
+        devnull = open("/dev/null", "w")
         hide = devnull
-        
     else:
         hide = None
 
     for data in packages:
-
         value = data.get("value", "")
+        type = data.get("type", "")
 
         try:
             if type == "install-package":
                 packages_to_check = value.split()
-                subprocess.run(["dnf", "list", "installed", packages_to_check])
+                result = subprocess.run(
+                    ["dnf", "list", "installed"] + packages_to_check,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    check=True,
+                )
+
+                # Check if the package is not installed based on the error message
+                if "error" in result.stderr.decode("utf-8"):
+                    print(packages_to_check, "not installed. Installing...")
+                    type_of_action(data, hide)
+                else:
+                    print(packages_to_check, "was installed. Skipping...")
 
             elif type == "install-package-flatpak":
-                subprocess.run(["flatpak", "list", "|", "grep", value])
+                result = subprocess.run(
+                    ["flatpak", "list"],
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    check=True,
+                )
+
+                # Check if the value is not in the output
+                if value not in result.stdout.decode("utf-8"):
+                    print(value, "not installed. Installing...")
+                    type_of_action(data, hide)
+
+                else:
+                    print(value, "was installed. Skipping...")
 
             else:
                 type_of_action(data, hide)
-
 
         except subprocess.CalledProcessError:
             type_of_action(data, hide)
 
 
 def type_of_action(data, hide):
-    
+
     current_user = getenv("USER")
     target_directory = f"/home/{current_user}/"
     name = data.get("name", "")
     type = data.get("type", "")
     value = data.get("value", "")
 
-    try:    
+    try:
         if type == "install-package":
             print(f"\n{name} Package(s) insalling")
             packages_to_install = value.split()
@@ -47,7 +69,7 @@ def type_of_action(data, hide):
                 ["sudo", "dnf", "install", "-y"] + packages_to_install,
                 check=True,
                 stderr=hide,
-                stdout=hide
+                stdout=hide,
             )
 
         elif type == "get-keys":
@@ -70,7 +92,7 @@ def type_of_action(data, hide):
                 ["sudo", "dnf", "install", "-y", value],
                 check=True,
                 stderr=hide,
-                stdout=hide
+                stdout=hide,
             )
 
         elif type == "local-package":
@@ -87,14 +109,14 @@ def type_of_action(data, hide):
                 cwd=target_directory,
                 check=True,
                 stderr=hide,
-                stdout=hide
+                stdout=hide,
             )
             subprocess.run(
                 ["sudo", "dnf", "install", "-y", f"local.package.rpm"],
                 cwd=target_directory,
                 check=True,
                 stderr=hide,
-                stdout=hide
+                stdout=hide,
             )
 
         elif type == "remove-package":
@@ -104,7 +126,7 @@ def type_of_action(data, hide):
                 ["sudo", "dnf", "remove", "-y"] + packages_to_remove,
                 check=True,
                 stderr=hide,
-                stdout=hide
+                stdout=hide,
             )
 
         elif type == "config-manager":
@@ -113,26 +135,32 @@ def type_of_action(data, hide):
                 ["sudo", "dnf", "config-manager", "--add-repo", value],
                 check=True,
                 stderr=hide,
-                stdout=hide
+                stdout=hide,
             )
 
         elif type == "install-service":
             print(f"\n\n{name}  service installing...")
-            subprocess.run(["sudo", "systemctl", "restart", value],
+            subprocess.run(
+                ["sudo", "systemctl", "restart", value],
                 check=True,
                 stderr=hide,
-                stdout=hide)
-            subprocess.run(["sudo", "systemctl", "enable", value],
+                stdout=hide,
+            )
+            subprocess.run(
+                ["sudo", "systemctl", "enable", value],
                 check=True,
                 stderr=hide,
-                stdout=hide)
+                stdout=hide,
+            )
 
         elif type == "add-group":
             print(f"\n{name} adding to group")
-            subprocess.run(["sudo", "usermod", "-aG", value, current_user],
+            subprocess.run(
+                ["sudo", "usermod", "-aG", value, current_user],
                 check=True,
                 stderr=hide,
-                stdout=hide)
+                stdout=hide,
+            )
 
         elif type == "add-repo-flathub":
             print(f"\n{name} repo adding to flatpak")
@@ -140,7 +168,7 @@ def type_of_action(data, hide):
                 ["sudo", "flatpak", "remote-add", "--if-not-exists", "flathub", value],
                 check=True,
                 stderr=hide,
-                stdout=hide
+                stdout=hide,
             )
 
         elif type == "install-package-flatpak":
@@ -149,10 +177,9 @@ def type_of_action(data, hide):
                 ["sudo", "flatpak", "install", "-y", value],
                 check=True,
                 stderr=hide,
-                stdout=hide
+                stdout=hide,
             )
 
     except subprocess.CalledProcessError as err:
 
         print(f"An error occurred: {err}")
-

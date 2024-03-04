@@ -1,7 +1,7 @@
 {
   "arch": [
     {
-      "name": "My Apps",
+      "name": "My_Apps",
       "values": [
         {
           "name": "Visual Studio Code",
@@ -12,11 +12,46 @@
           "name": "Github Desktop",
           "type": "install-package-AUR-git",
           "value": "github-desktop-bin"
+        },
+        {
+          "name": "Steam",
+          "type": "install-package",
+          "value": "steam"
+        },
+        {
+          "name": "Discord",
+          "type": "install-package",
+          "value": "discord"
+        },
+        {
+          "name": "Vlc",
+          "type": "install-package",
+          "value": "vlc"
+        },
+        {
+          "name": "Easyeffects",
+          "type": "install-package",
+          "value": "easyeffects"
+        },
+        {
+          "name": "Calf",
+          "type": "install-package",
+          "value": "calf"
+        },
+        {
+          "name": "Wine",
+          "type": "install-package",
+          "value": "wine"
+        },
+        {
+          "name": "Google Chrome Stable",
+          "type": "install-package-AUR-git",
+          "value": "google-chrome"
         }
       ]
     },
     {
-      "name": "Virtual Box 7.0",
+      "name": "VirtualBox-7.0",
       "values": [
         { "name": "Virtual Box", "type": "package", "value": "virtualbox" },
         {
@@ -38,7 +73,7 @@
     },
 
     {
-      "name": "Qemu and Virtual Machine Manager",
+      "name": "Qemu_and_VM_Manager",
       "values": [
         { "name": "Qemu", "type": "install-package", "value": "qemu-full" },
         {
@@ -60,7 +95,7 @@
     },
 
     {
-      "name": "Docker CLI and Docker Desktop",
+      "name": "Docker_CLI_and_Docker_Desktop",
       "values": [
         { "name": "Docker Cli", "type": "install-package", "value": "docker" },
         {
@@ -82,7 +117,7 @@
     },
 
     {
-      "name": "Podman and Podman Desktop",
+      "name": "Podman_and_Podman_Desktop",
       "values": [
         { "name": "Flatpak", "type": "install-package", "value": "flatpak" },
         {
@@ -103,7 +138,7 @@
 
   "debian": [
     {
-      "name":"My Apps",
+      "name":"My_Apps",
       "values":[
         {
           "name": "Visual Studio Code Repository",
@@ -139,7 +174,7 @@
       ]
     },
     {
-      "name": "Virtual Box 7.0",
+      "name": "VirtualBox-7.0",
       "values": [
         {
           "name": "VirtualBox Repository",
@@ -167,7 +202,7 @@
     },
 
     {
-      "name": "Qemu and Virtual Machine Manager",
+      "name": "Qemu_and_VM_Manager",
       "values": [
         { "name": "Qemu", "type": "install-package", "value": "qemu-system" },
         {
@@ -189,7 +224,7 @@
     },
 
     {
-      "name": "Docker CLI and Docker Desktop",
+      "name": "Docker_CLI_and_Docker_Desktop",
       "values": [
         {
           "name": "Docker Repository",
@@ -232,7 +267,7 @@
     },
 
     {
-      "name": "Podman and Podman Desktop",
+      "name": "Podman_and_Podman_Desktop",
       "values": [
         { "name": "Flatpak", "type": "install-package", "value": "flatpak" },
         {
@@ -252,7 +287,7 @@
 
   "fedora": [
     {
-      "name": "Enable Rpm Fusion",
+      "name": "Enable_Rpm_Fusion",
       "values": [
         {
           "name": "DNF repository manager",
@@ -272,7 +307,7 @@
       ]
     },
     {
-      "name": "My Apps",
+      "name": "My_Apps",
       "values": [
         {
           "name":"Nvidia akmod",
@@ -334,7 +369,7 @@
       ]
     },
     {
-      "name": "Virtual Box 7.0",
+      "name": "VirtualBox-7.0",
       "values": [
         {
           "name": "Virtual Box Repository",
@@ -376,7 +411,7 @@
     },
 
     {
-      "name": "Qemu and Virtual Machine Manager",
+      "name": "Qemu_and_VM_Manager",
       "values": [
         {
           "name": "Qemu package group",
@@ -397,7 +432,7 @@
     },
 
     {
-      "name": "Docker CLI and Docker Desktop",
+      "name": "Docker_CLI_and_Docker_Desktop",
       "values": [
         {
           "name": "Docker Repository",
@@ -428,7 +463,7 @@
     },
 
     {
-      "name": "Podman and Podman Desktop",
+      "name": "Podman_and_Podman_Desktop",
       "values": [
         { "name": "Flatpak", "type": "install-package", "value": "flatpak" },
         {
@@ -449,7 +484,7 @@
 
   "ubuntu": [
     {
-      "name":"My Apps",
+      "name":"My_Apps",
       "values":[
         {
           "name": "Visual Studio Code Repository",
@@ -485,7 +520,7 @@
       ]
     },
     {
-      "name": "Virtual Box 7.0",
+      "name": "VirtualBox-7.0",
       "values": [
         {
           "name": "VirtualBox Repository",
@@ -513,7 +548,7 @@
     },
 
     {
-      "name": "Qemu and Virtual Machine Manager",
+      "name": "Qemu_and_VM_Manager",
       "values": [
         { "name": "Qemu", "type": "install-package", "value": "qemu-system" },
         {
@@ -535,7 +570,7 @@
     },
 
     {
-      "name": "Docker CLI and Docker Desktop",
+      "name": "Docker_CLI_and_Docker_Desktop",
       "values": [
         {
           "name": "Docker Repository",
@@ -578,7 +613,7 @@
     },
 
     {
-      "name": "Podman and Podman Desktop",
+      "name": "Podman_and_Podman_Desktop",
       "values": [
         { "name": "Flatpak", "type": "install-package", "value": "flatpak" },
         {

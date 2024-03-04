@@ -1,35 +1,58 @@
 import subprocess
-from __pip_install__ import pip_package_installer
-from __get_os_package_manager__ import get_linux_package_manager
+from time import sleep
 
-dependencies = ["halo"]
+dependencies = []
 
 
-def check_dependencies():
-    """Install required dependencies for the CLI app if not already installed."""
+def check_dependencies(dependencies):
+    """Check if required Python packages are installed."""
+    missing_packages = []
 
     for package in dependencies:
         try:
-            subprocess.check_call(["pip", "show", package], stdout=subprocess.PIPE)
+            result = subprocess.run(
+                ["pip", "show", package], stdout=subprocess.PIPE, check=True, text=True
+            )
+            if "Version" not in result.stdout:
+                missing_packages.append(package)
+            else:
+                print(package, "is installed.")
         except subprocess.CalledProcessError:
-            return False
-    return True
+            missing_packages.append(package)
+
+    return missing_packages
 
 
-def get_dependencies():
-    dependencies_installed = check_dependencies()
-    print(dependencies_installed)
-
-    if dependencies_installed:
-        print("All dependencies installed!")
-        get_linux_package_manager()
+def install_dependencies(dependencies):
+    """Install missing Python packages using pip."""
+    if dependencies:
+        print("Installing missing dependencies...")
+        subprocess.run(["pip", "install"] + dependencies, check=True)
+        print("Dependencies installed successfully.")
     else:
-        selection = input(
-            "Dependencies were not satisfied. Would you like to download? (Y/n): "
-        )
-        if selection in [89, 121, 10]:  # 'Y', 'y', Enter
-            pip_package_installer(dependencies)
-        elif selection.lower() == "n":
-            print("Can you want to continue installing[y/N] ?")
+        print("No missing dependencies.")
+
+
+def handle_dependencies():
+    missing_packages = check_dependencies(dependencies)
+
+    if missing_packages:
+        print("The following dependencies are missing:", missing_packages)
+        confirmation_key = input("Do you want to install them? (Y/n): ")
+        if confirmation_key in [
+            89,
+            121,
+            10,
+            13,
+        ]:  # 'Y', 'y', Enter, Carriage Return
+            install_dependencies(missing_packages)
+            print("All dependencies installed!")
+            sleep(2)
+
         else:
-            print("Operation aborted.")
+            print("Operation aborted. Exiting...")
+            sleep(4)
+            exit(1)
+    else:
+        print("All dependencies are already installed.")
+        sleep(2)
