@@ -19,15 +19,19 @@ def ubuntu_package_installer(packages, hide_output):
             if type == "install-package":
                 packages_to_check = value.split()
                 result = subprocess.run(
-                    ["apt", "list", "installed"] + packages_to_check,
+                    ["apt", "list", "--installed"] + packages_to_check,
                     stdout=subprocess.PIPE,
                     stderr=subprocess.PIPE,
                     check=True,
                 )
 
-                # Check if the package is not installed based on the error message
-                if packages_to_check not in result.stdout.decode("utf-8"):
-                    print(packages_to_check, "not installed. Installing...")
+                # Check if any of the packages is not installed based on the output
+                not_installed_packages = [
+                    package for package in packages_to_check if package not in result.stdout.decode("utf-8")
+                ]
+
+                if not_installed_packages:
+                    print(not_installed_packages, "not installed. Installing...")
                     type_of_action(data, hide)
                 else:
                     print(packages_to_check, "was installed. Skipping...")
