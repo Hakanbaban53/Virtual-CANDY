@@ -98,10 +98,11 @@
       "name": "Docker_CLI_and_Docker_Desktop",
       "values": [
         { "name": "Docker Cli", "type": "install-package", "value": "docker" },
+        { "name": "Wget", "type": "install-package", "value": "wget" },
         {
           "name": "Docker Desktop",
           "type": "local-package",
-          "value": "https://desktop.docker.com/linux/main/amd64/137060/docker-desktop-4.27.2-x86_64.pkg.tar.zst"
+          "value": "https://desktop.docker.com/linux/main/amd64/137060/docker-desktop-4.28.0-x86_64.pkg.tar.zst"
         },
         {
           "name": "Start and Enable docker.service",
@@ -138,8 +139,8 @@
 
   "debian": [
     {
-      "name":"My_Apps",
-      "values":[
+      "name": "My_Apps",
+      "values": [
         {
           "name": "Visual Studio Code Repository",
           "type": "get-keys",
@@ -152,7 +153,7 @@
           ]
         },
         {
-          "name":"Visual Studio Code",
+          "name": "Visual Studio Code",
           "type": "install-package",
           "value": "code"
         },
@@ -166,11 +167,10 @@
           ]
         },
         {
-          "name":"Github Desktop",
+          "name": "Github Desktop",
           "type": "install-package",
           "value": "github-desktop"
         }
-        
       ]
     },
     {
@@ -251,7 +251,7 @@
         {
           "name": "Docker Desktop",
           "type": "local-package",
-          "value": "https://desktop.docker.com/linux/main/amd64/137060/docker-desktop-4.27.2-amd64.deb"
+          "value": "https://desktop.docker.com/linux/main/amd64/137060/docker-desktop-4.28.0-amd64.deb"
         },
         {
           "name": "Start and Enable docker.service",
@@ -310,32 +310,32 @@
       "name": "My_Apps",
       "values": [
         {
-          "name":"Nvidia akmod",
+          "name": "Nvidia akmod",
           "type": "install-package",
           "value": "akmod-nvidia"
         },
         {
-          "name":"Nvidia CUDA",
+          "name": "Nvidia CUDA",
           "type": "install-package",
           "value": "xorg-x11-drv-nvidia-cuda"
         },
         {
-          "name":"Discord",
+          "name": "Discord",
           "type": "install-package",
           "value": "discord"
         },
         {
-          "name":"Google Chrome Stable",
+          "name": "Google Chrome Stable",
           "type": "install-package",
           "value": "google-chrome-stable"
         },
         {
-          "name":"Steam",
+          "name": "Steam",
           "type": "install-package",
           "value": "steam"
         },
         {
-          "name":"Easyeffects",
+          "name": "Easyeffects",
           "type": "install-package",
           "value": "easyeffects"
         },
@@ -348,7 +348,7 @@
           ]
         },
         {
-          "name":"Visual Studio Code",
+          "name": "Visual Studio Code",
           "type": "install-package",
           "value": "code"
         },
@@ -361,11 +361,10 @@
           ]
         },
         {
-          "name":"Github Desktop",
+          "name": "Github Desktop",
           "type": "install-package",
           "value": "github-desktop"
         }
-        
       ]
     },
     {
@@ -406,7 +405,6 @@
             "echo 'y' | sudo vboxmanage extpack install Oracle_VM_VirtualBox_Extension_Pack-7.0.14.vbox-extpack"
           ]
         }
-
       ]
     },
 
@@ -452,7 +450,7 @@
         {
           "name": "Docker Desktop",
           "type": "local-package",
-          "value": "https://desktop.docker.com/linux/main/amd64/137060/docker-desktop-4.27.2-x86_64.rpm"
+          "value": "https://desktop.docker.com/linux/main/amd64/137060/docker-desktop-4.28.0-x86_64.rpm"
         },
         {
           "name": "Start and Enable docker.service",
@@ -484,8 +482,8 @@
 
   "ubuntu": [
     {
-      "name":"My_Apps",
-      "values":[
+      "name": "My_Apps",
+      "values": [
         {
           "name": "Visual Studio Code Repository",
           "type": "get-keys",
@@ -494,11 +492,12 @@
             "wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg",
             "sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg",
             "sudo sh -c 'echo \"deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main\" > /etc/apt/sources.list.d/vscode.list'",
-            "rm -f packages.microsoft.gpg"
+            "rm -f packages.microsoft.gpg",
+            "sudo apt update"
           ]
         },
         {
-          "name":"Visual Studio Code",
+          "name": "Visual Studio Code",
           "type": "install-package",
           "value": "code"
         },
@@ -508,15 +507,15 @@
           "script": [
             "sudo apt install wget software-properties-common",
             "wget -qO - https://apt.packages.shiftkey.dev/gpg.key | gpg --dearmor | sudo tee /usr/share/keyrings/shiftkey-packages.gpg > /dev/null",
-            "sudo sh -c 'echo \"deb [arch=amd64 signed-by=/usr/share/keyrings/shiftkey-packages.gpg] https://apt.packages.shiftkey.dev/ubuntu/ any main\" > /etc/apt/sources.list.d/shiftkey-packages-desktop.list'"
+            "sudo sh -c 'echo \"deb [arch=amd64 signed-by=/usr/share/keyrings/shiftkey-packages.gpg] https://apt.packages.shiftkey.dev/ubuntu/ any main\" > /etc/apt/sources.list.d/shiftkey-packages-desktop.list'",
+            "sudo apt update"
           ]
         },
         {
-          "name":"Github Desktop",
+          "name": "Github Desktop",
           "type": "install-package",
           "value": "github-desktop"
         }
-        
       ]
     },
     {
@@ -526,7 +525,7 @@
           "name": "VirtualBox Repository",
           "type": "get-keys",
           "script": [
-            "sudo apt install wget gnupg2 lsb-release -y",
+            "sudo apt install curl wget gnupg2 lsb-release -y",
             "curl -fsSL https://www.virtualbox.org/download/oracle_vbox_2016.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/vbox.gpg",
             "curl -fsSL https://www.virtualbox.org/download/oracle_vbox.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/oracle_vbox.gpg",
             "echo \"deb [arch=amd64] http://download.virtualbox.org/virtualbox/debian $(lsb_release -cs) contrib\" | sudo tee /etc/apt/sources.list.d/virtualbox.list",
@@ -597,7 +596,7 @@
         {
           "name": "Docker Desktop",
           "type": "local-package",
-          "value": "https://desktop.docker.com/linux/main/amd64/137060/docker-desktop-4.27.2-amd64.deb"
+          "value": "https://desktop.docker.com/linux/main/amd64/137060/docker-desktop-4.28.0-amd64.deb"
         },
         {
           "name": "Start and Enable docker.service",

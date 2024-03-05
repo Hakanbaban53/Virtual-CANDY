@@ -77,7 +77,11 @@ def type_of_action(data, hide):
                     "-O",
                     f"{target_directory}package.pkg.tar.zst",
                     value,
-                ]
+                ],
+                cwd=target_directory,
+                check=True,
+                stderr=hide,
+                stdout=hide,
             )
             subprocess.run(
                 [
@@ -87,6 +91,7 @@ def type_of_action(data, hide):
                     f"{target_directory}package.pkg.tar.zst",
                     "--noconfirm",
                 ],
+                cwd=target_directory,
                 check=True,
                 stderr=hide,
                 stdout=hide,
