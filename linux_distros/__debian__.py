@@ -80,7 +80,7 @@ def type_of_action(data, hide):
                         command, shell=True, check=True, stderr=hide, stdout=hide
                     )
                     print("Script executed successfully.")
-                except subprocess.calledProcessError as err:
+                except subprocess.CalledProcessError as err:
                     print(f"An error occurred: {err}")
 
         elif type == "local-package":
