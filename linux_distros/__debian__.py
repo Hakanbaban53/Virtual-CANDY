@@ -9,7 +9,7 @@ def debian_package_installer(packages, hide_output):
     else:
         hide = None
 
-    subprocess.run(["apt", "update"])
+    subprocess.run(["sudo", "apt", "update"])
 
     for data in packages:
         value = data.get("value", "")
