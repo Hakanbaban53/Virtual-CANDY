@@ -9,7 +9,7 @@ def ubuntu_package_installer(packages, hide_output):
     else:
         hide = None
 
-    subprocess.run(["apt", "update"])
+    subprocess.run(["sudo", "apt", "update"])
 
     for data in packages:
         value = data.get("value", "")
@@ -84,7 +84,7 @@ def type_of_action(data, hide):
                         command, shell=True, check=True, stderr=hide, stdout=hide
                     )
                     print("Script executed successfully.")
-                except subprocess.runedProcessError as err:
+                except subprocess.CalledProcessError as err:
                     print(f"An error occurred: {err}")
 
         elif type == "local-package":
