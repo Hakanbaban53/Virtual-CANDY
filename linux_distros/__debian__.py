@@ -19,13 +19,13 @@ def debian_package_installer(packages, hide_output):
             if type == "install-package":
                 packages_to_check = value.split()
                 result = subprocess.run(
-                    ["apt", "list", "installed"] + packages_to_check,
+                    ["apt", "list", "--installed"] + packages_to_check,
                     stdout=subprocess.PIPE,
                     stderr=subprocess.PIPE,
                     check=True,
                 )
 
-                # Check if the package is not installed based on the error message
+                # Check if any of the packages is not installed based on the output
                 not_installed_packages = [
                     package for package in packages_to_check if package not in result.stdout.decode("utf-8")
                 ]
