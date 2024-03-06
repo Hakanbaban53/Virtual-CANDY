@@ -168,7 +168,7 @@ def get_hide_output_choice(window):
             window,
             "Do you want to hide package manager output? [Y/n]: ",
             curses.LINES // 2 + 5,
-            curses.COLS // 2 - 20,
+            curses.COLS // 2 - 26,
         )
 
         if confirmation_key in [89, 121, 10, 13]:  # 'Y', 'y', Enter, Carriage Return
@@ -306,13 +306,12 @@ def main(window):
                     if selected_status_array[idx]
                 ]
                 window.addstr(1, 3, "Selected applications :")
-                window.addstr(0, 0, "{}".format(hide_output))
 
                 for idx, entity in enumerate(selected_entities):
                     window.addstr(2 + idx, 3, entity)
 
                 window.addstr(
-                    len(selected_entities) + 3, 3, "Do you want to continue[Y/n]? \n"
+                    len(selected_entities) + 3, 3, "Do you want to continue[Y/n]?"
                 )
                 window.refresh()
                 confirmation_key = window.getch()

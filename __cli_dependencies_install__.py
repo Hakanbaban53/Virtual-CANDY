@@ -51,7 +51,7 @@ def handle_dependencies():
 
         else:
             print("Operation aborted. Exiting...")
-            sleep(4)
+            sleep(3)
             exit(1)
     else:
         print("All dependencies are already installed.")
