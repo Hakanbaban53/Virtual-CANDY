@@ -2,7 +2,7 @@ from os import getenv
 import subprocess
 
 
-def ubuntu_package_installer(packages, hide_output):
+def ubuntu_package_manager(packages, hide_output):
     if hide_output:
         devnull = open("/dev/null", "w")
         hide = devnull

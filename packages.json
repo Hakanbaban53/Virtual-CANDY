@@ -53,7 +53,7 @@
     {
       "name": "VirtualBox-7.0",
       "values": [
-        { "name": "Virtual Box", "type": "package", "value": "virtualbox" },
+        { "name": "Virtual Box", "type": "install-package", "value": "virtualbox" },
         {
           "name": "Virtualbox Host Modules Arch",
           "type": "install-package",

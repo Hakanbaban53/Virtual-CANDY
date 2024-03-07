@@ -332,7 +332,7 @@ def main(window):
                                 "{} installing\n".format(entity),
                             )
                             get_linux_package_manager(
-                                linux_distribution, entity, hide_output
+                                linux_distribution, entity, hide_output, 'install'
                             )
                     curses.reset_prog_mode()
                     window.clear()

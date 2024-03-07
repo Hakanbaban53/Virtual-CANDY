@@ -12,21 +12,12 @@ def parse_arguments():
     parser.add_argument(
         "--distribution", default=linux_distro_id, help="Linux distribution"
     )
-
-    action_group = parser.add_mutually_exclusive_group()
-    action_group.add_argument(
-        "-i", "--install", action="store_true", default=None, help="Install packages"
-    )
-    action_group.add_argument(
-        "-r", "--remove", action="store_true", default=None, help="Remove packages"
+    parser.add_argument(
+        "-a", "--action", choices=["install", "remove"], default="install", help="Install or remove package"
     )
 
-    output_group = parser.add_mutually_exclusive_group()
-    output_group.add_argument(
-        "-s", "--silent", action="store_true", default=None, help="Silent mode"
-    )
-    output_group.add_argument(
-        "-n", "--noisy", action="store_true", default=None, help="Noisy mode"
+    parser.add_argument(
+        "-o", "--output", choices=["silent", "noisy"], default="silent", help="Silent or mode"
     )
 
     parser.add_argument(
@@ -38,21 +29,20 @@ def parse_arguments():
     args = parser.parse_args()
 
     if (
-        args.install is None
-        and args.remove is None
-        and args.silent is None
-        and args.noisy is None
+        args.action == "install"
+        and args.output == "silent"
     ):
-        args.install, args.silent = True, True
+        args.action, args.output = "install", True
 
-    elif args.install and args.noisy:
-        args.install, args.noisy = True, True
-    elif args.remove and args.noisy:
-        args.noisy, args.remove = True, True
+    elif args.action == "install" and args.output == "noisy":
+        args.output = False  # Reset noisy since it's not applicable in silent mode
+    elif args.action == "remove" and args.output == "noisy":
+        args.output = False  # Reset noisy since it's not applicable in silent mode
 
-    elif args.remove or args.install:
-        args.silent = True
-    elif args.silent or args.noisy:
-        args.install = True
+    elif args.action == "remove" or args.action == "install":
+        args.output = True
+
+    elif args.output == "noisy" or args.output == "silent":
+        args.action = "install"
 
     return args

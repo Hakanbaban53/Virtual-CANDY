@@ -2,7 +2,7 @@ from os import getenv
 import subprocess
 
 
-def arch_package_installer(packages, hide_output):
+def arch_package_manager(packages, hide_output):
     if hide_output:
         devnull = open("/dev/null", "w")
         hide = devnull
@@ -26,7 +26,7 @@ def arch_package_installer(packages, hide_output):
                 # Check if the package is not installed based on the error message
                 if "error" in result.stderr.decode("utf-8"):
                     print(packages_to_check, "not installed. Installing...")
-                    type_of_action(data, hide)
+                    installer(data, hide)
                 else:
                     print(packages_to_check, "was installed. Skipping...")
 
@@ -41,19 +41,19 @@ def arch_package_installer(packages, hide_output):
                 # Check if the value is not in the output
                 if value not in result.stdout.decode("utf-8"):
                     print(value, "not installed. Installing...")
-                    type_of_action(data, hide)
+                    installer(data, hide)
 
                 else:
                     print(value, "was installed. Skipping...")
 
             else:
-                type_of_action(data, hide)
+                installer(data, hide)
 
         except subprocess.CalledProcessError:
-            type_of_action(data, hide)
+            installer(data, hide)
 
 
-def type_of_action(data, hide):
+def installer(data, hide):
     current_user = getenv("USER")
     target_directory = f"/home/{current_user}/"
     name = data.get("name", "")
@@ -129,3 +129,6 @@ def type_of_action(data, hide):
 
     except subprocess.CalledProcessError as err:
         print(f"An error occurred: {err}")
+
+def remover():
+    print("Remover Working.")
