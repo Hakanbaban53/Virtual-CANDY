@@ -83,7 +83,7 @@ def fedora_package_manager(packages, hide_output, action):
         except subprocess.CalledProcessError as e:
                 # An exception is raised if the command has a non-zero exit code
             error_message = e.stderr.decode("utf-8").lower()
-
+            print(error_message)
             # Check if the package is not installed based on the error message
             if "error" in error_message:
                 if action == "install":
