@@ -106,7 +106,7 @@
         {
           "name": "Docker Desktop",
           "type": "local-package",
-          "value": "https://desktop.docker.com/linux/main/amd64/137060/docker-desktop-4.28.0-x86_64.pkg.tar.zst"
+          "value": "https://desktop.docker.com/linux/main/amd64/139021/docker-desktop-4.28.0-x86_64.pkg.tar.zst"
         },
         {
           "name": "Start and Enable docker.service",
@@ -257,7 +257,7 @@
         {
           "name": "Docker Desktop",
           "type": "local-package",
-          "value": "https://desktop.docker.com/linux/main/amd64/137060/docker-desktop-4.28.0-amd64.deb"
+          "value": "https://desktop.docker.com/linux/main/amd64/139021/docker-desktop-4.28.0-amd64.deb"
         },
         {
           "name": "Start and Enable docker.service",
@@ -500,7 +500,7 @@
         {
           "name": "Docker Desktop",
           "type": "local-package",
-          "install_value": "https://desktop.docker.com/linux/main/amd64/137060/docker-desktop-4.28.0-x86_64.rpm",
+          "install_value": "https://desktop.docker.com/linux/main/amd64/139021/docker-desktop-4.28.0-x86_64.rpm",
           "check_value": "docker-desktop",
           "remove_value": "docker-desktop"
         },
@@ -662,7 +662,7 @@
         {
           "name": "Docker Desktop",
           "type": "local-package",
-          "value": "https://desktop.docker.com/linux/main/amd64/137060/docker-desktop-4.28.0-amd64.deb"
+          "value": "https://desktop.docker.com/linux/main/amd64/139021/docker-desktop-4.28.0-amd64.deb"
         },
         {
           "name": "Start and Enable docker.service",
