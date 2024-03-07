@@ -1,18 +1,25 @@
 from time import sleep
 import requests
 
-def internet_connection():
-    try:
-        requests.get("https://www.google.com/", timeout=5)
-        return True
-    except requests.ConnectionError:
-        return False    
-def check_connection():
-    if internet_connection():
-        print("The Internet is connected.")
+def check_linux_package_manager_connection(distribution):
+    package_manager_urls = {
+        "ubuntu": "https://packages.ubuntu.com/",
+        "fedora": "https://apps.fedoraproject.org/packages/",
+        "debian": "https://packages.debian.org/",
+        "arch": "https://archlinux.org/packages/",
+    }
 
+    if distribution in package_manager_urls:
+        url = package_manager_urls[distribution]
+        try:
+            requests.get(url, timeout=5)
+            print(f"{distribution.capitalize()} package manager is connected.")
+        except requests.ConnectionError:
+            print(f"{distribution.capitalize()} package manager is not connected.")
+            sleep(5)
+            exit(1)
     else:
-        print("The Internet is not connected.")
+        print(f"Unsupported distribution: {distribution}")
         sleep(5)
         exit(1)
 

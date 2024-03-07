@@ -1,6 +1,7 @@
 import curses
 import json
 import os
+from time import sleep
 from __get_os_package_manager__ import (
     get_linux_distribution,
     identify_distribution,
@@ -332,8 +333,9 @@ def main(window):
                                 "{} installing\n".format(entity),
                             )
                             get_linux_package_manager(
-                                linux_distribution, entity, hide_output, 'install'
+                                linux_distribution, entity, hide_output, 'remove'
                             )
+                            sleep(3)
                     curses.reset_prog_mode()
                     window.clear()
                     window.refresh()
