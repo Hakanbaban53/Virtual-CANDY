@@ -24,21 +24,22 @@ def fedora_package_manager(packages, hide_output, action):
                     stderr=subprocess.PIPE,
                     check=True,
                 )
-                print(result.stderr.decode("utf-8").lower())
-                # Check if the package is not installed based on the error message
-                if "Error" in result.stderr.decode("utf-8").lower():
-                    if action == "install":
-                        print(check_value, "not installed. Installing...")
-                        package_installer(data, hide)
-                    elif action == "remove":
-                        print(check_value, "Not installed. Skipping...")
+                if result.returncode != 0:
+                    error_message = result.stderr.decode("utf-8").lower()
 
-                else:
-                    if action == "install":
-                        print(check_value, "was installed. Skipping...")
-                    elif action == "remove":
-                        print(check_value, "removing...")
-                        package_remover(data, hide)
+                    # Check if the package is not installed based on the error message
+                    if "error" in error_message:
+                        if action == "install":
+                            print(check_value, "not installed. Installing...")
+                            package_installer(data, hide)
+                        elif action == "remove":
+                            print(check_value, "Not installed. Skipping...")
+                    else:
+                        if action == "install":
+                            print(check_value, "was installed. Skipping...")
+                        elif action == "remove":
+                            print(check_value, "removing...")
+                            package_remover(data, hide)
 
             elif package_type == "get-keys":
                 for path_keys in check_script:
