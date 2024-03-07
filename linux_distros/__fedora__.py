@@ -23,9 +23,9 @@ def fedora_package_manager(packages, hide_output, action):
                         stderr=subprocess.PIPE,
                         check=True,
                     )
-
+                    print(result.stderr.decode("utf-8").lower())
                     # Check if the package is not installed based on the error message
-                    if "error" in result.stderr.decode("utf-8").lower():
+                    if "Error" in result.stderr.decode("utf-8").lower():
                         if action == "install":
                             print(packages_to_check, "not installed. Installing...")
                             package_installer(data, hide)
@@ -48,17 +48,30 @@ def fedora_package_manager(packages, hide_output, action):
 
                     # Check if the value is not in the output
                     if value not in result.stdout.decode("utf-8"):
-                        print(packages_to_check, "not installed. Installing...")
-                        package_installer(data, hide)
+                        if action == "install":
+                            print(packages_to_check, "not installed. Installing...")
+                            package_installer(data, hide)
+                        elif action == "remove":
+                            print(packages_to_check, "Not installed. Skipping...")
 
                     else:
-                        print(packages_to_check, "was installed. Skipping...")
+                        if action == "install":
+                            print(packages_to_check, "was installed. Skipping...")
+                        elif action == "remove":
+                            package_remover(data, hide)
 
                 else:
-                    package_installer(data, hide)
+                    if action == "install":
+                        package_installer(data, hide)
+                    elif action == "remove":
+                        package_remover(data, hide)
 
-            except subprocess.CalledProcessError:
-                package_installer(data, hide)
+
+            except subprocess.CalledProcessError as e:
+                if action == "install":
+                    package_installer(data, hide)
+                elif action == "remove":
+                    package_remover(data, hide)
 
 
 def package_installer(data, hide):

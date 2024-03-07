@@ -289,6 +289,16 @@
 
   "fedora": [
     {
+      "name":"Test",
+      "values":[
+        {
+          "name":"Test",
+          "type":"install-package",
+          "value":"virt-install"
+        }
+      ]
+    },
+    {
       "name": "Enable_Rpm_Fusion",
       "values": [
         {
