@@ -24,16 +24,8 @@ def fedora_package_manager(packages, hide_output, action):
                     stderr=subprocess.PIPE,
                     check=True,
                 )
-                print(result.stderr.decode("utf-8").lower())
                 # Check if the package is not installed based on the error message
-                if "Error" in result.stderr.decode("utf-8").lower():
-                    if action == "install":
-                        print(check_value, "not installed. Installing...")
-                        package_installer(data, hide)
-                    elif action == "remove":
-                        print(check_value, "Not installed. Skipping...")
-
-                else:
+                if check_value in result.stderr.decode("utf-8").lower():
                     if action == "install":
                         print(check_value, "was installed. Skipping...")
                     elif action == "remove":
