@@ -29,6 +29,7 @@ def fedora_package_manager(packages, hide_output, action):
                 if "Error" in result.stderr.decode("utf-8").lower():
                     if action == "install":
                         print(check_value, "not installed. Installing...")
+                        package_installer(data, hide)
                     elif action == "remove":
                         print(check_value, "Not installed. Skipping...")
 
@@ -37,6 +38,7 @@ def fedora_package_manager(packages, hide_output, action):
                         print(check_value, "was installed. Skipping...")
                     elif action == "remove":
                         print(check_value, "removing...")
+                        package_remover(data, hide)
 
             elif package_type == "get-keys":
                 for path_keys in check_script:
@@ -44,9 +46,17 @@ def fedora_package_manager(packages, hide_output, action):
                         print("Skipped...")
                     else:
                         if os.path.exists(path_keys):
-                            print("The file exists.")
+                            if action == "install":
+                                print(check_value, "repo key installed. Skipping...")
+                            elif action == "remove":
+                                print(check_value, " repo key removing...")
+                                package_remover(data, hide)
                         else:
-                            print("The file does not exist.")
+                            if action == "install":
+                                print(check_value, "repo key installed. Installing...")
+                                package_installer(data, hide)
+                            elif action == "remove":
+                                print(check_value, "repo key not installed. Skipping...")
 
             elif package_type == "package-flatpak":
                 result = subprocess.run(
@@ -69,6 +79,7 @@ def fedora_package_manager(packages, hide_output, action):
                         print(packages_to_check, "was installed. Skipping...")
                     elif action == "remove":
                         print(packages_to_check, "removing...")
+                        package_remover(data, hide)
         except subprocess.CalledProcessError as e:
             print(e)
 
