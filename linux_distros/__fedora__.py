@@ -24,22 +24,21 @@ def fedora_package_manager(packages, hide_output, action):
                     stderr=subprocess.PIPE,
                     check=True,
                 )
-                if result.returncode != 0:
-                    error_message = result.stderr.decode("utf-8").lower()
+                print(result.stderr.decode("utf-8").lower())
+                # Check if the package is not installed based on the error message
+                if "Error" in result.stderr.decode("utf-8").lower():
+                    if action == "install":
+                        print(check_value, "not installed. Installing...")
+                        package_installer(data, hide)
+                    elif action == "remove":
+                        print(check_value, "Not installed. Skipping...")
 
-                    # Check if the package is not installed based on the error message
-                    if "error" in error_message:
-                        if action == "install":
-                            print(check_value, "not installed. Installing...")
-                            package_installer(data, hide)
-                        elif action == "remove":
-                            print(check_value, "Not installed. Skipping...")
-                    else:
-                        if action == "install":
-                            print(check_value, "was installed. Skipping...")
-                        elif action == "remove":
-                            print(check_value, "removing...")
-                            package_remover(data, hide)
+                else:
+                    if action == "install":
+                        print(check_value, "was installed. Skipping...")
+                    elif action == "remove":
+                        print(check_value, "removing...")
+                        package_remover(data, hide)
 
             elif package_type == "get-keys":
                 for path_keys in check_script:
@@ -82,7 +81,19 @@ def fedora_package_manager(packages, hide_output, action):
                         print(packages_to_check, "removing...")
                         package_remover(data, hide)
         except subprocess.CalledProcessError as e:
-            print(e)
+                # An exception is raised if the command has a non-zero exit code
+            error_message = e.stderr.decode("utf-8").lower()
+
+            # Check if the package is not installed based on the error message
+            if "error" in error_message:
+                if action == "install":
+                    print(check_value, "not installed. Installing...")
+                    package_installer(data, hide)
+                elif action == "remove":
+                    print(check_value, "Not installed. Skipping...")
+            else:
+                # Handle other errors or re-raise the exception
+                raise e
 
 
 def package_installer(data, hide):
