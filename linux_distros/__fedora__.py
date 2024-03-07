@@ -26,11 +26,17 @@ def fedora_package_manager(packages, hide_output, action):
 
                     # Check if the package is not installed based on the error message
                     if "error" in result.stderr.decode("utf-8").lower():
-                        print(packages_to_check, "not installed. Installing...")
-                        package_installer(data, hide)
+                        if action == "install":
+                            print(packages_to_check, "not installed. Installing...")
+                            package_installer(data, hide)
+                        elif action == "remove":
+                            print(packages_to_check, "Not installed. Skipping...")
 
                     else:
-                        print(packages_to_check, "was installed. Skipping...")
+                        if action == "install":
+                            print(packages_to_check, "was installed. Skipping...")
+                        elif action == "remove":
+                            package_remover(data, hide)
 
                 elif package_type == "install-package-flatpak":
                     result = subprocess.run(
