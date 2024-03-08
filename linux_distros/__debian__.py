@@ -137,15 +137,19 @@ def package_installer(data, hide):
                     "--progress=bar:force",
                     "-O",
                     f"{target_directory}local.package.deb",
-                    install_value,
+                    packages_to_install,
                 ],
                 check=True,
-                stderr=hide,
-                stdout=hide,
             )
-
             run(
-                ["sudo", "dnf", "install", "-y", f"{target_directory}local.package.deb"],
+                [
+                    "sudo",
+                    "apt-get",
+                    "--fix-broken",
+                    "install",
+                    "-y",
+                    f"{target_directory}local.package.deb",
+                ],
                 check=True,
                 stderr=hide,
                 stdout=hide,
