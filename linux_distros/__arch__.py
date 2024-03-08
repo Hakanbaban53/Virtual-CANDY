@@ -188,7 +188,7 @@ def package_remover(data, hide):
     package_type = data.get("type", "")
     remove_value = data.get("remove_value", "")
     try:
-        if package_type == "package":
+        if package_type in {"package", "AUR-package", "local-package"}:
             run(
                 ["sudo", "pacman", "-R", remove_value, "--noconfirm"],
                 check=True,

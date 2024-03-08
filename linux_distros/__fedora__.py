@@ -30,6 +30,22 @@ def fedora_package_manager(packages, hide_output, action):
                         print(f"{name} removing...")
                         package_remover(data, hide)
 
+            if package_type == "remove-package":
+                packages_to_check = check_value.split()
+                result = run(
+                    ["dnf", "list", "installed"] + packages_to_check,
+                    stdout=PIPE,
+                    stderr=PIPE,
+                    check=True,
+                )
+
+                if "error" not in result.stderr.decode("utf-8").lower():
+                    if action == "install":
+                        print(f"{name} removing...")
+                        package_remover(data, hide)
+                    elif action == "remove":
+                        print(f"{name} not installed. Skipping...")
+
             elif package_type == "get-keys":
                 for path_keys in check_script:
                     if not path_keys:
@@ -152,15 +168,6 @@ def package_installer(data, hide):
                 stdout=hide,
             )
 
-        elif package_type == "remove-package":
-            packages_to_remove = install_value.split()
-            run(
-                ["sudo", "dnf", "remove", "-y"] + packages_to_remove,
-                check=True,
-                stderr=hide,
-                stdout=hide,
-            )
-
         elif package_type == "service":
             run(
                 ["sudo", "systemctl", "restart", install_value],
@@ -215,7 +222,7 @@ def package_remover(data, hide):
     remove_value = data.get("remove_value", "")
 
     try:
-        if package_type == "package":
+        if package_type in {"package", "url-package", "local-package", "remove-package"}:
             packages_to_remove = remove_value.split()
             run(
                 ["sudo", "dnf", "remove", "-y"] + packages_to_remove,
