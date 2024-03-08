@@ -137,7 +137,7 @@ def package_installer(data, hide):
                     "--progress=bar:force",
                     "-O",
                     f"{target_directory}local.package.deb",
-                    packages_to_install,
+                    install_value,
                 ],
                 check=True,
             )
