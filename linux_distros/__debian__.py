@@ -136,26 +136,23 @@ def package_installer(data, hide):
                     "--show-progress",
                     "--progress=bar:force",
                     "-O",
-                    "local.package.deb",
+                    f"{target_directory}local.package.deb",
                     install_value,
                 ],
-                cwd=target_directory,
                 check=True,
                 stderr=hide,
                 stdout=hide,
             )
 
             run(
-                ["sudo", "dnf", "install", "-y", "local.package.deb"],
-                cwd=target_directory,
+                ["sudo", "dnf", "install", "-y", f"{target_directory}local.package.deb"],
                 check=True,
                 stderr=hide,
                 stdout=hide,
             )
 
             run(
-                ["sudo", "rm", "-f", "local.package.deb"],
-                cwd=target_directory,
+                ["sudo", "rm", "-f", f"{target_directory}local.package.deb"],
                 check=True,
                 stderr=hide,
                 stdout=hide,
