@@ -1,94 +1,105 @@
-from os import getenv
-import subprocess
+import os
+from subprocess import run, PIPE, CalledProcessError
+from os.path import exists
 
 
-def arch_package_manager(packages, hide_output):
-    if hide_output:
-        devnull = open("/dev/null", "w")
-        hide = devnull
-    else:
-        hide = None
+def arch_package_manager(packages, hide_output, action):
+    hide = open(os.devnull, "w") if hide_output else None
 
     for data in packages:
-        value = data.get("value", "")
-        type = data.get("type", "")
+        name = data.get("name", "")
+        check_value = data.get("check_value", "")
+        package_type = data.get("type", "")
 
         try:
-            if type == "install-package":
-                packages_to_check = value.split()
-                result = subprocess.run(
+            if package_type in {"package", "AUR-package", "local-package"}:
+                packages_to_check = check_value.split()
+                result = run(
                     ["pacman", "-Q"] + packages_to_check,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
+                    stdout=PIPE,
+                    stderr=PIPE,
                     check=True,
                 )
 
-                # Check if the package is not installed based on the error message
-                if "error" in result.stderr.decode("utf-8"):
-                    print(packages_to_check, "not installed. Installing...")
-                    installer(data, hide)
+                if "error" not in result.stderr.decode("utf-8").lower():
+                    if action == "install":
+                        print(f"{name} was installed. Skipping...")
+                    elif action == "remove":
+                        print(f"{name} removing...")
+                        package_remover(data, hide)
+
+            elif package_type in {"service", "group"}:
+                if action == "install":
+                    print(f"{name} service/group (re)instaling...")
+                    package_installer(data, hide)
+                elif action == "remove":
+                    print("Skipping the service/group...")
+
+            elif package_type == "package-flatpak":
+                result = run(["flatpak", "list"], stdout=PIPE, stderr=PIPE, check=True)
+
+                if check_value not in result.stdout.decode("utf-8"):
+                    if action == "install":
+                        print(f"{name} not installed. Installing...")
+                        package_installer(data, hide)
+                    elif action == "remove":
+                        print(f"{name} Not installed. Skipping...")
+
                 else:
-                    print(packages_to_check, "was installed. Skipping...")
+                    if action == "install":
+                        print(f"{name} was installed. Skipping...")
+                    elif action == "remove":
+                        print(f"{name} removing...")
+                        package_remover(data, hide)
 
-            elif type == "install-package-flatpak":
-                result = subprocess.run(
-                    ["flatpak", "list"],
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    check=True,
-                )
+        except CalledProcessError as e:
+            error_message = e.stderr.decode("utf-8").lower()
 
-                # Check if the value is not in the output
-                if value not in result.stdout.decode("utf-8"):
-                    print(value, "not installed. Installing...")
-                    installer(data, hide)
-
-                else:
-                    print(value, "was installed. Skipping...")
-
+            if "error" in error_message:
+                if action == "install":
+                    print(f"{name} not installed. Installing...")
+                    package_installer(data, hide)
+                elif action == "remove":
+                    print(f"{name} Not installed. Skipping...")
             else:
-                installer(data, hide)
-
-        except subprocess.CalledProcessError:
-            installer(data, hide)
+                raise e
 
 
-def installer(data, hide):
-    current_user = getenv("USER")
+def package_installer(data, hide):
+    current_user = os.getenv("USER")
     target_directory = f"/home/{current_user}/"
-    name = data.get("name", "")
-    type = data.get("type", "")
-    value = data.get("value", "")
+    package_type = data.get("type", "")
+    install_value = data.get("install_value", "")
     try:
-        if type == "install-package":
-            subprocess.run(
-                ["sudo", "pacman", "-S", value, "--noconfirm"],
+        if package_type == "package":
+            run(
+                ["sudo", "pacman", "-S", install_value, "--noconfirm"],
                 check=True,
                 stderr=hide,
                 stdout=hide,
             )
 
         elif type == "local-package":
-            subprocess.run(
+            run(
                 [
                     "wget",
                     "--show-progress",
                     "--progress=bar:force",
                     "-O",
-                    f"{target_directory}package.pkg.tar.zst",
-                    value,
+                    "local.package.pkg.tar.zst",
+                    install_value,
                 ],
                 cwd=target_directory,
                 check=True,
                 stderr=hide,
                 stdout=hide,
             )
-            subprocess.run(
+            run(
                 [
                     "sudo",
                     "pacman",
                     "-U",
-                    f"{target_directory}package.pkg.tar.zst",
+                    "local.package.pkg.tar.zst",
                     "--noconfirm",
                 ],
                 cwd=target_directory,
@@ -96,39 +107,103 @@ def installer(data, hide):
                 stderr=hide,
                 stdout=hide,
             )
-
-        elif type == "install-service":
-            subprocess.run(["sudo", "systemctl", "restart", value])
-            subprocess.run(["sudo", "systemctl", "enable", value])
-
-        elif type == "add-group":
-            subprocess.run(["sudo", "usermod", "-aG", value, current_user])
-
-        elif type == "add-repo-flathub":
-            subprocess.run(
-                ["sudo", "flatpak", "remote-add", "--if-not-exists", "flathub", value]
+            run(
+                ["sudo", "rm", "-f", "local.package.pkg.tar.zst"],
+                cwd=target_directory,
+                check=True,
+                stderr=hide,
+                stdout=hide,
             )
 
-        elif type == "install-package-flatpak":
-            subprocess.run(["sudo", "flatpak", "install", "-y", value])
+        elif package_type == "service":
+            run(
+                ["sudo", "systemctl", "restart", install_value],
+                check=True,
+                stderr=hide,
+                stdout=hide,
+            )
+            run(
+                ["sudo", "systemctl", "enable", install_value],
+                check=True,
+                stderr=hide,
+                stdout=hide,
+            )
+
+        elif package_type == "group":
+            run(
+                ["sudo", "usermod", "-aG", install_value, current_user],
+                check=True,
+                stderr=hide,
+                stdout=hide,
+            )
+
+        elif package_type == "repo-flathub":
+            run(
+                [
+                    "sudo",
+                    "flatpak",
+                    "remote-add",
+                    "--if-not-exists",
+                    "flathub",
+                    install_value,
+                ],
+                check=True,
+                stderr=hide,
+                stdout=hide,
+            )
+
+        elif package_type == "package-flatpak":
+            run(
+                ["sudo", "flatpak", "install", "-y", install_value],
+                check=True,
+                stderr=hide,
+                stdout=hide,
+            )
 
         elif type == "install-package-AUR-git":
-            repository_directory = f"{target_directory}/{value}"
-            subprocess.run(
-                ["git", "clone", f"https://aur.archlinux.org/{value}.git"],
+            repository_directory = f"{target_directory}/{install_value}"
+            run(
+                ["git", "clone", f"https://aur.archlinux.org/{install_value}.git"],
                 cwd=target_directory,
             )
-            subprocess.run(
+            run(
                 ["makepkg", "-si", "--noconfirm"],
                 cwd=repository_directory,
                 check=True,
                 stderr=hide,
                 stdout=hide,
             )
-            subprocess.run(["makepkg", "--clean"], cwd=repository_directory)
+            run(
+                ["makepkg", "--clean"],
+                cwd=repository_directory,
+                check=True,
+                stderr=hide,
+                stdout=hide,
+            )
 
-    except subprocess.CalledProcessError as err:
+    except CalledProcessError as err:
         print(f"An error occurred: {err}")
 
-def remover():
-    print("Remover Working.")
+
+def package_remover(data, hide):
+    package_type = data.get("type", "")
+    remove_value = data.get("remove_value", "")
+    try:
+        if package_type == "package":
+            run(
+                ["sudo", "pacman", "-S", remove_value, "--noconfirm"],
+                check=True,
+                stderr=hide,
+                stdout=hide,
+            )
+        
+        elif package_type == "package-flatpak":
+            run(
+                ["sudo", "flatpak", "remove", "-y", remove_value],
+                check=True,
+                stderr=hide,
+                stdout=hide,
+            )
+
+    except CalledProcessError as err:
+        print(f"An error occurred: {err}")

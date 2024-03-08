@@ -47,6 +47,13 @@ def fedora_package_manager(packages, hide_output, action):
                         elif action == "remove":
                             print(f"{name} repo key not installed. Skipping...")
 
+            elif package_type in {"service", "group"}:
+                        if action == "install":
+                            print(f"{name} service/group (re)instaling...")
+                            package_installer(data, hide)
+                        elif action == "remove":
+                            print("Skipping the service/group...")
+
             elif package_type == "package-flatpak":
                 result = run(["flatpak", "list"], stdout=PIPE, stderr=PIPE, check=True)
 
@@ -155,7 +162,6 @@ def package_installer(data, hide):
             )
 
         elif package_type == "service":
-            print(f"{install_value} service setting up...")
             run(
                 ["sudo", "systemctl", "restart", install_value],
                 check=True,
@@ -170,7 +176,6 @@ def package_installer(data, hide):
             )
 
         elif package_type == "group":
-            print(f"{install_value} adding to group...")
             run(
                 ["sudo", "usermod", "-aG", install_value, current_user],
                 check=True,
