@@ -159,7 +159,7 @@ def package_installer(data, hide):
                 stdout=hide,
             )
 
-        elif package_type == "install-package-AUR-git":
+        elif package_type == "AUR-package":
             repository_directory = f"{target_directory}/{install_value}"
             run(
                 ["git", "clone", f"https://aur.archlinux.org/{install_value}.git"],

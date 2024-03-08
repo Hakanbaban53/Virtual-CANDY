@@ -79,13 +79,6 @@
           "remove_value": "virtualbox"
         },
         {
-          "name": "Virtualbox Host Modules Arch",
-          "type": "package",
-          "install_value": "virtualbox-host-modules-arch",
-          "check_value": "virtualbox-host-modules-arch",
-          "remove_value": "virtualbox-host-modules-arch"
-        },
-        {
           "name": "Virtual Box Extensions",
           "type": "AUR-package",
           "install_value": "virtualbox-ext-oracle",
