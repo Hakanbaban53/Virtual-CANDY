@@ -1,7 +1,7 @@
 import subprocess
 from time import sleep
 
-dependencies = []
+dependencies = ['requests']
 
 
 def check_dependencies(dependencies):

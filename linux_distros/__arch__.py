@@ -1,6 +1,5 @@
 import os
 from subprocess import run, PIPE, CalledProcessError
-from os.path import exists
 
 
 def arch_package_manager(packages, hide_output, action):
@@ -79,7 +78,7 @@ def package_installer(data, hide):
                 stdout=hide,
             )
 
-        elif type == "local-package":
+        elif package_type == "local-package":
             run(
                 [
                     "wget",
@@ -160,7 +159,7 @@ def package_installer(data, hide):
                 stdout=hide,
             )
 
-        elif type == "install-package-AUR-git":
+        elif package_type == "install-package-AUR-git":
             repository_directory = f"{target_directory}/{install_value}"
             run(
                 ["git", "clone", f"https://aur.archlinux.org/{install_value}.git"],
@@ -191,7 +190,7 @@ def package_remover(data, hide):
     try:
         if package_type == "package":
             run(
-                ["sudo", "pacman", "-S", remove_value, "--noconfirm"],
+                ["sudo", "pacman", "-R", remove_value, "--noconfirm"],
                 check=True,
                 stderr=hide,
                 stdout=hide,
