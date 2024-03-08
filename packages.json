@@ -257,8 +257,16 @@
             "sudo apt update",
             "sudo apt install linux-headers-$(uname -r) dkms -y"
           ],
-          "check_script": ["/etc/apt/sources.list.d/virtualbox.list"],
-          "remove_script": ["sudo rm -rf /etc/apt/sources.list.d/virtualbox.list"]
+          "check_script": [
+            "/etc/apt/sources.list.d/virtualbox.list",
+            "/etc/apt/trusted.gpg.d/vbox.gpg",
+            "/etc/apt/trusted.gpg.d/oracle_vbox.gpg"
+          ],
+          "remove_script": [
+            "sudo rm -rf /etc/apt/sources.list.d/virtualbox.list",
+            "sudo rm -rf /etc/apt/trusted.gpg.d/vbox.gpg",
+            "sudo rm -rf /etc/apt/trusted.gpg.d/oracle_vbox.gpg"
+          ]
         },
         {
           "name": "Virtual Box",
@@ -320,8 +328,14 @@
             "echo \"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian $(. /etc/os-release && echo \"$VERSION_CODENAME\") stable\" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null",
             "sudo apt-get update"
           ],
-          "check_script": ["/etc/apt/sources.list.d/docker.list"],
-          "remove_script": ["sudo rm -rf /etc/apt/sources.list.d/docker.list"]
+          "check_script": [
+            "/etc/apt/sources.list.d/docker.list",
+            "/etc/apt/keyrings/docker.asc"
+          ],
+          "remove_script": [
+            "sudo rm -rf /etc/apt/sources.list.d/docker.list",
+            "sudo rm -rf /etc/apt/keyrings/docker.asc"
+          ]
         },
         {
           "name": "Remove Old Docker Cli",

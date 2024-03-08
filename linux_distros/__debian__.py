@@ -7,6 +7,13 @@ from os.path import exists
 def debian_package_manager(packages, hide_output, action):
     hide = open(os.devnull, "w") if hide_output else None
 
+    run(
+        ["sudo", "apt", "update"],
+        check=True,
+        stderr=hide,
+        stdout=hide,
+    )
+
     for data in packages:
         name = data.get("name", "")
         check_value = data.get("check_value", "")
