@@ -5,48 +5,66 @@
       "values": [
         {
           "name": "Visual Studio Code",
-          "type": "install-package-AUR-git",
-          "value": "visual-studio-code-bin"
+          "type": "AUR-package",
+          "install_value": "visual-studio-code-bin",
+          "check_value": "visual-studio-code-bin",
+          "remove_value": "visual-studio-code-bin"
         },
         {
           "name": "Github Desktop",
-          "type": "install-package-AUR-git",
-          "value": "github-desktop-bin"
+          "type": "AUR-package",
+          "install_value": "github-desktop-bin",
+          "check_value": "github-desktop-bin",
+          "remove_value": "github-desktop-bin"
         },
         {
           "name": "Steam",
-          "type": "install-package",
-          "value": "steam"
+          "type": "package",
+          "install_value": "steam",
+          "check_value": "steam",
+          "remove_value": "steam"
         },
         {
           "name": "Discord",
-          "type": "install-package",
-          "value": "discord"
+          "type": "package",
+          "install_value": "discord",
+          "check_value": "discord",
+          "remove_value": "discord"
         },
         {
           "name": "Vlc",
-          "type": "install-package",
-          "value": "vlc"
+          "type": "package",
+          "install_value": "vlc",
+          "check_value": "vlc",
+          "remove_value": "vlc"
         },
         {
           "name": "Easyeffects",
-          "type": "install-package",
-          "value": "easyeffects"
+          "type": "package",
+          "install_value": "easyeffects",
+          "check_value": "easyeffects",
+          "remove_value": "easyeffects"
         },
         {
           "name": "Calf",
-          "type": "install-package",
-          "value": "calf"
+          "type": "package",
+          "install_value": "calf",
+          "check_value": "calf",
+          "remove_value": "calf"
         },
         {
           "name": "Wine",
-          "type": "install-package",
-          "value": "wine"
+          "type": "package",
+          "install_value": "wine",
+          "check_value": "wine",
+          "remove_value": "wine"
         },
         {
           "name": "Google Chrome Stable",
-          "type": "install-package-AUR-git",
-          "value": "google-chrome"
+          "type": "AUR-package",
+          "install_value": "google-chrome",
+          "check_value": "google-chrome",
+          "remove_value": "google-chrome"
         }
       ]
     },
@@ -55,23 +73,29 @@
       "values": [
         {
           "name": "Virtual Box",
-          "type": "install-package",
-          "value": "virtualbox"
+          "type": "package",
+          "install_value": "virtualbox",
+          "check_value": "virtualbox",
+          "remove_value": "virtualbox"
         },
         {
           "name": "Virtualbox Host Modules Arch",
-          "type": "install-package",
-          "value": "virtualbox-host-modules-arch"
+          "type": "package",
+          "install_value": "virtualbox-host-modules-arch",
+          "check_value": "virtualbox-host-modules-arch",
+          "remove_value": "virtualbox-host-modules-arch"
         },
         {
           "name": "Virtual Box Extensions",
-          "type": "install-package-AUR-git",
-          "value": "virtualbox-ext-oracle"
+          "type": "AUR-package",
+          "install_value": "virtualbox-ext-oracle",
+          "check_value": "virtualbox-ext-oracle",
+          "remove_value": "virtualbox-ext-oracle"
         },
         {
           "name": "Add User to vboxusers Group",
-          "type": "add-group",
-          "value": "vboxusers"
+          "type": "group",
+          "install_value": "vboxusers"
         }
       ]
     },
@@ -79,21 +103,29 @@
     {
       "name": "Qemu_and_VM_Manager",
       "values": [
-        { "name": "Qemu", "type": "install-package", "value": "qemu-full" },
+        { 
+          "name": "Qemu", 
+          "type": "package", 
+          "install_value": "qemu-full",
+          "check_value": "qemu-full",
+          "remove_value": "qemu-full"
+         },
         {
           "name": "Qemu-KVM GUI Manager",
-          "type": "install-package",
-          "value": "virt-manager"
+          "type": "package",
+          "install_value": "virt-manager",
+          "check_value": "virt-manager",
+          "remove_value": "virt-manager"
         },
         {
           "name": "Start and Enable libvirtd.service",
-          "type": "install-service",
-          "value": "libvirtd.service"
+          "type": "service",
+          "install_value": "libvirtd.service"
         },
         {
           "name": "Add User to libvirt Group.",
-          "type": "add-group",
-          "value": "libvirt"
+          "type": "group",
+          "install_value": "libvirt"
         }
       ]
     },
@@ -101,22 +133,36 @@
     {
       "name": "Docker_CLI_and_Docker_Desktop",
       "values": [
-        { "name": "Docker Cli", "type": "install-package", "value": "docker" },
-        { "name": "Wget", "type": "install-package", "value": "wget" },
+        { 
+          "name": "Docker Cli", 
+          "type": "package", 
+          "install_value": "docker",
+          "check_value": "docker",
+          "remove_value": "docker"
+        },
+        { 
+          "name": "Wget", 
+          "type": "package", 
+          "install_value": "wget",
+          "check_value": "wget",
+          "remove_value": ""
+        },
         {
           "name": "Docker Desktop",
           "type": "local-package",
-          "value": "https://desktop.docker.com/linux/main/amd64/139021/docker-desktop-4.28.0-x86_64.pkg.tar.zst"
+          "install_value": "https://desktop.docker.com/linux/main/amd64/139021/docker-desktop-4.28.0-x86_64.pkg.tar.zst",
+          "check_value": "docker-desktop",
+          "remove_value": "docker-desktop"
         },
         {
           "name": "Start and Enable docker.service",
-          "type": "install-service",
-          "value": "docker.service"
+          "type": "service",
+          "install_value": "docker.service"
         },
         {
           "name": "Start and Enable docker.socket",
-          "type": "install-service",
-          "value": "docker.socket"
+          "type": "service",
+          "install_value": "docker.socket"
         }
       ]
     },
@@ -124,18 +170,32 @@
     {
       "name": "Podman_and_Podman_Desktop",
       "values": [
-        { "name": "Flatpak", "type": "install-package", "value": "flatpak" },
+        {
+          "name": "Flatpak",
+          "type": "package",
+          "install_value": "flatpak",
+          "check_value": "flatpak",
+          "remove_value": ""
+        },
         {
           "name": "Flathub",
-          "type": "add-repo-flathub",
-          "value": "https://dl.flathub.org/repo/flathub.flatpakrepo"
+          "type": "repo-flathub",
+          "install_value": "https://dl.flathub.org/repo/flathub.flatpakrepo"
         },
 
-        { "name": "Podman Cli", "type": "install-package", "value": "podman" },
+        {
+          "name": "Podman Cli",
+          "type": "package",
+          "install_value": "podman",
+          "check_value": "podman",
+          "remove_value": "podman"
+        },
         {
           "name": "Podman Desktop",
-          "type": "install-package-flatpak",
-          "value": "io.podman_desktop.PodmanDesktop"
+          "type": "package-flatpak",
+          "install_value": "io.podman_desktop.PodmanDesktop",
+          "check_value": "io.podman_desktop.PodmanDesktop",
+          "remove_value": "io.podman_desktop.PodmanDesktop"
         }
       ]
     }
