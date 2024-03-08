@@ -623,6 +623,7 @@
           "type": "service",
           "install_value": "docker"
         }
+        
       ]
     },
 
@@ -661,92 +662,124 @@
   ],
 
   "ubuntu": [
-    {
-      "name": "My_Apps",
-      "values": [
-        {
-          "name": "Visual Studio Code Repository",
-          "type": "get-keys",
-          "script": [
-            "sudo apt-get install wget gpg",
-            "wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg",
-            "sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg",
-            "sudo sh -c 'echo \"deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main\" > /etc/apt/sources.list.d/vscode.list'",
-            "rm -f packages.microsoft.gpg",
-            "sudo apt update"
-          ]
-        },
-        {
-          "name": "Visual Studio Code",
-          "type": "install-package",
-          "value": "code"
-        },
-        {
-          "name": "GitHub Desktop Repository",
-          "type": "get-keys",
-          "script": [
-            "sudo apt install wget software-properties-common",
-            "wget -qO - https://apt.packages.shiftkey.dev/gpg.key | gpg --dearmor | sudo tee /usr/share/keyrings/shiftkey-packages.gpg > /dev/null",
-            "sudo sh -c 'echo \"deb [arch=amd64 signed-by=/usr/share/keyrings/shiftkey-packages.gpg] https://apt.packages.shiftkey.dev/ubuntu/ any main\" > /etc/apt/sources.list.d/shiftkey-packages-desktop.list'",
-            "sudo apt update"
-          ]
-        },
-        {
-          "name": "Github Desktop",
-          "type": "install-package",
-          "value": "github-desktop"
-        }
-      ]
-    },
-    {
-      "name": "VirtualBox-7.0",
-      "values": [
-        {
-          "name": "VirtualBox Repository",
-          "type": "get-keys",
-          "script": [
-            "sudo apt install curl wget gnupg2 lsb-release -y",
-            "curl -fsSL https://www.virtualbox.org/download/oracle_vbox_2016.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/vbox.gpg",
-            "curl -fsSL https://www.virtualbox.org/download/oracle_vbox.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/oracle_vbox.gpg",
-            "echo \"deb [arch=amd64] http://download.virtualbox.org/virtualbox/debian $(lsb_release -cs) contrib\" | sudo tee /etc/apt/sources.list.d/virtualbox.list",
-            "sudo apt update",
-            "sudo apt install linux-headers-$(uname -r) dkms -y"
-          ]
-        },
-        {
-          "name": "Virtual Box",
-          "type": "install-package",
-          "value": "virtualbox-7.0"
-        },
-        {
-          "name": "Add User to vboxusers Group",
-          "type": "add-group",
-          "value": "vboxusers"
-        }
-      ]
-    },
-
-    {
-      "name": "Qemu_and_VM_Manager",
-      "values": [
-        { "name": "Qemu", "type": "install-package", "value": "qemu-system" },
-        {
-          "name": "Qemu-KVM GUI Manager",
-          "type": "install-package",
-          "value": "virt-manager"
-        },
-        {
-          "name": "Start and Enable libvirtd.service",
-          "type": "install-service",
-          "value": "libvirtd.service"
-        },
-        {
-          "name": "Add User to libvirt Group.",
-          "type": "add-group",
-          "value": "libvirt"
-        }
-      ]
-    },
+      {
+        "name": "My_Apps",
+        "values": [
+          {
+            "name": "Visual Studio Code Repository",
+            "type": "get-keys",
+            "install_script": [
+              "sudo apt-get update",
+              "sudo apt-get install wget gpg -y",
+              "wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg",
+              "sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg",
+              "sudo sh -c 'echo \"deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main\" > /etc/apt/sources.list.d/vscode.list'",
+              "rm -f packages.microsoft.gpg",
+              "sudo apt-get update"
+            ],
+            "check_script": ["/etc/apt/sources.list.d/vscode.list"],
+            "remove_script": ["sudo rm -rf /etc/apt/sources.list.d/vscode.list"]
+          },
+          {
+            "name": "Visual Studio Code",
+            "type": "package",
+            "install_value": "code",
+            "check_value": "code", 
+            "remove_value": "code"
+          },
+          {
+            "name": "GitHub Desktop Repository",
+            "type": "get-keys",
+            "install_script": [
+              "sudo apt-get update",
+              "sudo apt install wget software-properties-common -y",
+              "wget -qO - https://apt.packages.shiftkey.dev/gpg.key | gpg --dearmor | sudo tee /usr/share/keyrings/shiftkey-packages.gpg > /dev/null",
+              "sudo sh -c 'echo \"deb [arch=amd64 signed-by=/usr/share/keyrings/shiftkey-packages.gpg] https://apt.packages.shiftkey.dev/ubuntu/ any main\" > /etc/apt/sources.list.d/shiftkey-packages-desktop.list'",
+              "sudo apt-get update"
+            ],
+            "check_script": ["/etc/apt/sources.list.d/shiftkey-packages-desktop.list"],
+            "remove_script": ["sudo rm -rf /etc/apt/sources.list.d/shiftkey-packages-desktop.list"]
+          },
+          {
+            "name": "Github Desktop",
+            "type": "package",
+            "install_value": "github-desktop",
+            "check_value": "github-desktop", 
+            "remove_value": "github-desktop"
+          }
+        ]
+      },
+      {
+        "name": "VirtualBox-7.0",
+        "values": [
+          {
+            "name": "VirtualBox Repository",
+            "type": "get-keys",
+            "install_script": [
+              "sudo apt-get update",
+              "sudo apt install wget gnupg2 lsb-release -y",
+              "curl -fsSL https://www.virtualbox.org/download/oracle_vbox_2016.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/vbox.gpg",
+              "curl -fsSL https://www.virtualbox.org/download/oracle_vbox.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/oracle_vbox.gpg",
+              "echo \"deb [arch=amd64] http://download.virtualbox.org/virtualbox/debian $(lsb_release -cs) contrib\" | sudo tee /etc/apt/sources.list.d/virtualbox.list",
+              "sudo apt update",
+              "sudo apt install linux-headers-$(uname -r) dkms -y"
+            ],
+            "check_script": [
+              "/etc/apt/sources.list.d/virtualbox.list",
+              "/etc/apt/trusted.gpg.d/vbox.gpg",
+              "/etc/apt/trusted.gpg.d/oracle_vbox.gpg"
+            ],
+            "remove_script": [
+              "sudo rm -rf /etc/apt/sources.list.d/virtualbox.list",
+              "sudo rm -rf /etc/apt/trusted.gpg.d/vbox.gpg",
+              "sudo rm -rf /etc/apt/trusted.gpg.d/oracle_vbox.gpg"
+            ]
+          },
+          {
+            "name": "Virtual Box",
+            "type": "package",
+            "install_value": "virtualbox-7.0",
+            "check_value": "virtualbox-7.0", 
+            "remove_value": "virtualbox-7.0"
+          },
+          {
+            "name": "Add User to vboxusers Group",
+            "type": "group",
+            "install_value": "vboxusers"
+          }
+        ]
+      },
+  
+      {
+        "name": "Qemu_and_VM_Manager",
+        "values": [
+          { 
+            "name": "Qemu", 
+            "type": "package", 
+            "install_value": "qemu-system",
+            "check_value": "qemu-system", 
+            "remove_value": "qemu-system"
+          },
+          {
+            "name": "Qemu-KVM GUI Manager",
+            "type": "package",
+            "install_value": "virt-manager",
+            "check_value": "virt-manager", 
+            "remove_value": "virt-manager"
+          },
+          {
+            "name": "Start and Enable libvirtd.service",
+            "type": "service",
+            "install_value": "libvirtd.service"
+          },
+          {
+            "name": "Add User to libvirt Group.",
+            "type": "group",
+            "install_value": "libvirt"
+          }
+        ]
+      },
+  
 
     {
       "name": "Docker_CLI_and_Docker_Desktop",
@@ -754,29 +787,43 @@
         {
           "name": "Docker Repository",
           "type": "get-keys",
-          "script": [
+          "install_script": [
             "sudo apt-get install ca-certificates curl -y",
             "sudo install -d -m 0755 /etc/apt/keyrings",
             "sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc",
             "sudo chmod a+r /etc/apt/keyrings/docker.asc",
             "echo \"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo \"$VERSION_CODENAME\") stable\" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null",
             "sudo apt-get update"
+          ],
+          "check_script": [
+            "/etc/apt/sources.list.d/docker.list",
+            "/etc/apt/keyrings/docker.asc"
+          ],
+          "remove_script": [
+            "sudo rm -rf /etc/apt/sources.list.d/docker.list",
+            "sudo rm -rf /etc/apt/keyrings/docker.asc"
           ]
         },
         {
           "name": "Remove Old Docker Cli",
           "type": "remove-package",
-          "value": "docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc"
+          "install_value": "docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc",
+          "check_value": "docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc", 
+          "remove_value": "docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc"
         },
         {
           "name": "Install new Docker Cli",
-          "type": "install-package",
-          "value": "docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin"
+          "type": "package",
+          "install_value": "docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin",
+          "check_value": "docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin", 
+          "remove_value": "docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin"
         },
         {
           "name": "Docker Desktop",
           "type": "local-package",
-          "value": "https://desktop.docker.com/linux/main/amd64/139021/docker-desktop-4.28.0-amd64.deb"
+          "install_value": "https://desktop.docker.com/linux/main/amd64/139021/docker-desktop-4.28.0-amd64.deb",
+          "check_value": "docker-desktop", 
+          "remove_value": "docker-desktop"
         },
         {
           "name": "Start and Enable docker.service",
@@ -794,17 +841,32 @@
     {
       "name": "Podman_and_Podman_Desktop",
       "values": [
-        { "name": "Flatpak", "type": "install-package", "value": "flatpak" },
+        {
+          "name": "Flatpak",
+          "type": "package",
+          "install_value": "flatpak",
+          "check_value": "flatpak",
+          "remove_value": ""
+        },
         {
           "name": "Flathub",
-          "type": "add-repo-flathub",
-          "value": "https://dl.flathub.org/repo/flathub.flatpakrepo"
+          "type": "repo-flathub",
+          "install_value": "https://dl.flathub.org/repo/flathub.flatpakrepo"
         },
-        { "name": "Podman Cli", "type": "install-package", "value": "podman" },
+
+        {
+          "name": "Podman Cli",
+          "type": "package",
+          "install_value": "podman",
+          "check_value": "podman",
+          "remove_value": "podman"
+        },
         {
           "name": "Podman Desktop",
-          "type": "install-package-flatpak",
-          "value": "io.podman_desktop.PodmanDesktop"
+          "type": "package-flatpak",
+          "install_value": "io.podman_desktop.PodmanDesktop",
+          "check_value": "io.podman_desktop.PodmanDesktop",
+          "remove_value": "io.podman_desktop.PodmanDesktop"
         }
       ]
     }

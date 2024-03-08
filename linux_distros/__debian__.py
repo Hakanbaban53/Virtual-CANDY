@@ -1,5 +1,4 @@
 import os
-import subprocess
 from subprocess import run, PIPE, CalledProcessError
 from os.path import exists
 
@@ -78,7 +77,7 @@ def debian_package_manager(packages, hide_output, action):
                             package_remover(data, hide)
                     else:
                         if action == "install":
-                            print(f"{name} repo key installed. Installing...")
+                            print(f"{name} repo key not installed. Installing...")
                             package_installer(data, hide)
                         elif action == "remove":
                             print(f"{name} repo key not installed. Skipping...")

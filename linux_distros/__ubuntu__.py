@@ -1,105 +1,153 @@
-from os import getenv
-import subprocess
+import os
+from subprocess import run, PIPE, CalledProcessError
+from os.path import exists
 
 
-def ubuntu_package_manager(packages, hide_output):
-    if hide_output:
-        devnull = open("/dev/null", "w")
-        hide = devnull
-    else:
-        hide = None
+def ubuntu_package_manager(packages, hide_output, action):
+    hide = open(os.devnull, "w") if hide_output else None
 
-    subprocess.run(["sudo", "apt", "update"])
+    run(
+        ["sudo", "apt", "update"],
+        check=True,
+        stderr=hide,
+        stdout=hide,
+    )
 
     for data in packages:
-        value = data.get("value", "")
-        type = data.get("type", "")
+        name = data.get("name", "")
+        check_value = data.get("check_value", "")
+        package_type = data.get("type", "")
+        check_script = data.get("check_script", [])
 
         try:
-            if type == "install-package":
-                packages_to_check = value.split()
-                result = subprocess.run(
+            if package_type in {"package", "url-package", "local-package"}:
+                packages_to_check = check_value.split()
+                result = run(
                     ["apt", "list", "--installed"] + packages_to_check,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
+                    stdout=PIPE,
+                    stderr=PIPE,
                     check=True,
                 )
-
-                # Check if any of the packages is not installed based on the output
                 not_installed_packages = [
                     package for package in packages_to_check if package not in result.stdout.decode("utf-8")
                 ]
 
                 if not_installed_packages:
-                    print(not_installed_packages, "not installed. Installing...")
-                    type_of_action(data, hide)
+                    if action == "install":
+                        print(f"{name} not installed. Installing...")
+                        package_installer(data, hide)
+                    elif action == "remove":
+                        print(f"{name} Not installed. Skipping...")
                 else:
-                    print(packages_to_check, "was installed. Skipping...")
+                    if action == "install":
+                        print(f"{name} was installed. Skipping...")
+                    elif action == "remove":
+                        print(f"{name} removing...")
+                        package_remover(data, hide)
 
-            elif type == "install-package-flatpak":
-                result = subprocess.run(
-                    ["flatpak", "list"],
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
+            if package_type == "remove-package":
+                packages_to_check = check_value.split()
+                result = run(
+                    ["apt", "list", "--installed"] + packages_to_check,
+                    stdout=PIPE,
+                    stderr=PIPE,
                     check=True,
                 )
 
-                # Check if the value is not in the output
-                if value not in result.stdout.decode("utf-8"):
-                    print(value, "not installed. Installing...")
-                    type_of_action(data, hide)
+                not_installed_packages = [
+                    package for package in packages_to_check if package not in result.stdout.decode("utf-8")
+                ]
+
+                if not_installed_packages:
+                    if action == "install":
+                        print(f"{name} Removing...")
+                        package_installer(data, hide)
+                    elif action == "remove":
+                        print(f"{name} Not installed. Skipping...")
+
+            elif package_type == "get-keys":
+                for path_keys in check_script:
+                    if not path_keys:
+                        print("Skipped...")
+                    elif exists(path_keys):
+                        if action == "install":
+                            print(f"{name} repo key installed. Skipping...")
+                        elif action == "remove":
+                            print(f"{name} repo key removing...")
+                            package_remover(data, hide)
+                    else:
+                        if action == "install":
+                            print(f"{name} repo key not installed. Installing...")
+                            package_installer(data, hide)
+                        elif action == "remove":
+                            print(f"{name} repo key not installed. Skipping...")
+
+            elif package_type in {"service", "group"}:
+                        if action == "install":
+                            print(f"{name} service/group (re)instaling...")
+                            package_installer(data, hide)
+                        elif action == "remove":
+                            print("Skipping the service/group...")
+
+            elif package_type == "package-flatpak":
+                result = run(["flatpak", "list"], stdout=PIPE, stderr=PIPE, check=True)
+
+                if check_value not in result.stdout.decode("utf-8"):
+                    if action == "install":
+                        print(f"{name} not installed. Installing...")
+                        package_installer(data, hide)
+                    elif action == "remove":
+                        print(f"{name} Not installed. Skipping...")
 
                 else:
-                    print(value, "was installed. Skipping...")
+                    if action == "install":
+                        print(f"{name} was installed. Skipping...")
+                    elif action == "remove":
+                        print(f"{name} removing...")
+                        package_remover(data, hide)
 
-            else:
-                type_of_action(data, hide)
-
-        except subprocess.CalledProcessError:
-            type_of_action(data, hide)
+        except CalledProcessError as e:
+            print(e)
 
 
-def type_of_action(data, hide):
-
-    current_user = getenv("USER")
+def package_installer(data, hide):
+    current_user = os.getenv("USER")
     target_directory = f"/home/{current_user}/"
-    name = data.get("name", "")
-    type = data.get("type", "")
-    value = data.get("value", "")
+    package_type = data.get("type", "")
+    install_value = data.get("install_value", "")
+
     try:
-        if type == "install-package":
-            packages_to_install = value.split()  # Split the package names into a list
-            subprocess.run(
+        if package_type == "package":
+            packages_to_install = install_value.split()
+            run(
                 ["sudo", "apt", "install", "-y"] + packages_to_install,
                 check=True,
                 stderr=hide,
                 stdout=hide,
             )
 
-        elif type == "get-keys":
-            keys = data["script"]
-            for command in keys:
+        elif package_type == "get-keys":
+            install_script = data.get("install_script", [])
+            for command in install_script:
                 try:
-                    subprocess.run(
-                        command, shell=True, check=True, stderr=hide, stdout=hide
-                    )
-                    print("Script executed successfully.")
-                except subprocess.CalledProcessError as err:
+                    run(command, shell=True, check=True, stderr=hide, stdout=hide)
+                except CalledProcessError as err:
                     print(f"An error occurred: {err}")
 
-        elif type == "local-package":
-            subprocess.run(
+
+        elif package_type == "local-package":
+            run(
                 [
                     "wget",
                     "--show-progress",
                     "--progress=bar:force",
                     "-O",
                     f"{target_directory}local.package.deb",
-                    value,
+                    install_value,
                 ],
                 check=True,
             )
-            subprocess.run(
+            run(
                 [
                     "sudo",
                     "apt-get",
@@ -113,37 +161,91 @@ def type_of_action(data, hide):
                 stdout=hide,
             )
 
-        elif type == "remove-package":
-            packages_to_remove = value.split()  # Split the package names into a list
-            subprocess.run(
+            run(
+                ["sudo", "rm", "-f", f"{target_directory}local.package.deb"],
+                check=True,
+                stderr=hide,
+                stdout=hide,
+            )
+
+        elif package_type == "service":
+            run(
+                ["sudo", "systemctl", "restart", install_value],
+                check=True,
+                stderr=hide,
+                stdout=hide,
+            )
+            run(
+                ["sudo", "systemctl", "enable", install_value],
+                check=True,
+                stderr=hide,
+                stdout=hide,
+            )
+
+        elif package_type == "group":
+            run(
+                ["sudo", "usermod", "-aG", install_value, current_user],
+                check=True,
+                stderr=hide,
+                stdout=hide,
+            )
+
+        elif package_type == "repo-flathub":
+            run(
+                [
+                    "sudo",
+                    "flatpak",
+                    "remote-add",
+                    "--if-not-exists",
+                    "flathub",
+                    install_value,
+                ],
+                check=True,
+                stderr=hide,
+                stdout=hide,
+            )
+
+        elif package_type == "package-flatpak":
+            run(
+                ["sudo", "flatpak", "install", "-y", install_value],
+                check=True,
+                stderr=hide,
+                stdout=hide,
+            )
+
+    except CalledProcessError as err:
+        print(f"An error occurred: {err}")
+
+
+def package_remover(data, hide):
+    package_type = data.get("type", "")
+    remove_value = data.get("remove_value", "")
+
+    try:
+        if package_type in {"package", "url-package", "local-package", "remove-package"}:
+            packages_to_remove = remove_value.split()
+            run(
                 ["sudo", "apt", "remove", "-y"] + packages_to_remove,
                 check=True,
                 stderr=hide,
                 stdout=hide,
             )
 
-        elif type == "install-service":
-            subprocess.run(["sudo", "systemctl", "restart", value])
-            subprocess.run(["sudo", "systemctl", "enable", value])
-
-        elif type == "add-group":
-            subprocess.run(["sudo", "usermod", "-aG", value, current_user])
-
-        elif type == "add-repo-flathub":
-            print(f"\n{name} repo adding to flatpak")
-            subprocess.run(
-                ["sudo", "flatpak", "remote-add", "--if-not-exists", "flathub", value],
-                check=True,
-            )
-
-        elif type == "install-package-flatpak":
-            print(f"\n{name} flatpak Package(s) insalling")
-            subprocess.run(
-                ["sudo", "flatpak", "install", "-y", value],
+        elif package_type == "package-flatpak":
+            run(
+                ["sudo", "flatpak", "remove", "-y", remove_value],
                 check=True,
                 stderr=hide,
                 stdout=hide,
             )
 
-    except subprocess.CalledProcessError as err:
+        elif package_type == "get-keys":
+            remove_script = data.get("remove_script", [])
+            for command in remove_script:
+                try:
+                    run(command, shell=True, check=True, stderr=hide, stdout=hide)
+                except CalledProcessError as err:
+                    print(f"An error occurred: {err}")
+
+    except CalledProcessError as err:
         print(f"An error occurred: {err}")
