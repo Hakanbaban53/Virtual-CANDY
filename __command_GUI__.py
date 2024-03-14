@@ -34,6 +34,24 @@ def terminal_size_error(window):
     curses.delay_output(3000)
     exit(1)
 
+def info_messages(window, move_keys, select_keys):
+    curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
+
+    height, width = window.getmaxyx()
+    # Add the error message with the new color pair
+    window.addstr(
+        1,
+        1,
+        "[Press Ctrl + C to exit program]",
+        curses.color_pair(2) | curses.A_BOLD,
+    )
+
+    window.addstr(
+        height - 2,
+        width // 2 - 28,
+        f"Use {move_keys} arrow keys the move. Select with {select_keys} key.",
+    )
+
 
 def get_user_input_string(window, prompt, y, x):
     curses.echo()
@@ -53,8 +71,6 @@ def get_user_input_string(window, prompt, y, x):
             else:
                 window.addstr(y + 1, x + 1, "Please give valid input : ")
                 window.refresh()
-
-
 
 
 def packages(linux_distro):
@@ -84,6 +100,8 @@ def print_menu(window, selected_row, relevant_packages, selected_status):
     window.clear()
     height, width = window.getmaxyx()
 
+    info_messages(window, "Up/Down", "Tab")
+
     start_idx = max(0, selected_row - MAX_DISPLAYED_PACKAGES + 1)
     end_idx = min(len(relevant_packages), start_idx + MAX_DISPLAYED_PACKAGES)
 
@@ -102,7 +120,7 @@ def print_menu(window, selected_row, relevant_packages, selected_status):
     # Display scrollbar or arrow if there are more packages
     if start_idx > 0:
         window.addstr(
-            height // 2 - MAX_DISPLAYED_PACKAGES // 2 - 1, width // 2 - 6, "---- ^ ----"
+            height // 2 - MAX_DISPLAYED_PACKAGES // 2 - 2, width // 2 - 6, "---- ^ ----"
         )
     if end_idx < len(relevant_packages):
         window.addstr(
@@ -116,17 +134,23 @@ def selections(window, prompt, x, y, options):
     selected_option = 0
     curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLACK)
 
+    height, width = window.getmaxyx()
+
+    info_messages(window, "Left/Right", "Enter")
+
     while True:
-        window.addstr(y, x, prompt, curses.color_pair(1) | curses.A_BOLD | curses.A_UNDERLINE)
+        window.addstr(
+            y, x, prompt, curses.color_pair(1) | curses.A_BOLD | curses.A_UNDERLINE
+        )
 
         # Display options side by side
         for i, option in enumerate(options):
             width = x + 16 * i
             height = y + 2
             if i == selected_option:
-                window.addstr(height, width, '[' + option + ']', curses.A_REVERSE)
+                window.addstr(height, width, "[" + option + "]", curses.A_REVERSE)
             else:
-                window.addstr(height, width, '[' + option + ']')
+                window.addstr(height, width, "[" + option + "]")
 
         window.refresh()
 
@@ -139,104 +163,120 @@ def selections(window, prompt, x, y, options):
             selected_option = (selected_option + 1) % len(options)
         elif key in [curses.KEY_ENTER, 10, 13]:
             return options[selected_option]
-        
-def get_hide_output_choice(window):
-    x = curses.COLS // 2 - 20
-    y = curses.LINES // 2 + 3
-    prompt = "Do you want to hide package manager output?"
-    selection = selections(
-        window,
-        prompt,
-        x,
-        y,
-        OPTIONS_YES_NO,
-    )
 
-    if selection == "Yes":
-        return True
-    elif selection == "No":
-        return False
+
+def get_hide_output_choice(window):
+    try:
+        x = curses.COLS // 2 - 20
+        y = curses.LINES // 2 + 3
+        prompt = "Do you want to hide package manager output?"
+        selection = selections(
+            window,
+            prompt,
+            x,
+            y,
+            OPTIONS_YES_NO,
+        )
+
+        if selection == "Yes":
+            return True
+        elif selection == "No":
+            return False
+    except curses.error:
+        terminal_size_error(window)
 
 
 def install_or_remove(window):
-    window.clear()
-    prompt = "Please select the action:"
-    x = curses.COLS // 2 - 13
-    y = curses.LINES // 2 - 2
-    return selections(window, prompt, x, y, OPTIONS_INSTALL_REMOVE)
+    try:
+        window.clear()
+        prompt = "Please select the action:"
+        x = curses.COLS // 2 - 13
+        y = curses.LINES // 2 - 2
+        return selections(window, prompt, x, y, OPTIONS_INSTALL_REMOVE)
+    except curses.error:
+        terminal_size_error(window)
+
 
 def get_linux_distro(window):
 
-    window.addstr(
-        curses.LINES // 2 - 5, curses.COLS // 2 - 20, "Getting Linux Distro:"
-    )
-    linux_distribution = get_linux_distribution()
-    linux_distro_id = identify_distribution()
+    try:
+        window.addstr(
+            curses.LINES // 2 - 5, curses.COLS // 2 - 20, "Getting Linux Distro:"
+        )
+        linux_distribution = get_linux_distribution()
+        linux_distro_id = identify_distribution()
 
-    window.addstr(
-        curses.LINES // 2 - 4,
-        curses.COLS // 2 - 20,
-        "Linux Distro: {}".format(linux_distribution),
-    )
-    window.addstr(
-        curses.LINES // 2 - 3,
-        curses.COLS // 2 - 20,
-        "Distro ID: {}".format(linux_distro_id),
-    )
+        window.addstr(
+            curses.LINES // 2 - 4,
+            curses.COLS // 2 - 20,
+            "Linux Distro: {}".format(linux_distribution),
+        )
+        window.addstr(
+            curses.LINES // 2 - 3,
+            curses.COLS // 2 - 20,
+            "Distro ID: {}".format(linux_distro_id),
+        )
 
-    prompt = "Is that true?"
-    x = curses.COLS // 2 - 20
-    y = curses.LINES // 2 - 1
-    selected_option = selections(window, prompt, x, y, OPTIONS_YES_NO)
+        prompt = "Is that true?"
+        x = curses.COLS // 2 - 20
+        y = curses.LINES // 2 - 1
+        selected_option = selections(window, prompt, x, y, OPTIONS_YES_NO)
 
-    warning_line = (
+        warning_line = (
             curses.LINES // 2 - 2
         )  # Line where the warning message is displayed
 
-    if selected_option == "Yes":
-        return identify_distribution()
-    elif selected_option == "No":
-        while True:
-            linux_distribution = get_user_input_string(
-                window,
-                "Please enter the distro: ",
-                curses.LINES // 2 + 3,
-                curses.COLS // 2 - 20,
-            )
-            linux_distribution_lower = linux_distribution.lower()
+        if selected_option == "Yes":
+            return identify_distribution()
 
-            window = curses.initscr()
-            window.clrtoeol()
-            window.refresh()
-            window.addstr(
-                curses.LINES // 2 - 3,
-                curses.COLS // 2 - 20,
-                "Entered Linux Distro: {}".format(linux_distribution),
-            )
+        elif selected_option == "No":
+            while True:
+                linux_distribution = get_user_input_string(
+                    window,
+                    "Please enter the distro: ",
+                    curses.LINES // 2 + 3,
+                    curses.COLS // 2 - 20,
+                )
+                linux_distribution_lower = linux_distribution.lower()
 
-            for distro, keywords in known_distros.items():
-                if any(keyword in linux_distribution_lower for keyword in keywords):
-                    # Clear the warning message line when the correct key is entered
-                    window.move(warning_line, 0)
-                    window.clrtoeol()
-                    return distro
-                elif not any(keyword in linux_distribution_lower for keyword in keywords):
-                    curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
+                window = curses.initscr()
+                window.clrtoeol()
+                window.refresh()
+                window.addstr(
+                    curses.LINES // 2 - 3,
+                    curses.COLS // 2 - 20,
+                    "Entered Linux Distro: {}".format(linux_distribution),
+                )
 
-                    # Add the error message with the new color pair
-                    window.addstr(
-                        warning_line,
-                        curses.COLS // 2 - 20,
-                        "{} distro not found. Please try again.".format(linux_distribution),
-                        curses.color_pair(2) | curses.A_BOLD
-                    )
+                for distro, keywords in known_distros.items():
+                    if any(keyword in linux_distribution_lower for keyword in keywords):
+                        # Clear the warning message line when the correct key is entered
+                        window.move(warning_line, 0)
+                        window.clrtoeol()
+                        return distro
+                    elif not any(
+                        keyword in linux_distribution_lower for keyword in keywords
+                    ):
+                        curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
+
+                        # Add the error message with the new color pair
+                        window.addstr(
+                            warning_line,
+                            curses.COLS // 2 - 20,
+                            "{} distro not found. Please try again.".format(
+                                linux_distribution
+                            ),
+                            curses.color_pair(2) | curses.A_BOLD,
+                        )
+    except curses.error:
+        terminal_size_error(window)
 
 
 def main(window):
     try:
 
         curses.init_pair(5, curses.COLOR_WHITE, curses.COLOR_BLACK)
-        window.bkgd(' ', curses.color_pair(5))
+        window.bkgd(" ", curses.color_pair(5))
 
         curses.curs_set(0)
         linux_distribution = get_linux_distro(window)
@@ -272,6 +312,15 @@ def main(window):
                     for idx, status in enumerate(relevant_packages)
                     if selected_status_array[idx]
                 ]
+
+                if not selected_entities:
+                    window.addstr(1, curses.COLS // 2 - 12, "Please Select Packages!")
+                    window.addstr(3, curses.COLS // 2 - 12, "[Press any arrow key.]", curses.A_REVERSE)
+                    continue
+
+
+
+
                 window.addstr(1, curses.COLS // 2 - 21, "Selected applications :")
 
                 for idx, entity in enumerate(selected_entities):
@@ -336,7 +385,7 @@ def main(window):
         curses.delay_output(1500)
         exit(1)
     except curses.error:
-         terminal_size_error(window)
+        terminal_size_error(window)
 
 
 curses.wrapper(main)
