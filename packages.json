@@ -53,6 +53,13 @@
           "remove_value": "calf"
         },
         {
+          "name": "Linux Studio Plugins",
+          "type": "package",
+          "install_value": "lsp-plugins",
+          "check_value": "lsp-plugins",
+          "remove_value": "lsp-plugins"
+        },
+        {
           "name": "Wine",
           "type": "package",
           "install_value": "wine",

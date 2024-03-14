@@ -3,6 +3,7 @@ import json
 import os
 from time import sleep
 
+from __check_repository_connection__ import check_linux_package_manager_connection
 from __get_os_package_manager__ import (
     get_linux_distribution,
     get_linux_package_manager,
@@ -275,9 +276,6 @@ def get_linux_distro(window):
 def main(window):
     try:
 
-        curses.init_pair(5, curses.COLOR_WHITE, curses.COLOR_BLACK)
-        window.bkgd(" ", curses.color_pair(5))
-
         curses.curs_set(0)
         linux_distribution = get_linux_distro(window)
         hide_output = get_hide_output_choice(window)
@@ -318,9 +316,6 @@ def main(window):
                     window.addstr(3, curses.COLS // 2 - 12, "[Press any arrow key.]", curses.A_REVERSE)
                     continue
 
-
-
-
                 window.addstr(1, curses.COLS // 2 - 21, "Selected applications :")
 
                 for idx, entity in enumerate(selected_entities):
@@ -341,12 +336,19 @@ def main(window):
                     for idx, entity in enumerate(selected_entities):
                         window.clear()
                         window.refresh()
+
+
                         if entity in selected_entities:
                             curses.reset_shell_mode()
+
+                            if action == 'install':
+                                linux_distro_id = identify_distribution()
+                                check_linux_package_manager_connection(linux_distro_id)
+
                             window.addstr(
                                 len(selected_entities) + 4 + idx,
                                 3,
-                                "{} installing\n".format(entity),
+                                f"{entity} {action}ing\n",
                             )
                             get_linux_package_manager(
                                 linux_distribution, entity, hide_output, action

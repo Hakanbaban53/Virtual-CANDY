@@ -15,10 +15,16 @@ def app():
         if args.distribution and args.packages:
             print_info(args)
 
+            if args.action == 'install':
+                linux_distro_id = identify_distribution()
+                check_linux_package_manager_connection(linux_distro_id)
+
             for package in args.packages:
                 get_linux_package_manager(args.distribution, package, args.output, args.action)
+
         else:
             import __command_GUI__
+            
     except KeyboardInterrupt:
         print("Ctrl + C pressed.\nExiting...")
     except Exception as e:
@@ -34,6 +40,4 @@ def print_info(args):
     print("Selected Packages:", args.packages)
 
 if __name__ == "__main__":
-    linux_distro_id = identify_distribution()
-    check_linux_package_manager_connection(linux_distro_id)
     app()
