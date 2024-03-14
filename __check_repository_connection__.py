@@ -10,6 +10,7 @@ def check_linux_package_manager_connection(distribution):
     }
 
     if distribution in package_manager_urls:
+        print("Package manager checking internet connection...")
         url = package_manager_urls[distribution]
         try:
             requests.get(url, timeout=5)
