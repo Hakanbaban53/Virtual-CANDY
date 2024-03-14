@@ -23,7 +23,7 @@ def fedora_package_manager(packages, hide_output, action):
                     check=True,
                 )
 
-                if "error" not in result.stderr.decode("utf-8").lower():
+                if check_value not in result.stderr.decode("utf-8").lower():
                     if action == "install":
                         print(f"{name} was installed. Skipping...")
                     elif action == "remove":
@@ -90,7 +90,7 @@ def fedora_package_manager(packages, hide_output, action):
         except CalledProcessError as e:
             error_message = e.stderr.decode("utf-8").lower()
 
-            if "error" in error_message:
+            if check_value not in error_message:
                 if action == "install":
                     print(f"{name} not installed. Installing...")
                     package_installer(data, hide)

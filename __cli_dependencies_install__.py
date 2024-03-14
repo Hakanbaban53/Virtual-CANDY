@@ -37,18 +37,11 @@ def handle_dependencies():
     missing_packages = check_dependencies(dependencies)
 
     if missing_packages:
-        print("The following dependencies are missing:", missing_packages)
         confirmation_key = input("Do you want to install them? (Y/n): ")
-        if confirmation_key in [
-            89,
-            121,
-            10,
-            13,
-        ]:  # 'Y', 'y', Enter, Carriage Return
+        if confirmation_key.lower() in ['y', 'yes', '']:
             install_dependencies(missing_packages)
             print("All dependencies installed!")
             sleep(2)
-
         else:
             print("Operation aborted. Exiting...")
             sleep(3)

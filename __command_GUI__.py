@@ -190,7 +190,7 @@ def get_linux_distro(window):
     selected_option = selections(window, prompt, x, y, OPTIONS_YES_NO)
 
     warning_line = (
-            curses.LINES // 2 + 3
+            curses.LINES // 2 - 2
         )  # Line where the warning message is displayed
 
     if selected_option == "Yes":
@@ -205,6 +205,9 @@ def get_linux_distro(window):
             )
             linux_distribution_lower = linux_distribution.lower()
 
+            window = curses.initscr()
+            window.clrtoeol()
+            window.refresh()
             window.addstr(
                 curses.LINES // 2 - 3,
                 curses.COLS // 2 - 20,
@@ -217,6 +220,16 @@ def get_linux_distro(window):
                     window.move(warning_line, 0)
                     window.clrtoeol()
                     return distro
+                elif not any(keyword in linux_distribution_lower for keyword in keywords):
+                    curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
+
+                    # Add the error message with the new color pair
+                    window.addstr(
+                        warning_line,
+                        curses.COLS // 2 - 20,
+                        "{} distro not found. Please try again.".format(linux_distribution),
+                        curses.color_pair(2) | curses.A_BOLD
+                    )
 
 
 def main(window):
