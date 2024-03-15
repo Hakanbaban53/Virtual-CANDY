@@ -7,7 +7,8 @@
 ###
 
 <div align="center">
-  <img height="200" src="https://i.imgflip.com/65efzo.gif"  />
+  <img src="./assets/arguments.gif" style="max-width: 150px;">
+  <img src="./assets/Command_gui.gif" style="max-width: 150px;">
 </div>
 
 ###
