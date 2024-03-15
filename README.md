@@ -7,8 +7,8 @@
 ###
 
 <div align="center">
-  <img src="./assets/arguments.gif" style="max-width: 250px;">
-  <img src="./assets/Command_gui.gif" style="max-width: 250px;">
+  <img src="./assets/arguments.gif" style="max-width: 150px;">
+  <img src="./assets/Command_gui.gif" style="max-width: 150px;">
 </div>
 
 ###
