@@ -7,8 +7,8 @@
 ###
 
 <div align="center">
-  <img src="./assets/arguments.gif" style="width: 500px; height: auto:">
-  <img src="./assets/Command_gui.gif" style="width: 500px; height: auto;">
+  <img src="./assets/arguments.gif" style="width: 300px; height: auto:">
+  <img src="./assets/Command_gui.gif" style="width: 300px; height: auto;">
 </div>
 
 ###
