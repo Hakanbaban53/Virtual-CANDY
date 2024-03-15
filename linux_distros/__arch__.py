@@ -173,8 +173,8 @@ def package_installer(data, hide):
                 stdout=hide,
             )
             run(
-                ["makepkg", "--clean"],
-                cwd=repository_directory,
+                ["sudo", "rm", "-rf", install_value],
+                cwd=target_directory,
                 check=True,
                 stderr=hide,
                 stdout=hide,

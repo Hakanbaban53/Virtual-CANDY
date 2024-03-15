@@ -79,18 +79,18 @@
       "name": "VirtualBox-7.0",
       "values": [
         {
-          "name": "Virtual Box",
-          "type": "package",
-          "install_value": "virtualbox",
-          "check_value": "virtualbox",
-          "remove_value": "virtualbox"
-        },
-        {
           "name": "Virtual Box Extensions",
           "type": "AUR-package",
           "install_value": "virtualbox-ext-oracle",
           "check_value": "virtualbox-ext-oracle",
           "remove_value": "virtualbox-ext-oracle"
+        },
+        {
+          "name": "Virtual Box",
+          "type": "package",
+          "install_value": "virtualbox",
+          "check_value": "virtualbox",
+          "remove_value": "virtualbox"
         },
         {
           "name": "Add User to vboxusers Group",
