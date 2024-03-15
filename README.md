@@ -36,6 +36,31 @@
 
 ###
 
+## Folder structure
+
+```css
+ .
+├──  assets
+│  └──  preview images
+├──  functions
+│  ├──  __check_repository_connection__.py
+│  ├──  __cli_dependencies_install__.py
+│  └──  __get_os_package_manager__.py
+├──  linux_distros
+│  ├──  __arch__.py
+│  ├──  __debian__.py
+│  ├──  __fedora__.py
+│  └──  __ubuntu__.py
+├──  packages
+│  └──  packages.json
+├──  scripts
+│  ├──  __arguments__.py
+│  └──  __command_GUI__.py
+├──  README.md
+└──  app.py
+
+```
+
 <h2 align="center">Hakan İSMAİL 💙</h2>
 
 ###
