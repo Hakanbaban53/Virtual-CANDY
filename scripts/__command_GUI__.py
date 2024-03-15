@@ -3,8 +3,8 @@ import json
 import os
 from time import sleep
 
-from __check_repository_connection__ import check_linux_package_manager_connection
-from __get_os_package_manager__ import (
+from functions.__check_repository_connection__ import check_linux_package_manager_connection
+from functions.__get_os_package_manager__ import (
     get_linux_distribution,
     get_linux_package_manager,
     identify_distribution,
@@ -76,7 +76,7 @@ def get_user_input_string(window, prompt, y, x):
 
 def packages(linux_distro):
     current_directory = os.path.dirname(os.path.abspath(__file__))
-    json_file_path = os.path.join(current_directory, "packages.json")
+    json_file_path = os.path.join(current_directory, "../packages/packages.json")
 
     with open(json_file_path, "r") as json_file:
         instructions_data = json.load(json_file)
@@ -108,7 +108,7 @@ def print_menu(window, selected_row, relevant_packages, selected_status):
 
     for idx in range(start_idx, end_idx):
         status = relevant_packages[idx].replace("_", " ")
-        x = width // 2 - 20
+        x = width // 2 - 12
         y = height // 2 - MAX_DISPLAYED_PACKAGES // 2 + idx - start_idx
 
         if idx == selected_row:
@@ -202,24 +202,24 @@ def get_linux_distro(window):
 
     try:
         window.addstr(
-            curses.LINES // 2 - 5, curses.COLS // 2 - 20, "Getting Linux Distro:"
+            curses.LINES // 2 - 5, curses.COLS // 2 - 11, "Getting Linux Distro:"
         )
         linux_distribution = get_linux_distribution()
         linux_distro_id = identify_distribution()
 
         window.addstr(
             curses.LINES // 2 - 4,
-            curses.COLS // 2 - 20,
+            curses.COLS // 2 - 11,
             "Linux Distro: {}".format(linux_distribution),
         )
         window.addstr(
             curses.LINES // 2 - 3,
-            curses.COLS // 2 - 20,
+            curses.COLS // 2 - 11,
             "Distro ID: {}".format(linux_distro_id),
         )
 
         prompt = "Is that true?"
-        x = curses.COLS // 2 - 20
+        x = curses.COLS // 2 - 11
         y = curses.LINES // 2 - 1
         selected_option = selections(window, prompt, x, y, OPTIONS_YES_NO)
 
@@ -236,7 +236,7 @@ def get_linux_distro(window):
                     window,
                     "Please enter the distro: ",
                     curses.LINES // 2 + 3,
-                    curses.COLS // 2 - 20,
+                    curses.COLS // 2 - 11,
                 )
                 linux_distribution_lower = linux_distribution.lower()
 
@@ -245,7 +245,7 @@ def get_linux_distro(window):
                 window.refresh()
                 window.addstr(
                     curses.LINES // 2 - 3,
-                    curses.COLS // 2 - 20,
+                    curses.COLS // 2 - 11,
                     "Entered Linux Distro: {}".format(linux_distribution),
                 )
 
@@ -263,7 +263,7 @@ def get_linux_distro(window):
                         # Add the error message with the new color pair
                         window.addstr(
                             warning_line,
-                            curses.COLS // 2 - 20,
+                            curses.COLS // 2 - 11,
                             "{} distro not found. Please try again.".format(
                                 linux_distribution
                             ),
@@ -316,13 +316,13 @@ def main(window):
                     window.addstr(3, curses.COLS // 2 - 12, "[Press any arrow key.]", curses.A_REVERSE)
                     continue
 
-                window.addstr(1, curses.COLS // 2 - 21, "Selected applications :")
+                window.addstr(3, curses.COLS // 2 - 12, "Selected applications :")
 
                 for idx, entity in enumerate(selected_entities):
-                    window.addstr(2 + idx, curses.COLS // 2 - 21, entity)
+                    window.addstr(4 + idx, curses.COLS // 2 - 12, entity)
 
-                x = curses.COLS // 2 - 21
-                y = len(selected_entities) + 3
+                x = curses.COLS // 2 - 12
+                y = len(selected_entities) + 5
                 prompt = "Do you want to continue?"
                 selection = selections(
                     window,
@@ -333,17 +333,19 @@ def main(window):
                 )
 
                 if selection == "Yes":
+                    curses.reset_shell_mode()
+                    window.clear()
+                    window.refresh()
+
+                    if action == 'install':
+                        linux_distro_id = identify_distribution()
+                        check_linux_package_manager_connection(linux_distro_id)
+                        
                     for idx, entity in enumerate(selected_entities):
                         window.clear()
                         window.refresh()
 
-
                         if entity in selected_entities:
-                            curses.reset_shell_mode()
-
-                            if action == 'install':
-                                linux_distro_id = identify_distribution()
-                                check_linux_package_manager_connection(linux_distro_id)
 
                             window.addstr(
                                 len(selected_entities) + 4 + idx,
@@ -353,7 +355,8 @@ def main(window):
                             get_linux_package_manager(
                                 linux_distribution, entity, hide_output, action
                             )
-                            sleep(3)
+                            sleep(1)
+
                     curses.reset_prog_mode()
                     window.clear()
                     window.refresh()

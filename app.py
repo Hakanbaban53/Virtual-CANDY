@@ -1,8 +1,7 @@
-import __cli_dependencies_install__
-from __arguments__ import parse_arguments
-from __check_repository_connection__ import check_linux_package_manager_connection
-from __get_os_package_manager__ import get_linux_package_manager
-from __get_os_package_manager__ import identify_distribution
+from scripts.__arguments__ import parse_arguments
+from functions.__check_repository_connection__ import check_linux_package_manager_connection
+from functions.__get_os_package_manager__ import get_linux_package_manager
+from functions.__get_os_package_manager__ import identify_distribution
 
 
 def app():
@@ -23,7 +22,7 @@ def app():
                 get_linux_package_manager(args.distribution, package, args.output, args.action)
 
         else:
-            import __command_GUI__
+            import scripts.__command_GUI__ as __command_GUI__
             
     except KeyboardInterrupt:
         print("Ctrl + C pressed.\nExiting...")

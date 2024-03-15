@@ -37,7 +37,7 @@ def identify_distribution():
 
 def get_linux_package_manager(linux_distribution, package_name, hide_output, action):
     current_directory = os.path.dirname(os.path.abspath(__file__))
-    json_file_path = os.path.join(current_directory, "packages.json")
+    json_file_path = os.path.join(current_directory, "../packages/packages.json")
 
     with open(json_file_path, "r") as json_file:
         instructions_data = json.load(json_file)

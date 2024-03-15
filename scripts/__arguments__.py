@@ -1,5 +1,5 @@
 import argparse
-from __get_os_package_manager__ import identify_distribution
+from functions.__get_os_package_manager__ import identify_distribution
 
 def parse_arguments():
     """
