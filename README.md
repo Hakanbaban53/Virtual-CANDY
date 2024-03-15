@@ -23,9 +23,36 @@
 
 <h3 align="left">With Argumants</h3>
 
-###
+```bash
+--distribution <your_distro> #Default detect the your linux distro. If you want to another disto use this.
+-a <action> #You select the action. <install> or <remove>. Default is install.
+-o <output> #Hide or show terminal output. <silent> is hide the package manager and other outputs. <noisy> is show the terminal output. Default is <silent>.
 
-<p align="left">-o<br>-a<br>--distribtion</p>
+#EXAMPLE
+python app.py -a remove -o noisy <package_name> #This is a remove example.
+
+python app.py -a remove -o noisy VirtualBox-7.0 Qemu_and_VM_Manager #You can use more than one package. Like this.
+```
+
+<p align="left">And one more thing. Arguments is case sensitive. You need the give in the packages name in the below!</p>
+
+# Packages
+
+<details><summary>Package Names</summary>
+
+- Package names in the json and packages
+
+    <details>
+
+```json
+  My_Apps
+  VirtualBox-7.0
+  Qemu_and_VM_Manager
+  Docker_CLI_and_Docker_Desktop
+  Podman_and_Podman_Desktop
+```
+
+</details>
 
 ###
 
