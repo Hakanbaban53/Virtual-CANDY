@@ -42,14 +42,23 @@ python app.py -a remove -o noisy VirtualBox-7.0 Qemu_and_VM_Manager #You can use
 
 - Package names in the json and packages
 
-    <details>
-
-```json
-  My_Apps
-  VirtualBox-7.0
-  Qemu_and_VM_Manager
-  Docker_CLI_and_Docker_Desktop
-  Podman_and_Podman_Desktop
+```css
+🗃 .
+├── 📦 My_Apps
+│  ├── 🗋 Visual Studio Code
+│  └── 🗋 Github Desktop
+├── 📦 VirtualBox-7.0
+│  ├── 🗋 VirtualBox 7.0
+│  └── 🗋 Virtual Box Extensions
+├── 📦 Qemu_and_VM_Manager
+│  ├── 🗋 QEMU
+│  └── 🗋 Virtual Machine Manager
+├── 📦 Docker_CLI_and_Docker_Desktop
+│  ├── 🗋 Docker CLI
+│  └── 🗋 Docker Desktop
+└── 📦 Podman_and_Podman_Desktop
+   ├── 🗋 Podman CLI
+   └── 🗋 Podman Desktop
 ```
 
 </details>
@@ -61,8 +70,8 @@ python app.py -a remove -o noisy VirtualBox-7.0 Qemu_and_VM_Manager #You can use
 ###
 
 <p align="left">"python app.py" Start with default. Basic terminal UI for installer. </p>
-- Use Left/Right arrow key select "yes" or "no". Press "Enter" key for confirm..
-- Use Up/Down arrow key move eachother packager. Use "Tab" key Select/Unselect packages. Press Enter key the confirm packages.
+<p align="left">Use Left/Right arrow key select "yes" or "no". Press "Enter" key for confirm..</p>
+<p align="left">Use Up/Down arrow key move eachother packager. Use "Tab" key Select/Unselect packages. Press Enter key the confirm packages.</p>
 
 ###
 
