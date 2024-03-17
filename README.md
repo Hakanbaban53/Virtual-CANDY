@@ -74,23 +74,23 @@ python app.py -a remove -o noisy VirtualBox-7.0 Qemu_and_VM_Manager #You can use
 ```css
 🗃 .
 ├── 🖿 assets
-│  └── 🗋 preview images
+│  └── 🖻 preview images
 ├── 🖿 functions
-│  ├── 🗋 __check_repository_connection__.py
-│  ├── 🗋 __cli_dependencies_install__.py
-│  └── 🗋 __get_os_package_manager__.py
+│  ├── 🗎 __check_repository_connection__.py
+│  ├── 🗎 __cli_dependencies_install__.py
+│  └── 🗎 __get_os_package_manager__.py
 ├── 🖿 linux_distros
-│  ├── 🗋 __arch__.py
-│  ├── 🗋 __debian__.py
-│  ├── 🗋 __fedora__.py
-│  └── 🗋 __ubuntu__.py
+│  ├── 🗎 __arch__.py
+│  ├── 🗎 __debian__.py
+│  ├── 🗎 __fedora__.py
+│  └── 🗎 __ubuntu__.py
 ├── 🖿 packages
-│  └── 🗋 packages.json
+│  └── 🗎 packages.json
 ├── 🖿 scripts
-│  ├── 🗋 __arguments__.py
-│  └── 🗋 __command_GUI__.py
-├── 🗋 README.md
-└── 🗋 app.py
+│  ├── 🗎 __arguments__.py
+│  └── 🗎 __command_GUI__.py
+├── 🗎 README.md
+└── 🗎 app.py
 
 ```
 
