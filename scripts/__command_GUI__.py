@@ -3,6 +3,7 @@ import json
 import os
 from time import sleep
 
+from functions.__keyboard_interrupt__ import keyboard_interrupt
 from functions.__check_repository_connection__ import check_linux_package_manager_connection
 from functions.__get_os_package_manager__ import (
     get_linux_distribution,
@@ -24,54 +25,54 @@ known_distros = {
 }
 
 
-def terminal_size_error(window):
-    window.clear()
-    window.addstr(
+def terminal_size_error(stdscr):
+    stdscr.clear()
+    stdscr.addstr(
         curses.LINES // 2,
         curses.COLS // 2 - 32,
         "Error: Terminal size is too small. Please resize and try again.",
     )
-    window.refresh()
+    stdscr.refresh()
     curses.delay_output(3000)
     exit(1)
 
-def info_messages(window, move_keys, select_keys):
+def info_messages(stdscr, move_keys, select_keys):
     curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
 
-    height, width = window.getmaxyx()
+    height, width = stdscr.getmaxyx()
     # Add the error message with the new color pair
-    window.addstr(
+    stdscr.addstr(
         1,
         1,
         "[Press Ctrl + C to exit program]",
         curses.color_pair(2) | curses.A_BOLD,
     )
 
-    window.addstr(
+    stdscr.addstr(
         height - 2,
         width // 2 - 28,
         f"Use {move_keys} arrow keys the move. Select with {select_keys} key.",
     )
 
 
-def get_user_input_string(window, prompt, y, x):
+def get_user_input_string(stdscr, prompt, y, x):
     curses.echo()
-    window.addstr(y, x, prompt)
-    window.refresh()
+    stdscr.addstr(y, x, prompt)
+    stdscr.refresh()
     while True:
         try:
-            input_str = window.getstr().decode("utf-8")
+            input_str = stdscr.getstr().decode("utf-8")
             return input_str
         except curses.error as e:
             if e.code == curses.ERR:
                 # End of file (Ctrl+D), handle accordingly or break the loop
-                window.addstr(y + 1, x + 1, "End of input. Exiting...")
-                window.refresh()
+                stdscr.addstr(y + 1, x + 1, "End of input. Exiting...")
+                stdscr.refresh()
                 curses.delay_output(2000)
                 exit(0)
             else:
-                window.addstr(y + 1, x + 1, "Please give valid input : ")
-                window.refresh()
+                stdscr.addstr(y + 1, x + 1, "Please give valid input : ")
+                stdscr.refresh()
 
 
 def packages(linux_distro):
@@ -97,11 +98,11 @@ def initialize_selected_status(length):
     return [False] * length
 
 
-def print_menu(window, selected_row, relevant_packages, selected_status):
-    window.clear()
-    height, width = window.getmaxyx()
+def print_menu(stdscr, selected_row, relevant_packages, selected_status):
+    stdscr.clear()
+    height, width = stdscr.getmaxyx()
 
-    info_messages(window, "Up/Down", "Tab")
+    info_messages(stdscr, "Up/Down", "Tab")
 
     start_idx = max(0, selected_row - MAX_DISPLAYED_PACKAGES + 1)
     end_idx = min(len(relevant_packages), start_idx + MAX_DISPLAYED_PACKAGES)
@@ -112,35 +113,35 @@ def print_menu(window, selected_row, relevant_packages, selected_status):
         y = height // 2 - MAX_DISPLAYED_PACKAGES // 2 + idx - start_idx
 
         if idx == selected_row:
-            window.addstr(y, x - 3, "(*)" if selected_status[idx] else "( )")
-            window.addstr(y, x, status, curses.A_REVERSE)
+            stdscr.addstr(y, x - 3, "(*)" if selected_status[idx] else "( )")
+            stdscr.addstr(y, x, status, curses.A_REVERSE)
         else:
-            window.addstr(y, x - 3, "(*)" if selected_status[idx] else "( )")
-            window.addstr(y, x, status)
+            stdscr.addstr(y, x - 3, "(*)" if selected_status[idx] else "( )")
+            stdscr.addstr(y, x, status)
 
     # Display scrollbar or arrow if there are more packages
     if start_idx > 0:
-        window.addstr(
+        stdscr.addstr(
             height // 2 - MAX_DISPLAYED_PACKAGES // 2 - 2, width // 2 - 6, "---- ^ ----"
         )
     if end_idx < len(relevant_packages):
-        window.addstr(
+        stdscr.addstr(
             height // 2 + MAX_DISPLAYED_PACKAGES // 2 + 1, width // 2 - 6, "---- v ----"
         )
 
-    window.refresh()
+    stdscr.refresh()
 
 
-def selections(window, prompt, x, y, options):
+def selections(stdscr, prompt, x, y, options):
     selected_option = 0
     curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLACK)
 
-    height, width = window.getmaxyx()
+    height, width = stdscr.getmaxyx()
 
-    info_messages(window, "Left/Right", "Enter")
+    info_messages(stdscr, "Left/Right", "Enter")
 
     while True:
-        window.addstr(
+        stdscr.addstr(
             y, x, prompt, curses.color_pair(1) | curses.A_BOLD | curses.A_UNDERLINE
         )
 
@@ -149,14 +150,14 @@ def selections(window, prompt, x, y, options):
             width = x + 16 * i
             height = y + 2
             if i == selected_option:
-                window.addstr(height, width, "[" + option + "]", curses.A_REVERSE)
+                stdscr.addstr(height, width, "[" + option + "]", curses.A_REVERSE)
             else:
-                window.addstr(height, width, "[" + option + "]")
+                stdscr.addstr(height, width, "[" + option + "]")
 
-        window.refresh()
+        stdscr.refresh()
 
         # Wait for user input
-        key = window.getch()
+        key = stdscr.getch()
 
         if key == curses.KEY_LEFT:
             selected_option = (selected_option - 1) % len(options)
@@ -166,13 +167,13 @@ def selections(window, prompt, x, y, options):
             return options[selected_option]
 
 
-def get_hide_output_choice(window):
+def get_hide_output_choice(stdscr):
     try:
         x = curses.COLS // 2 - 20
         y = curses.LINES // 2 + 3
         prompt = "Do you want to hide package manager output?"
         selection = selections(
-            window,
+            stdscr,
             prompt,
             x,
             y,
@@ -184,35 +185,35 @@ def get_hide_output_choice(window):
         elif selection == "No":
             return False
     except curses.error:
-        terminal_size_error(window)
+        terminal_size_error(stdscr)
 
 
-def install_or_remove(window):
+def install_or_remove(stdscr):
     try:
-        window.clear()
+        stdscr.clear()
         prompt = "Please select the action:"
         x = curses.COLS // 2 - 13
         y = curses.LINES // 2 - 2
-        return selections(window, prompt, x, y, OPTIONS_INSTALL_REMOVE)
+        return selections(stdscr, prompt, x, y, OPTIONS_INSTALL_REMOVE)
     except curses.error:
-        terminal_size_error(window)
+        terminal_size_error(stdscr)
 
 
-def get_linux_distro(window):
+def get_linux_distro(stdscr):
 
     try:
-        window.addstr(
+        stdscr.addstr(
             curses.LINES // 2 - 5, curses.COLS // 2 - 11, "Getting Linux Distro:"
         )
         linux_distribution = get_linux_distribution()
         linux_distro_id = identify_distribution()
 
-        window.addstr(
+        stdscr.addstr(
             curses.LINES // 2 - 4,
             curses.COLS // 2 - 11,
             "Linux Distro: {}".format(linux_distribution),
         )
-        window.addstr(
+        stdscr.addstr(
             curses.LINES // 2 - 3,
             curses.COLS // 2 - 11,
             "Distro ID: {}".format(linux_distro_id),
@@ -221,7 +222,7 @@ def get_linux_distro(window):
         prompt = "Is that true?"
         x = curses.COLS // 2 - 11
         y = curses.LINES // 2 - 1
-        selected_option = selections(window, prompt, x, y, OPTIONS_YES_NO)
+        selected_option = selections(stdscr, prompt, x, y, OPTIONS_YES_NO)
 
         warning_line = (
             curses.LINES // 2 - 2
@@ -233,17 +234,17 @@ def get_linux_distro(window):
         elif selected_option == "No":
             while True:
                 linux_distribution = get_user_input_string(
-                    window,
+                    stdscr,
                     "Please enter the distro: ",
                     curses.LINES // 2 + 3,
                     curses.COLS // 2 - 11,
                 )
                 linux_distribution_lower = linux_distribution.lower()
 
-                window = curses.initscr()
-                window.clrtoeol()
-                window.refresh()
-                window.addstr(
+                stdscr = curses.initscr()
+                stdscr.clrtoeol()
+                stdscr.refresh()
+                stdscr.addstr(
                     curses.LINES // 2 - 3,
                     curses.COLS // 2 - 11,
                     "Entered Linux Distro: {}".format(linux_distribution),
@@ -252,8 +253,8 @@ def get_linux_distro(window):
                 for distro, keywords in known_distros.items():
                     if any(keyword in linux_distribution_lower for keyword in keywords):
                         # Clear the warning message line when the correct key is entered
-                        window.move(warning_line, 0)
-                        window.clrtoeol()
+                        stdscr.move(warning_line, 0)
+                        stdscr.clrtoeol()
                         return distro
                     elif not any(
                         keyword in linux_distribution_lower for keyword in keywords
@@ -261,7 +262,7 @@ def get_linux_distro(window):
                         curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
 
                         # Add the error message with the new color pair
-                        window.addstr(
+                        stdscr.addstr(
                             warning_line,
                             curses.COLS // 2 - 11,
                             "{} distro not found. Please try again.".format(
@@ -270,16 +271,16 @@ def get_linux_distro(window):
                             curses.color_pair(2) | curses.A_BOLD,
                         )
     except curses.error:
-        terminal_size_error(window)
+        terminal_size_error(stdscr)
 
 
-def main(window):
+def main(stdscr):
     try:
 
         curses.curs_set(0)
-        linux_distribution = get_linux_distro(window)
-        hide_output = get_hide_output_choice(window)
-        action = install_or_remove(window)
+        linux_distribution = get_linux_distro(stdscr)
+        hide_output = get_hide_output_choice(stdscr)
+        action = install_or_remove(stdscr)
 
         relevant_packages = packages(linux_distribution)
         selected_status_array = initialize_selected_status(len(relevant_packages))
@@ -287,10 +288,10 @@ def main(window):
         curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_WHITE)
 
         current_row = 0
-        print_menu(window, current_row, relevant_packages, selected_status_array)
+        print_menu(stdscr, current_row, relevant_packages, selected_status_array)
 
         while True:
-            key = window.getch()
+            key = stdscr.getch()
 
             if key == curses.KEY_DOWN:
                 current_row = (current_row + 1) % len(relevant_packages)
@@ -304,7 +305,7 @@ def main(window):
                 ]
 
             elif key == 10:  # Enter key
-                window.clear()
+                stdscr.clear()
                 selected_entities = [
                     status
                     for idx, status in enumerate(relevant_packages)
@@ -312,20 +313,20 @@ def main(window):
                 ]
 
                 if not selected_entities:
-                    window.addstr(1, curses.COLS // 2 - 12, "Please Select Packages!")
-                    window.addstr(3, curses.COLS // 2 - 12, "[Press any arrow key.]", curses.A_REVERSE)
+                    stdscr.addstr(1, curses.COLS // 2 - 12, "Please Select Packages!")
+                    stdscr.addstr(3, curses.COLS // 2 - 12, "[Press any arrow key.]", curses.A_REVERSE)
                     continue
 
-                window.addstr(3, curses.COLS // 2 - 12, "Selected applications :")
+                stdscr.addstr(3, curses.COLS // 2 - 12, "Selected applications :")
 
                 for idx, entity in enumerate(selected_entities):
-                    window.addstr(4 + idx, curses.COLS // 2 - 12, entity)
+                    stdscr.addstr(4 + idx, curses.COLS // 2 - 12, entity)
 
                 x = curses.COLS // 2 - 12
                 y = len(selected_entities) + 5
                 prompt = "Do you want to continue?"
                 selection = selections(
-                    window,
+                    stdscr,
                     prompt,
                     x,
                     y,
@@ -334,20 +335,20 @@ def main(window):
 
                 if selection == "Yes":
                     curses.reset_shell_mode()
-                    window.clear()
-                    window.refresh()
+                    stdscr.clear()
+                    stdscr.refresh()
 
                     if action == 'install':
                         linux_distro_id = identify_distribution()
                         check_linux_package_manager_connection(linux_distro_id)
                         
                     for idx, entity in enumerate(selected_entities):
-                        window.clear()
-                        window.refresh()
+                        stdscr.clear()
+                        stdscr.refresh()
 
                         if entity in selected_entities:
 
-                            window.addstr(
+                            stdscr.addstr(
                                 len(selected_entities) + 4 + idx,
                                 3,
                                 f"{entity} {action}ing\n",
@@ -358,39 +359,27 @@ def main(window):
                             sleep(1)
 
                     curses.reset_prog_mode()
-                    window.clear()
-                    window.refresh()
-                    window.addstr(
+                    stdscr.clear()
+                    stdscr.refresh()
+                    stdscr.addstr(
                         curses.LINES // 2,
                         curses.COLS // 2 - 21,
                         "The selected options have been implemented!",
                     )
-                    window.addstr(
+                    stdscr.addstr(
                         curses.LINES // 2 + 1,
                         curses.COLS // 2 - 37,
                         "Reboot for the installed Apps to appear in the App menu and work properly!",
                     )
-                    window.getch()
+                    stdscr.getch()
                     break
 
-            print_menu(window, current_row, relevant_packages, selected_status_array)
+            print_menu(stdscr, current_row, relevant_packages, selected_status_array)
     except KeyboardInterrupt:
-        window.clear()
-        window.addstr(
-            curses.LINES // 2,
-            curses.COLS // 2 - 14,
-            "Ctrl + C pressed. Exiting...",
-        )
-        window.addstr(
-            curses.LINES // 2 + 2,
-            curses.COLS // 2 - 3,
-            "Bye 👋",
-        )
-        window.refresh()
-        curses.delay_output(1500)
-        exit(1)
+       keyboard_interrupt() 
+       
     except curses.error:
-        terminal_size_error(window)
+        terminal_size_error(stdscr)
 
-
-curses.wrapper(main)
+def start_terminal_gui():
+    curses.wrapper(main)
