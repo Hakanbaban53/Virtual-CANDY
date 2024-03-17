@@ -70,8 +70,8 @@ python app.py -a remove -o noisy VirtualBox-7.0 Qemu_and_VM_Manager #You can use
 ###
 
 <p align="left">"python app.py" Start with default. Basic terminal UI for installer. </p>
-- Use Left/Right arrow key select "yes" or "no". Press "Enter" key for confirm..
-- Use Up/Down arrow key move eachother packager. Use "Tab" key Select/Unselect packages. Press Enter key the confirm packages.
+<p align="left">Use Left/Right arrow key select "yes" or "no". Press "Enter" key for confirm..</p>
+<p align="left">Use Up/Down arrow key move eachother packager. Use "Tab" key Select/Unselect packages. Press Enter key the confirm packages.</p>
 
 ###
 
