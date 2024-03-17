@@ -42,7 +42,7 @@ python app.py -a remove -o noisy VirtualBox-7.0 Qemu_and_VM_Manager #You can use
 
 - Package names in the json and packages
 
-```json
+```css
 🗃 .
 ├── 📦 My_Apps
 │  ├── 🗋 Visual Studio Code
