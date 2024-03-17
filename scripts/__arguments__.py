@@ -1,4 +1,5 @@
 import argparse
+from time import sleep
 from functions.__get_os_package_manager__ import identify_distribution
 
 def parse_arguments():
@@ -31,6 +32,9 @@ def parse_arguments():
 
     adjust_arguments(args)
 
+    if args.distribution and args.packages:
+        print_info(args)
+
     return args
 
 def adjust_arguments(args):
@@ -50,3 +54,13 @@ def adjust_arguments(args):
         args.output = True
     elif args.output == "noisy" or args.output == "silent":
         args.action = "install"
+
+def print_info(args):
+
+    """Print information about the selected packages and configuration."""
+
+    print("Linux Distribution:", args.distribution)
+    print("Action: Install" if args.action == "install" else "Action: Remove")
+    print("Output Mode: Silent" if args.output else "Output Mode: Noisy")
+    print("Selected Packages:", args.packages)
+    sleep(1)

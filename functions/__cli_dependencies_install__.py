@@ -48,4 +48,4 @@ def handle_dependencies():
             exit(1)
     else:
         print("All dependencies are already installed.")
-        sleep(2)
+        sleep(1)

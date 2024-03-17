@@ -13,8 +13,6 @@ def app():
 
     try:
         if args.distribution and args.packages:
-            print_info(args)
-
             if args.action == 'install':
                 linux_distro_id = identify_distribution()
                 check_linux_package_manager_connection(linux_distro_id)
@@ -30,14 +28,7 @@ def app():
     except Exception as e:
         print(f"An error occurred: {e}")
 
-def print_info(args):
 
-    """Print information about the selected packages and configuration."""
-
-    print("Linux Distribution:", args.distribution)
-    print("Action: Install" if args.action == "install" else "Action: Remove")
-    print("Output Mode: Silent" if args.output else "Output Mode: Noisy")
-    print("Selected Packages:", args.packages)
 
 if __name__ == "__main__":
     handle_dependencies()
