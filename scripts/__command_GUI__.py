@@ -1,6 +1,5 @@
 import curses
-import json
-import os
+from packages.packages import packages_data
 from time import sleep
 
 from functions.__keyboard_interrupt__ import keyboard_interrupt
@@ -76,20 +75,13 @@ def get_user_input_string(stdscr, prompt, y, x):
 
 
 def packages(linux_distro):
-    current_directory = os.path.dirname(os.path.abspath(__file__))
-    json_file_path = os.path.join(current_directory, "../packages/packages.json")
-
-    with open(json_file_path, "r") as json_file:
-        instructions_data = json.load(json_file)
-
-    if linux_distro in instructions_data:
-        package_list = instructions_data[linux_distro]
+    if linux_distro in packages_data:
+        package_list = packages_data[linux_distro]
         relevant_packages = []
 
-        for idx, package in enumerate(package_list):
+        for package in package_list:
             relevant_packages.append(package.get("name", ""))
         return relevant_packages
-
     else:
         return []
 

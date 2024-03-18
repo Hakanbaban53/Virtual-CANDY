@@ -4,6 +4,7 @@ from linux_distros.__arch__ import arch_package_manager
 from linux_distros.__debian__ import debian_package_manager
 from linux_distros.__fedora__ import fedora_package_manager
 from linux_distros.__ubuntu__ import ubuntu_package_manager
+from packages.packages import packages_data
 
 
 
@@ -35,17 +36,13 @@ def identify_distribution():
         return 'Not running on Linux'
 
 
+
+
 def get_linux_package_manager(linux_distribution, package_name, hide_output, action):
-    current_directory = os.path.dirname(os.path.abspath(__file__))
-    json_file_path = os.path.join(current_directory, "../packages/packages.json")
-
-    with open(json_file_path, "r") as json_file:
-        instructions_data = json.load(json_file)
-
     package_manager_func = globals().get(f"{linux_distribution.lower()}_package_manager")
 
     if package_manager_func:
-        package_data_ref = instructions_data.get(linux_distribution, [])
+        package_data_ref = packages_data.get(linux_distribution, [])
         for data in package_data_ref:
             name = data.get("name", "")
             if package_name in name:
