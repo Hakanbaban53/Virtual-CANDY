@@ -40,8 +40,13 @@ def handle_dependencies():
         confirmation_key = input("Do you want to install them? (Y/n): ")
         if confirmation_key.lower() in ['y', 'yes', '', 'Y']:
             install_dependencies(missing_packages)
-            print("All dependencies installed!")
+            print("\n" + "=" * 40)
+            print("All dependencies installed successfully!")
+            print("Please relaunch the application to continue.")
+            print("=" * 40 + "\n")
             sleep(2)
+            exit(1)
+
         else:
             print("Operation aborted. Exiting...")
             sleep(3)
