@@ -2,7 +2,6 @@ import curses
 from packages.packages import packages_data
 from time import sleep
 
-from functions.__keyboard_interrupt__ import keyboard_interrupt
 from functions.__check_repository_connection__ import check_linux_package_manager_connection
 from functions.__get_os_package_manager__ import (
     get_linux_distribution,
@@ -368,7 +367,20 @@ def main(stdscr):
 
             print_menu(stdscr, current_row, relevant_packages, selected_status_array)
     except KeyboardInterrupt:
-       keyboard_interrupt() 
+        stdscr.clear()
+        stdscr.addstr(
+        curses.LINES // 2,
+        curses.COLS // 2 - 14,
+        "Ctrl + C pressed. Exiting...",
+        )
+        stdscr.addstr(
+            curses.LINES // 2 + 2,
+            curses.COLS // 2 - 3,
+            "Bye 👋",
+        )
+        stdscr.refresh()
+        curses.delay_output(1500)
+        exit(1)
        
     except curses.error:
         terminal_size_error(stdscr)
