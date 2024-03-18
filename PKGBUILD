@@ -19,11 +19,8 @@ b2sums=('SKIP')
 package() {
   cd "$srcdir/Container-and-Virtualization-Installer"
 
-  # Remove EXTERNALLY-MANAGED file
+  # Remove EXTERNALLY-MANAGED file for pip
   rm -f "$pkgdir/usr/lib/python3.11/EXTERNALLY-MANAGED"
-  
-  # Delete preview images
-  rm -rf "$pkgdir/assets"
 
   # Install Python packages
   python -m pip install --no-deps --prefix="$pkgdir/usr" requests pyinstaller
@@ -32,7 +29,6 @@ package() {
   # Build the Python project with PyInstaller
   pyinstaller --onefile app.py --distpath="$pkgdir/usr/bin" --name=vcandy
   
-  # Optionally, you can remove any unwanted files/directories here
   
   # Fix permissions if necessary
   chmod +x "$pkgdir/usr/bin/vcandy"
