@@ -30,10 +30,10 @@ Homepage: https://github.com/Hakanbaban53/Container-and-Virtualization-Installer
 
 Package: vcandy
 Architecture: any
-Depends: ${misc:Depends}, python3-pip, ${python3:Depends}
+Depends: \${misc:Depends}, python3-pip, \${python3:Depends}
 Description: A python CLI application that installs automatic container and virtualization tools for many Linux systems.
 EOF
 
 # Build the package
-dpkg-deb --root-owner-group --build debian/vcandy
+dpkg-deb --root-owner-group --build debian/vcandy/DEBIAN
 
