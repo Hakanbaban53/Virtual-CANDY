@@ -28,21 +28,6 @@ Description: A python CLI application that installs automatic container and virt
  vcandy is a command-line tool that simplifies the installation process of container and virtualization tools on Linux systems.
 EOF
 
-# Create the rules file
-cat <<EOF > debian/rules
-#!/usr/bin/make -f
-
-%:
-	dh \$@
-
-override_dh_auto_install:
-	dh_auto_install
-	python3 -m pip install --no-deps --prefix=\$(CURDIR)/debian/vcandy/usr requests pyinstaller
-	rm \$(CURDIR)/debian/vcandy/usr/lib/python3.11/EXTERNALLY-MANAGED
-    pyinstaller --onefile app.py --distpath=\$(CURDIR)/debian/vcandy/usr/bin --name=vcandy
-
-EOF
-
 cat <<EOF > debian/changelog
 vcandy (0.1-1) UNRELEASED; urgency=medium
 
