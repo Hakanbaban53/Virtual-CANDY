@@ -10,16 +10,16 @@ rm -rf rpmbuild
 mkdir -p rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
 
 # Install Python pip
-sudo yum install python3-pip -y
+sudo dnf install python3-pip -y
 
 # Install requests and PyInstaller using pip
-pip3 install --no-cache-dir --prefix=/usr/local requests pyinstaller
+pip3 install --no-cache-dir requests pyinstaller
 
 # Build the Python project with PyInstaller
-pyinstaller --onefile app.py
+pyinstaller --onefile app.py --name=vcandy
 
 # Move the binary file to the SOURCES directory
-mv dist/app rpmbuild/SOURCES/vcandy
+mv vcandy rpmbuild/SOURCES/vcandy
 
 # Create the spec file
 cat <<EOF > rpmbuild/SPECS/vcandy.spec
