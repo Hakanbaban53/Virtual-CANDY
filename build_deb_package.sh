@@ -9,6 +9,10 @@ rm -rf vcandy
 # Install dependencies
 sudo apt install python3-pip debhelper -y
 
+sudo rm -f /usr/lib/python3.11/EXTERNALLY-MANAGED
+
+pip install --no-cache-dir requests pyinstaller setuptools
+
 # Create the necessary directories
 mkdir -p vcandy/bin
 
