@@ -17,12 +17,17 @@ pip3 install --no-cache-dir requests pyinstaller setuptools
 # Build the Python project with PyInstaller
 pyinstaller --onefile app.py --name=vcandy
 
+mkdir vcandy-0.1
+
 # Move the binary file to the SOURCES directory
-mv dist/vcandy ~/rpmbuild/SOURCES/vcandy
+mv dist/vcandy vcandy-0.1
+
+tar --create --file vcandy-0.1.tar.gz vcandy-0.1
 
 # Create the source tarball and directory
-mkdir -p ~/rpmbuild/SOURCES/vcandy-0.1
-tar --create --file ~/rpmbuild/SOURCES/vcandy-0.1.tar.gz ~/rpmbuild/SOURCES/vcandy
+
+mv vcandy-0.1.tar.gz ~/rpmbuild/SOURCES
+
 
 # Create the spec file
 cat <<EOF > ~/rpmbuild/SPECS/vcandy.spec
