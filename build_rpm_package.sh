@@ -21,6 +21,10 @@ pyinstaller --onefile app.py --name=vcandy
 # Move the binary file to the SOURCES directory
 mv dist/vcandy rpmbuild/SOURCES/vcandy
 
+# Create the source tarball and directory
+mkdir -p rpmbuild/SOURCES/vcandy-0.1
+tar --create --file rpmbuild/SOURCES/vcandy-0.1.tar.gz -C rpmbuild/SOURCES vcandy
+
 # Create the spec file
 cat <<EOF > rpmbuild/SPECS/vcandy.spec
 Summary: A python CLI application that installs automatic container and virtualization tools for many Linux systems
@@ -52,9 +56,6 @@ cp %{SOURCE0} %{buildroot}/usr/bin/vcandy
 * Thu Mar 19 2024 Hakan İSMAİL <hakanismail53@gmail.com> - 0.1-1
 - Initial release
 EOF
-
-# Create the source tarball
-tar --create --file rpmbuild/SOURCES/vcandy-0.1.tar.gz rpmbuild/SOURCES/vcandy
 
 # Build the RPM package
 rpmbuild -ba rpmbuild/SPECS/vcandy.spec
