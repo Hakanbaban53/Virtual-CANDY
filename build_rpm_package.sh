@@ -9,6 +9,12 @@ rm -rf rpmbuild
 # Create necessary directories
 mkdir -p rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
 
+# Install Python pip
+sudo yum install python3-pip -y
+
+# Install requests and PyInstaller using pip
+pip3 install --no-cache-dir --prefix=/usr/local requests pyinstaller
+
 # Build the Python project with PyInstaller
 pyinstaller --onefile app.py
 
