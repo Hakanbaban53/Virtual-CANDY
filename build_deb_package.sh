@@ -19,21 +19,20 @@ mv dist/vcandy vcandy/bin
 mkdir -p vcandy/DEBIAN
 
 # Create the control file
-cat <<EOF > vcandy/control
-Source: vcandy
+cat <<EOF > vcandy/DEBIAN/control
+Package: vcandy
+Version: 0.1
+Architecture: all
 Section: python
 Priority: optional
 Maintainer: Hakan İSMAİL <hakanismail53@gmail.com>
-Build-Depends: debhelper (>= 9), python3-pip, debhelper-compat (>=9)
-Standards-Version: 4.5.0
 Homepage: https://github.com/Hakanbaban53/Container-and-Virtualization-Installer
-
-Package: vcandy
-Architecture: any
-Depends: \${misc:Depends}, python3-pip, \${python3:Depends}
 Description: A python CLI application that installs automatic container and virtualization tools for many Linux systems.
 EOF
 
 # Build the package
-dpkg-deb --root-owner-group --build vcandy/DEBIAN
+dpkg-deb --root-owner-group --build vcandy
 
+sudo dpkg -i vcandy.deb
+
+rm -rf vcandy*
