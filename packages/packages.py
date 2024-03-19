@@ -417,7 +417,7 @@ packages_data = {
                     "type": "package",
                     "install_value": "dnf-plugins-core",
                     "check_value": "dnf-plugins-core",
-                    "remove_value": "dnf-plugins-core",
+                    "remove_value": "",
                 },
                 {
                     "name": "Enable RPM Fusion free",
