@@ -6,11 +6,10 @@ cd "$(dirname "$0")" || exit
 # Clean previous build artifacts
 rm -rf ~/rpmbuild
 
-# Create necessary directories
-mkdir -p ~/rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
-
 # Install Python pip
 sudo dnf install python3-pip rpmdevtools rpmlint -y
+
+rpmdev-setuptree
 
 # Install requests and PyInstaller using pip
 pip3 install --no-cache-dir requests pyinstaller setuptools
@@ -23,7 +22,7 @@ mv dist/vcandy ~/rpmbuild/SOURCES/vcandy
 
 # Create the source tarball and directory
 mkdir -p ~/rpmbuild/SOURCES/vcandy-0.1
-tar --create --file ~/rpmbuild/SOURCES/vcandy-0.1.tar.gz -C ~/rpmbuild/SOURCES vcandy
+tar --create --file ~/rpmbuild/SOURCES/vcandy-0.1.tar.gz ~/rpmbuild/SOURCES/vcandy
 
 # Create the spec file
 cat <<EOF > rpmbuild/SPECS/vcandy.spec
