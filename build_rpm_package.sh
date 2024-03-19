@@ -13,13 +13,13 @@ mkdir -p rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
 sudo dnf install python3-pip -y
 
 # Install requests and PyInstaller using pip
-pip3 install --no-cache-dir requests pyinstaller
+pip3 install --no-cache-dir requests pyinstaller setuptools
 
 # Build the Python project with PyInstaller
 pyinstaller --onefile app.py --name=vcandy
 
 # Move the binary file to the SOURCES directory
-mv vcandy rpmbuild/SOURCES/vcandy
+mv dist/vcandy rpmbuild/SOURCES/vcandy
 
 # Create the spec file
 cat <<EOF > rpmbuild/SPECS/vcandy.spec
@@ -54,7 +54,7 @@ cp %{SOURCE0} %{buildroot}/usr/bin/vcandy
 EOF
 
 # Create the source tarball
-tar -czvf rpmbuild/SOURCES/vcandy-0.1.tar.gz rpmbuild/SOURCES/vcandy
+tar --create --file rpmbuild/SOURCES/vcandy-0.1.tar.gz rpmbuild/SOURCES/vcandy
 
 # Build the RPM package
 rpmbuild -ba rpmbuild/SPECS/vcandy.spec
