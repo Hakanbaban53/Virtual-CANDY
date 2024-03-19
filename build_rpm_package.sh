@@ -25,7 +25,7 @@ mkdir -p ~/rpmbuild/SOURCES/vcandy-0.1
 tar --create --file ~/rpmbuild/SOURCES/vcandy-0.1.tar.gz ~/rpmbuild/SOURCES/vcandy
 
 # Create the spec file
-cat <<EOF > rpmbuild/SPECS/vcandy.spec
+cat <<EOF > ~/rpmbuild/SPECS/vcandy.spec
 Summary: A python CLI application that installs automatic container and virtualization tools for many Linux systems
 Name: vcandy
 Version: 0.1
