@@ -42,6 +42,15 @@ override_dh_auto_install:
 	rm \$(CURDIR)/debian/vcandy/usr/lib/python3.11/EXTERNALLY-MANAGED
 EOF
 
+cat <<EOF > debian/changelog
+vcandy (0.1-1) UNRELEASED; urgency=medium
+
+  * Initial release.
+
+ -- Hakan İSMAİL <hakanismail53@gmail.com>  Thu, 19 Mar 2024 00:00:00 +0000
+
+EOF
+
 # Make the rules file executable
 chmod +x debian/rules
 
