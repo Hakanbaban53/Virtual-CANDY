@@ -6,8 +6,7 @@ cd "$(dirname "$0")" || exit
 # Clean previous build artifacts
 rm -rf debian/vcandy
 
-# Build the Python project with PyInstaller
-pyinstaller --onefile --distpath debian/vcandy/usr/bin --name vcandy app.py
+sudo apt install python3-pip debhelper -y
 
 # Create the necessary directories
 mkdir -p debian/vcandy/usr
@@ -40,6 +39,8 @@ override_dh_auto_install:
 	dh_auto_install
 	python3 -m pip install --no-deps --prefix=\$(CURDIR)/debian/vcandy/usr requests pyinstaller
 	rm \$(CURDIR)/debian/vcandy/usr/lib/python3.11/EXTERNALLY-MANAGED
+    pyinstaller --onefile app.py --distpath=\$(CURDIR)/debian/vcandy/usr/bin --name=vcandy
+
 EOF
 
 cat <<EOF > debian/changelog
@@ -53,6 +54,9 @@ EOF
 
 # Make the rules file executable
 chmod +x debian/rules
+
+# Run rules file
+debian/rules
 
 # Build the package
 dpkg-buildpackage -us -uc
