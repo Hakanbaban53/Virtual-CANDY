@@ -45,16 +45,16 @@ vcandy is a command-line tool that simplifies the installation process of contai
 %prep
 %setup -q
 
-%build
-# No build step required for Python scripts
-
 %install
-rm -rf %{buildroot}
-mkdir -p %{buildroot}/usr/bin
-cp %{SOURCE0} %{buildroot}/usr/bin
+rm -rf $RPM_BUILD_ROOT
+mkdir -p $RPM_BUILD_ROOT/%{_bindir}
+cp %{name}.sh $RPM_BUILD_ROOT/%{_bindir}
+
+%clean
+rm -rf $RPM_BUILD_ROOT
 
 %files
-/usr/bin/vcandy
+%{_bindir}/%{name}
 
 %changelog
 * Thu Mar 19 2024 Hakan İSMAİL <hakanismail53@gmail.com> - 0.1-1
