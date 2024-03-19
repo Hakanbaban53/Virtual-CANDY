@@ -4,7 +4,7 @@ Release: 1%{?dist}
 Summary: A python CLI application that installs automatic container and virtualization tools for many Linux systems
 License: MIT
 URL: https://github.com/Hakanbaban53/Container-and-Virtualization-Installer
-Source0: %{name}-%{version}.tar.gz
+Source0: https://github.com/Hakanbaban53/Container-and-Virtualization-Installer/archive/%{version}.tar.gz
 
 BuildRequires: python3-setuptools
 Requires: python3-pip
@@ -13,16 +13,15 @@ Requires: python3-pip
 vcandy is a command-line tool that simplifies the installation process of container and virtualization tools on Linux systems.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
-python3 -m pip install --no-deps --prefix=%{_builddir}/%{name}-%{version}/usr requests pyinstaller
-rm -f %{_builddir}/%{name}-%{version}/usr/lib/python3.11/EXTERNALLY-MANAGED
-pyinstaller app.py --distpath=%{_builddir}/%{name}-%{version}/usr/bin --name=vcandy
+# Nothing to do here
 
 %install
 mkdir -p %{buildroot}/%{_datadir}/%{name}
-cp -r %{_builddir}/%{name}-%{version}/usr/* %{buildroot}/%{_datadir}/%{name}/
+python3 -m pip install --no-deps --prefix=%{buildroot}/%{_datadir}/%{name} requests pyinstaller
+pyinstaller --onefile %{_builddir}/%{name}-%{version}/app.py --distpath=%{buildroot}/%{_datadir}/%{name}/bin --name=vcandy
 
 %files
 %{_datadir}/%{name}/
