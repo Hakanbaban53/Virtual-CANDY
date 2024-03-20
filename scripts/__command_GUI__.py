@@ -11,7 +11,6 @@ from functions.__get_os_package_manager__ import (
 
 OPTIONS_YES_NO = ["Yes", "No"]
 OPTIONS_INSTALL_REMOVE = ["install", "remove"]
-MAX_WRONG_ATTEMPTS = 3
 MAX_DISPLAYED_PACKAGES = 5  # Maximum number of packages to display at a time
 selected_status_array = []
 
@@ -261,6 +260,9 @@ def get_linux_distro(stdscr):
                             ),
                             curses.color_pair(2) | curses.A_BOLD,
                         )
+                        stdscr.move(curses.LINES // 2 + 3, curses.COLS // 2 - 11)
+                        stdscr.clrtoeol()
+                        stdscr.refresh()
     except curses.error:
         terminal_size_error(stdscr)
 

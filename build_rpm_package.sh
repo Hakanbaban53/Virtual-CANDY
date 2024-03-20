@@ -6,9 +6,10 @@ cd "$(dirname "$0")" || exit
 # Clean previous build artifacts
 rm -rf ~/rpmbuild
 
-# Install Python pip
+# Install Python pip and rpm development tools
 sudo dnf install python3-pip rpmdevtools rpmlint -y
 
+# Set up the rpm development files home directory
 rpmdev-setuptree
 
 # Install requests and PyInstaller using pip
@@ -17,15 +18,16 @@ pip3 install --no-cache-dir requests pyinstaller setuptools
 # Build the Python project with PyInstaller
 pyinstaller --onefile app.py --name=vcandy
 
+# Create the binary folder
 mkdir vcandy-0.1
 
-# Move the binary file to the SOURCES directory
+# Move the binary file to the binary folder we create
 mv dist/vcandy vcandy-0.1
 
+# Add the .tar.gz folder binary folder
 tar --create --file vcandy-0.1.tar.gz vcandy-0.1
 
-# Create the source tarball and directory
-
+# Move the .tar.gz file in the rpm SOURCES file
 mv vcandy-0.1.tar.gz ~/rpmbuild/SOURCES
 
 
@@ -46,12 +48,12 @@ vcandy is a command-line tool that simplifies the installation process of contai
 %setup -q
 
 %install
-rm -rf $RPM_BUILD_ROOT
-mkdir -p $RPM_BUILD_ROOT/%{_bindir}
-cp %{name}.sh $RPM_BUILD_ROOT/%{_bindir}
+rm -rf \$RPM_BUILD_ROOT
+mkdir -p \$RPM_BUILD_ROOT/%{_bindir}
+cp %{name} \$RPM_BUILD_ROOT/%{_bindir}
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf \$RPM_BUILD_ROOT
 
 %files
 %{_bindir}/%{name}
@@ -64,3 +66,8 @@ EOF
 # Build the RPM package
 rpmbuild -bb ~/rpmbuild/SPECS/vcandy.spec
 
+# Install rpm package
+sudo dnf install ~/rpmbuild/RPMS/vcandy-0.1-1*
+
+# Clean up
+rm -rf ~/rpmbuild vcandy-0.1 dist build
