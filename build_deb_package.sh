@@ -1,34 +1,68 @@
 #!/bin/bash
 
-# Ensure we're in the correct directory
-cd "$(dirname "$0")" || exit
+set -e  # Exit immediately if a command fails
+
+# Directory of the script
+SCRIPT_DIR="$(dirname "$0")"
+
+# Log function
+log() {
+    echo "[INFO] $1"
+}
+
+# Check if dependencies are installed
+check_dependencies() {
+    log "Checking dependencies..."
+    if ! dpkg -s python3-pip debhelper &> /dev/null; then
+        log "Installing dependencies..."
+        sudo apt update
+        sudo apt install python3-pip debhelper -y
+    else
+        log "Dependencies already installed."
+    fi
+}
+
+# Install required Python libraries in a virtual environment
+install_python_dependencies() {
+    log "Installing Python dependencies..."
+    python3 -m venv "$SCRIPT_DIR/venv"
+    source "$SCRIPT_DIR/venv/bin/activate"
+    pip install --no-cache-dir requests pyinstaller setuptools
+    deactivate
+}
 
 # Clean previous build artifacts
-rm -rf vcandy
+log "Cleaning previous build artifacts..."
+rm -rf "$SCRIPT_DIR/vcandy"
 
-# Install dependencies
-sudo apt install python3-pip debhelper -y
+# Ensure we're in the correct directory
+cd "$SCRIPT_DIR" || exit
 
-# Remove the externally managed file for python pip
-sudo rm -f /usr/lib/python3.11/EXTERNALLY-MANAGED
+# Check and install dependencies
+check_dependencies
 
-# Install the required python libraries
-pip install --no-cache-dir requests pyinstaller setuptools
+# Remove the externally managed file for Python pip
+sudo rm -f /usr/lib/python3.11/EXTERNALLY-MANAGED || true
 
-# Create the necessary directories
-mkdir -p vcandy/bin
+# Install required Python libraries
+install_python_dependencies
 
-# Build the python project
+# Create necessary directories
+mkdir -p "$SCRIPT_DIR/vcandy/bin"
+
+# Build the Python project
+log "Building the Python project..."
 pyinstaller --onefile app.py --name=vcandy
 
-# Move the binary file the build directory
-mv dist/vcandy vcandy/bin
+# Move the binary file to the build directory
+mv dist/vcandy "$SCRIPT_DIR/vcandy/bin"
 
-# Create the debian control file location
-mkdir -p vcandy/DEBIAN
+# Create the Debian control file location
+mkdir -p "$SCRIPT_DIR/vcandy/DEBIAN"
 
 # Create the control file
-cat <<EOF > vcandy/DEBIAN/control
+log "Creating the Debian control file..."
+cat <<EOF > "$SCRIPT_DIR/vcandy/DEBIAN/control"
 Package: vcandy
 Version: 0.1-1
 Architecture: all
@@ -36,14 +70,20 @@ Section: python
 Priority: optional
 Maintainer: Hakan İSMAİL <hakanismail53@gmail.com>
 Homepage: https://github.com/Hakanbaban53/Container-and-Virtualization-Installer
-Description: A python CLI application that installs automatic container and virtualization tools for many Linux systems.
+Description: A Python CLI application that installs automatic container and virtualization tools for many Linux systems.
 EOF
 
 # Build the package
+log "Building the package..."
 dpkg-deb --root-owner-group --build vcandy
 
 # Install the package
+log "Installing the package..."
 sudo dpkg -i vcandy.deb
 
 # Clean up
+log "Cleaning up..."
 rm -rf vcandy*
+
+log "Installation completed successfully!"
+

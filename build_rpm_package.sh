@@ -1,37 +1,47 @@
 #!/bin/bash
 
+set -e  # Exit immediately if a command fails
+
+# Log function
+log() {
+    echo "[INFO] $1"
+}
+
 # Ensure we're in the correct directory
 cd "$(dirname "$0")" || exit
 
 # Clean previous build artifacts
-rm -rf ~/rpmbuild
+log "Cleaning previous build artifacts..."
+rm -rf ~/rpmbuild vcandy-0.1 dist build
 
-# Install Python pip and rpm development tools
+# Check and install dependencies
+log "Checking and installing dependencies..."
 sudo dnf install python3-pip rpmdevtools rpmlint -y
 
-# Set up the rpm development files home directory
+# Set up the RPM development files home directory
 rpmdev-setuptree
 
 # Install requests and PyInstaller using pip
+log "Installing Python dependencies..."
 pip3 install --no-cache-dir requests pyinstaller setuptools
 
 # Build the Python project with PyInstaller
+log "Building the Python project with PyInstaller..."
 pyinstaller --onefile app.py --name=vcandy
 
 # Create the binary folder
 mkdir vcandy-0.1
 
-# Move the binary file to the binary folder we create
+# Move the binary file to the binary folder we created
 mv dist/vcandy vcandy-0.1
 
-# Add the .tar.gz folder binary folder
+# Add the .tar.gz folder to the RPM SOURCES directory
+log "Moving the .tar.gz file to the RPM SOURCES directory..."
 tar --create --file vcandy-0.1.tar.gz vcandy-0.1
-
-# Move the .tar.gz file in the rpm SOURCES file
 mv vcandy-0.1.tar.gz ~/rpmbuild/SOURCES
 
-
 # Create the spec file
+log "Creating the spec file..."
 cat <<EOF > ~/rpmbuild/SPECS/vcandy.spec
 Summary: A python CLI application that installs automatic container and virtualization tools for many Linux systems
 Name: vcandy
@@ -64,10 +74,15 @@ rm -rf \$RPM_BUILD_ROOT
 EOF
 
 # Build the RPM package
+log "Building the RPM package..."
 rpmbuild -bb ~/rpmbuild/SPECS/vcandy.spec
 
-# Install rpm package
-sudo dnf install ~/rpmbuild/RPMS/vcandy-0.1-1*
+# Install the RPM package
+log "Installing the RPM package..."
+sudo dnf install ~/rpmbuild/RPMS/*/vcandy-0.1-1*
 
 # Clean up
+log "Cleaning up..."
 rm -rf ~/rpmbuild vcandy-0.1 dist build
+
+log "Installation completed successfully!"

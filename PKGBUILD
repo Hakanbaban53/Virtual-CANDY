@@ -25,11 +25,13 @@ package() {
   # Install Python packages
   python -m pip install --no-deps --prefix="$pkgdir/usr" requests pyinstaller
   
-
   # Build the Python project with PyInstaller
   pyinstaller --onefile app.py --distpath="$pkgdir/usr/bin" --name=vcandy
   
-  
   # Fix permissions if necessary
   chmod +x "$pkgdir/usr/bin/vcandy"
+
+  # Clean up build artifacts
+  rm -rf "$srcdir/Container-and-Virtualization-Installer/build"
+  rm -rf "$srcdir/Container-and-Virtualization-Installer/dist"
 }
