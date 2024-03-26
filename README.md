@@ -94,7 +94,7 @@ python app.py -a remove -o noisy VirtualBox-7.0 Qemu_and_VM_Manager #You can use
 │  ├── 🗎 __fedora__.py
 │  └── 🗎 __ubuntu__.py
 ├── 🖿 packages
-│  └── 🗎 packages.json
+│  └── 🗎 packages.py
 ├── 🖿 scripts
 │  ├── 🗎 __arguments__.py
 │  └── 🗎 __command_GUI__.py

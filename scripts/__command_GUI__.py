@@ -21,6 +21,11 @@ known_distros = {
     "ubuntu": ["ubuntu"],
 }
 
+def clean_line(stdscr, x, y):
+    stdscr.move(y, x)
+    stdscr.clrtoeol()
+    stdscr.refresh()
+
 
 def terminal_size_error(stdscr):
     stdscr.clear()
@@ -231,9 +236,8 @@ def get_linux_distro(stdscr):
                 )
                 linux_distribution_lower = linux_distribution.lower()
 
-                stdscr = curses.initscr()
-                stdscr.clrtoeol()
-                stdscr.refresh()
+                clean_line(stdscr, curses.COLS // 2 - 11, curses.LINES // 2 - 3)
+
                 stdscr.addstr(
                     curses.LINES // 2 - 3,
                     curses.COLS // 2 - 11,
@@ -242,14 +246,14 @@ def get_linux_distro(stdscr):
 
                 for distro, keywords in known_distros.items():
                     if any(keyword in linux_distribution_lower for keyword in keywords):
-                        # Clear the warning message line when the correct key is entered
-                        stdscr.move(warning_line, 0)
-                        stdscr.clrtoeol()
+                        clean_line(stdscr, curses.COLS // 2 - 11, warning_line)
                         return distro
                     elif not any(
                         keyword in linux_distribution_lower for keyword in keywords
                     ):
                         curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
+                        
+                        clean_line(stdscr, curses.COLS // 2 - 11, warning_line)
 
                         # Add the error message with the new color pair
                         stdscr.addstr(
@@ -260,9 +264,7 @@ def get_linux_distro(stdscr):
                             ),
                             curses.color_pair(2) | curses.A_BOLD,
                         )
-                        stdscr.move(curses.LINES // 2 + 3, curses.COLS // 2 - 11)
-                        stdscr.clrtoeol()
-                        stdscr.refresh()
+                        clean_line(stdscr, curses.COLS // 2 - 11, curses.LINES // 2 + 3)
     except curses.error:
         terminal_size_error(stdscr)
 
