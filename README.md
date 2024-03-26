@@ -14,6 +14,67 @@
 ###
 
 <h2 align="left">Installation</h2>
+<details><summary>Arch</summary>
+
+The initial installation of vcandy can be done by cloning the PKGBUILD and
+building with makepkg:
+
+```sh
+pacman -S --needed git
+git clone https://github.com/Hakanbaban53/Container-and-Virtualization-Installer.git
+cd Container-and-Virtualization-Installer
+makepkg -si
+```
+
+If you want to do all of this at once, we can chain the commands like so:
+
+```sh
+pacman -S --needed git && git clone https://github.com/Hakanbaban53/Container-and-Virtualization-Installer.git && cd Container-and-Virtualization-Installer && makepkg -si
+```
+
+</details>
+
+<details><summary>Debian or Ubuntu</summary>
+
+To install Candy on Debian or Ubuntu, it is sufficient to first clone this repository and make the build_deb_package.sh script executable and run it. 
+It will automatically create and install the debian package:
+
+```sh
+apt install git
+git clone https://github.com/Hakanbaban53/Container-and-Virtualization-Installer.git
+cd Container-and-Virtualization-Installer
+chmod +x ./build_deb_package.sh
+./build_deb_package.sh
+```
+
+If you want to do all of this at once, we can chain the commands like so:
+
+```sh
+apt install git && git clone https://github.com/Hakanbaban53/Container-and-Virtualization-Installer.git && cd Container-and-Virtualization-Installer && chmod +x ./build_deb_package.sh && ./build_deb_package.sh
+```
+
+</details>
+
+<details><summary>Fedora</summary>
+
+To install Candy on Fedora, it is sufficient to first clone this repository and make the build_rpm_package.sh script executable and run it. 
+It will automatically create and install the rpm package:
+
+```sh
+dnf install git
+git clone https://github.com/Hakanbaban53/Container-and-Virtualization-Installer.git
+cd Container-and-Virtualization-Installer
+chmod +x ./build_rpm_package.sh
+./build_rpm_package.sh
+```
+
+If you want to do all of this at once, we can chain the commands like so:
+
+```sh
+dnf install git && git clone https://github.com/Hakanbaban53/Container-and-Virtualization-Installer.git && cd Container-and-Virtualization-Installer && chmod +x ./build_rpm_package.sh && ./build_rpm_package.sh
+```
+
+</details>
 
 ###
 
