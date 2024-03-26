@@ -45,7 +45,7 @@ log "Creating the spec file..."
 cat <<EOF > ~/rpmbuild/SPECS/vcandy.spec
 Summary: A python CLI application that installs automatic container and virtualization tools for many Linux systems
 Name: vcandy
-Version: 0.1
+Version: 0.2-1
 Release: 1%{?dist}
 License: MIT
 URL: https://github.com/Hakanbaban53/Container-and-Virtualization-Installer

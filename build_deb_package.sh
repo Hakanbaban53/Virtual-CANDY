@@ -16,7 +16,7 @@ check_dependencies() {
     if ! dpkg -s python3-pip debhelper &> /dev/null; then
         log "Installing dependencies..."
         sudo apt update
-        sudo apt install python3-pip debhelper -y
+        sudo apt install python3-pip debhelper python3-venv -y
     else
         log "Dependencies already installed."
     fi
@@ -64,7 +64,7 @@ mkdir -p "$SCRIPT_DIR/vcandy/DEBIAN"
 log "Creating the Debian control file..."
 cat <<EOF > "$SCRIPT_DIR/vcandy/DEBIAN/control"
 Package: vcandy
-Version: 0.1-1
+Version: 0.2-1
 Architecture: all
 Section: python
 Priority: optional

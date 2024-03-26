@@ -1,10 +1,9 @@
-import os
 from subprocess import run, PIPE, CalledProcessError
-from os.path import exists
+from os import path, devnull, getenv
 
 
 def ubuntu_package_manager(packages, hide_output, action):
-    hide = open(os.devnull, "w") if hide_output else None
+    hide = open(devnull, "w") if hide_output else None
 
     run(
         ["sudo", "apt", "update"],
@@ -69,7 +68,7 @@ def ubuntu_package_manager(packages, hide_output, action):
                 for path_keys in check_script:
                     if not path_keys:
                         print("Skipped...")
-                    elif exists(path_keys):
+                    elif path.exists(path_keys):
                         if action == "install":
                             print(f"{name} repo key installed. Skipping...")
                         elif action == "remove":
@@ -111,7 +110,7 @@ def ubuntu_package_manager(packages, hide_output, action):
 
 
 def package_installer(data, hide):
-    current_user = os.getenv("USER")
+    current_user = getenv("USER")
     target_directory = f"/home/{current_user}/"
     package_type = data.get("type", "")
     install_value = data.get("install_value", "")

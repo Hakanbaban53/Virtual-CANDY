@@ -1,5 +1,3 @@
-import json
-import os
 from linux_distros.__arch__ import arch_package_manager
 from linux_distros.__debian__ import debian_package_manager
 from linux_distros.__fedora__ import fedora_package_manager

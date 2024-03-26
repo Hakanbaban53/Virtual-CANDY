@@ -1,4 +1,4 @@
-import subprocess
+from subprocess import run, PIPE, CalledProcessError
 from time import sleep
 
 dependencies = ['requests']
@@ -10,14 +10,14 @@ def check_dependencies(dependencies):
 
     for package in dependencies:
         try:
-            result = subprocess.run(
-                ["pip", "show", package], stdout=subprocess.PIPE, check=True, text=True
+            result = run(
+                ["pip", "show", package], stdout=PIPE, check=True, text=True
             )
             if "Version" not in result.stdout:
                 missing_packages.append(package)
             else:
                 print(package, "is installed.")
-        except subprocess.CalledProcessError:
+        except CalledProcessError:
             missing_packages.append(package)
 
     return missing_packages
@@ -27,7 +27,7 @@ def install_dependencies(dependencies):
     """Install missing Python packages using pip."""
     if dependencies:
         print("Installing missing dependencies...")
-        subprocess.run(["pip", "install"] + dependencies, check=True)
+        run(["pip", "install"] + dependencies, check=True)
         print("Dependencies installed successfully.")
     else:
         print("No missing dependencies.")

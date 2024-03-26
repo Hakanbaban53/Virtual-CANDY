@@ -1,4 +1,4 @@
-import argparse
+from argparse import ArgumentParser
 from time import sleep
 from functions.__get_os_package_manager__ import identify_distribution
 
@@ -10,7 +10,7 @@ def parse_arguments():
         argparse.Namespace: Parsed command-line arguments.
     """
     linux_distro_id = identify_distribution()
-    parser = argparse.ArgumentParser(description="Linux Package Manager")
+    parser = ArgumentParser(description="Linux Package Manager")
 
     # Add command-line arguments with default values
     parser.add_argument(

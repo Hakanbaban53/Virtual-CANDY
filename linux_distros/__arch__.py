@@ -1,9 +1,8 @@
-import os
 from subprocess import run, PIPE, CalledProcessError
-
+from os import devnull, getenv
 
 def arch_package_manager(packages, hide_output, action):
-    hide = open(os.devnull, "w") if hide_output else None
+    hide = open(devnull, "w") if hide_output else None
 
     for data in packages:
         name = data.get("name", "")
@@ -65,7 +64,7 @@ def arch_package_manager(packages, hide_output, action):
 
 
 def package_installer(data, hide):
-    current_user = os.getenv("USER")
+    current_user = getenv("USER")
     target_directory = f"/home/{current_user}/"
     package_type = data.get("type", "")
     install_value = data.get("install_value", "")

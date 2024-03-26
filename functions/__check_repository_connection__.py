@@ -1,5 +1,5 @@
 from time import sleep
-import requests
+from requests import get, ConnectionError
 
 def check_linux_package_manager_connection(distribution):
     package_manager_urls = {
@@ -13,9 +13,9 @@ def check_linux_package_manager_connection(distribution):
         print("Package manager checking internet connection...")
         url = package_manager_urls[distribution]
         try:
-            requests.get(url, timeout=5)
+            get(url, timeout=5)
             print(f"{distribution.capitalize()} package manager is connected.")
-        except requests.ConnectionError:
+        except ConnectionError:
             print(f"{distribution.capitalize()} package manager is not connected.")
             sleep(5)
             exit(1)

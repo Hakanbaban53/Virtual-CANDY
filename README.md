@@ -82,7 +82,7 @@ dnf install git && git clone https://github.com/Hakanbaban53/Container-and-Virtu
 
 ###
 
-<h3 align="left">With Argumants</h3>
+<h3 align="left">With Arguments</h3>
 
 ```bash
 --distribution <your_distro> #Default detect the your linux distro. If you want to another disto use this.

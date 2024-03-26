@@ -1,11 +1,9 @@
-import os
-import subprocess
-from subprocess import run, PIPE, CalledProcessError
-from os.path import exists
+from subprocess import run, PIPE, CalledProcessError, check_output
+from os import path, devnull, getenv
 
 
 def fedora_package_manager(packages, hide_output, action):
-    hide = open(os.devnull, "w") if hide_output else None
+    hide = open(devnull, "w") if hide_output else None
 
     for data in packages:
         name = data.get("name", "")
@@ -50,7 +48,7 @@ def fedora_package_manager(packages, hide_output, action):
                 for path_keys in check_script:
                     if not path_keys:
                         print("Skipped...")
-                    elif exists(path_keys):
+                    elif path.exists(path_keys):
                         if action == "install":
                             print(f"{name} repo key installed. Skipping...")
                         elif action == "remove":
@@ -101,7 +99,7 @@ def fedora_package_manager(packages, hide_output, action):
 
 
 def package_installer(data, hide):
-    current_user = os.getenv("USER")
+    current_user = getenv("USER")
     target_directory = f"/home/{current_user}/"
     package_type = data.get("type", "")
     install_value = data.get("install_value", "")
@@ -125,7 +123,7 @@ def package_installer(data, hide):
                     print(f"An error occurred: {err}")
 
         elif package_type == "url-package":
-            fedora_version = subprocess.check_output(
+            fedora_version = check_output(
                 ["rpm", "-E", "%fedora"], text=True
             ).strip()
             install_value = install_value.replace("$(rpm -E %fedora)", fedora_version)
