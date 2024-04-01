@@ -1,19 +1,14 @@
-<h1 align="center">Virtualization and container applications installer 🖥️</h1>
-
-###
+# Virtualization and container applications installer 🖥️
 
 <h4 align="center">An application that installs certain virtualization applications (Docker/Docker Desktop, VirtManager/QEMU, VirtualBox and Podman/Podman Desktop) on Linux via argument or command line user interface.</h4>
 
-###
-
 <div align="center">
-  <img src="./assets/arguments.gif" style="width: 500px; height: auto:">
+  <img src="./assets/arguments.gif" style="width: 500px; height: auto;">
   <img src="./assets/Command_gui.gif" style="width: 500px; height: auto;">
 </div>
 
-###
+## Installation
 
-<h2 align="left">Installation</h2>
 <details><summary>Arch</summary>
 
 The initial installation of vcandy can be done by cloning the PKGBUILD and
@@ -36,7 +31,7 @@ pacman -S --needed git && git clone https://github.com/Hakanbaban53/Container-an
 
 <details><summary>Debian or Ubuntu</summary>
 
-To install Candy on Debian or Ubuntu, it is sufficient to first clone this repository and make the build_deb_package.sh script executable and run it. 
+To install Candy on Debian or Ubuntu, it is sufficient to first clone this repository and make the build_deb_package.sh script executable and run it.
 It will automatically create and install the debian package:
 
 ```sh
@@ -57,7 +52,7 @@ apt install git && git clone https://github.com/Hakanbaban53/Container-and-Virtu
 
 <details><summary>Fedora</summary>
 
-To install Candy on Fedora, it is sufficient to first clone this repository and make the build_rpm_package.sh script executable and run it. 
+To install Candy on Fedora, it is sufficient to first clone this repository and make the build_rpm_package.sh script executable and run it.
 It will automatically create and install the rpm package:
 
 ```sh
@@ -76,28 +71,30 @@ dnf install git && git clone https://github.com/Hakanbaban53/Container-and-Virtu
 
 </details>
 
-###
+## Usage
 
-<h2 align="center">Usage</h2>
+### With Arguments
 
-###
+#### Arguments
 
-<h3 align="left">With Arguments</h3>
+You can install several themes in one string: `python install.py --red --green --blue`
 
-```bash
---distribution <your_distro> #Default detect the your linux distro. If you want to another disto use this.
--a <action> #You select the action. <install> or <remove>. Default is install.
--o <output> #Hide or show terminal output. <silent> is hide the package manager and other outputs. <noisy> is show the terminal output. Default is <silent>.
+| Option         | Description                                                                                                                                 |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| -a <action>    | You select the action. <install> or <remove>. Default is install.                                                                           |
+| -o <output>    | Hide or show terminal output. <silent> hides the package manager and other outputs. <noisy> shows the terminal output. Default is <silent>. |
+| --distribution | Specify the Linux distribution. Default detects your Linux distro. Use this if you want to specify another distro.                          |
 
-#EXAMPLE
-python app.py -a remove -o noisy <package_name> #This is a remove example.
+```css
+# EXAMPLE
+python app.py -a remove -o noisy <package_name> # This is a remove example.
 
-python app.py -a remove -o noisy VirtualBox-7.0 Qemu_and_VM_Manager #You can use more than one package. Like this.
+python app.py -a remove -o noisy VirtualBox-7.0 Qemu_and_VM_Manager # You can use more than one package. Like this.
 ```
 
-<p align="left">And one more thing. Arguments is case sensitive. You need the give in the packages name in the below!</p>
+And one more thing. Arguments are case-sensitive. You need to give the package names as specified below:
 
-# Packages
+### Packages
 
 <details><summary>Package Names</summary>
 
@@ -124,19 +121,14 @@ python app.py -a remove -o noisy VirtualBox-7.0 Qemu_and_VM_Manager #You can use
 
 </details>
 
-###
-
-<h3 align="left">With Command UI</h3>
-
-###
+### With Command UI
 
 <p align="left">"python app.py" Start with default. Basic terminal UI for installer. </p>
 <p align="left">Use Left/Right arrow key select "yes" or "no". Press "Enter" key for confirm..</p>
-<p align="left">Use Up/Down arrow key move eachother packager. Use "Tab" key Select/Unselect packages. Press Enter key the confirm packages.</p>
+<p align="left">Use Up/Down arrow key move each other packager. Use "Tab" key Select/Unselect packages. Press Enter key the confirm packages.</p>
 
-###
+## IMPORTANT
 
-# IMPORTANT
 - Reboot for the installed Apps to appear in the App menu and work properly!
 
 ## Folder structure
@@ -164,6 +156,4 @@ python app.py -a remove -o noisy VirtualBox-7.0 Qemu_and_VM_Manager #You can use
 
 ```
 
-<h2 align="center">Hakan İSMAİL 💙</h2>
-
-###
+## Hakan İSMAİL 💙
