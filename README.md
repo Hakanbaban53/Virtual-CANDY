@@ -175,4 +175,4 @@ And one more thing. Arguments are case-sensitive. You need to give the package n
 
 ```
 
-## Hakan İSMAİL 💙
+<h2 align="center"> Hakan İSMAİL 💙 </h2>
