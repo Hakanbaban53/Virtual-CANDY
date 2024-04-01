@@ -7,7 +7,7 @@
   <img src="./assets/Command_gui.gif" style="width: 500px; height: auto;">
 </div>
 
-## Installation
+## 💡 Installation
 
 <details><summary>Arch</summary>
 
@@ -71,34 +71,48 @@ dnf install git && git clone https://github.com/Hakanbaban53/Container-and-Virtu
 
 </details>
 
-## Usage
+## ⚙️ Usage
 
-### With Arguments
+<details><summary><strong><em>With Arguments</em></strong></summary>
+
 
 #### Arguments
 
-You can install several themes in one string: `python install.py --red --green --blue`
-
 | Option         | Description                                                                                                                                 |
 | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| -a <action>    | You select the action. <install> or <remove>. Default is install.                                                                           |
-| -o <output>    | Hide or show terminal output. <silent> hides the package manager and other outputs. <noisy> shows the terminal output. Default is <silent>. |
+| -a             | You select the action. 'install' or 'remove'. Default is 'install'.                                                                         |
+| -o             | Hide or show terminal output. 'silent' hides the package manager and other outputs. 'noisy' shows the terminal output. Default is 'silent'. |
 | --distribution | Specify the Linux distribution. Default detects your Linux distro. Use this if you want to specify another distro.                          |
 
 ```css
-# EXAMPLE
-python app.py -a remove -o noisy <package_name> # This is a remove example.
+// If you install the app on your system;
+vcandy -a remove -o noisy <package_name> # This is a remove example.
 
-python app.py -a remove -o noisy VirtualBox-7.0 Qemu_and_VM_Manager # You can use more than one package. Like this.
+vcandy -a remove -o noisy VirtualBox-7.0 Qemu_and_VM_Manager # You can use more than one package. Like this.
+
+// If you not install the app on your system;
+python3 app.py -a remove -o noisy <package_name> # This is a remove example.
+
+python3 app.py -a remove -o noisy VirtualBox-7.0 Qemu_and_VM_Manager # You can use more than one package. Like this.
 ```
 
 And one more thing. Arguments are case-sensitive. You need to give the package names as specified below:
+</details>
 
-### Packages
+### 
+<details><summary><strong><em>With Command UI</em></strong></summary>
+
+<p align="left">If you install the in your pc you can use in the terminal vcandy or you can use "python app.py". Command UI start with default. Basic terminal UI for installer. </p>
+<p align="left">Use Left/Right arrow key select "yes" or "no". Press "Enter" key for confirm..</p>
+<p align="left">Use Up/Down arrow key move each other packager. Use "Tab" key Select/Unselect packages. Press Enter key the confirm packages.</p>
+
+</details>
+
+## 📦 Packages
 
 <details><summary>Package Names</summary>
 
-- Package names in the json and packages
+- Package names in the packages.py.
 
 ```css
 🗃 .
@@ -121,17 +135,12 @@ And one more thing. Arguments are case-sensitive. You need to give the package n
 
 </details>
 
-### With Command UI
 
-<p align="left">"python app.py" Start with default. Basic terminal UI for installer. </p>
-<p align="left">Use Left/Right arrow key select "yes" or "no". Press "Enter" key for confirm..</p>
-<p align="left">Use Up/Down arrow key move each other packager. Use "Tab" key Select/Unselect packages. Press Enter key the confirm packages.</p>
-
-## IMPORTANT
+## ⁉️ IMPORTANT
 
 - Reboot for the installed Apps to appear in the App menu and work properly!
 
-## Folder structure
+## 📂 Folder structure
 
 ```css
 🗃 .
