@@ -70,6 +70,16 @@ dnf install git && git clone https://github.com/Hakanbaban53/Container-and-Virtu
 ```
 
 </details>
+- 🗑️ If you want to remove the package:
+
+    # Arch
+    pacman -Rsc vcandy
+    
+    # Debian or Ubuntu
+    apt remove vcandy
+    
+    # Fedora
+    dnf remove vcany
 
 ## ⚙️ Usage
 
