@@ -164,7 +164,7 @@ def selections(stdscr, prompt, x, y, options):
 
 def get_hide_output_choice(stdscr):
     try:
-        x = curses.COLS // 2 - 20
+        x = curses.COLS // 2 - 14
         y = curses.LINES // 2 + 3
         prompt = "Do you want to hide package manager output?"
         selection = selections(
@@ -187,7 +187,7 @@ def install_or_remove(stdscr):
     try:
         stdscr.clear()
         prompt = "Please select the action:"
-        x = curses.COLS // 2 - 13
+        x = curses.COLS // 2 - 14
         y = curses.LINES // 2 - 2
         return selections(stdscr, prompt, x, y, OPTIONS_INSTALL_REMOVE)
     except curses.error:
@@ -198,24 +198,24 @@ def get_linux_distro(stdscr):
 
     try:
         stdscr.addstr(
-            curses.LINES // 2 - 5, curses.COLS // 2 - 11, "Getting Linux Distro:"
+            curses.LINES // 2 - 5, curses.COLS // 2 - 14, "Getting Linux Distro:"
         )
         linux_distribution = get_linux_distribution()
         linux_distro_id = identify_distribution()
 
         stdscr.addstr(
             curses.LINES // 2 - 4,
-            curses.COLS // 2 - 11,
+            curses.COLS // 2 - 14,
             "Linux Distro: {}".format(linux_distribution),
         )
         stdscr.addstr(
             curses.LINES // 2 - 3,
-            curses.COLS // 2 - 11,
+            curses.COLS // 2 - 14,
             "Distro ID: {}".format(linux_distro_id),
         )
 
         prompt = "Is that true?"
-        x = curses.COLS // 2 - 11
+        x = curses.COLS // 2 - 14
         y = curses.LINES // 2 - 1
         selected_option = selections(stdscr, prompt, x, y, OPTIONS_YES_NO)
 
@@ -232,39 +232,39 @@ def get_linux_distro(stdscr):
                     stdscr,
                     "Please enter the distro: ",
                     curses.LINES // 2 + 3,
-                    curses.COLS // 2 - 11,
+                    curses.COLS // 2 - 14,
                 )
                 linux_distribution_lower = linux_distribution.lower()
 
-                clean_line(stdscr, curses.COLS // 2 - 11, curses.LINES // 2 - 3)
+                clean_line(stdscr, curses.COLS // 2 - 14, curses.LINES // 2 - 3)
 
                 stdscr.addstr(
                     curses.LINES // 2 - 3,
-                    curses.COLS // 2 - 11,
+                    curses.COLS // 2 - 14,
                     "Entered Linux Distro: {}".format(linux_distribution),
                 )
 
                 for distro, keywords in known_distros.items():
                     if any(keyword in linux_distribution_lower for keyword in keywords):
-                        clean_line(stdscr, curses.COLS // 2 - 11, warning_line)
+                        clean_line(stdscr, curses.COLS // 2 - 14, warning_line)
                         return distro
                     elif not any(
                         keyword in linux_distribution_lower for keyword in keywords
                     ):
                         curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
                         
-                        clean_line(stdscr, curses.COLS // 2 - 11, warning_line)
+                        clean_line(stdscr, curses.COLS // 2 - 14, warning_line)
 
                         # Add the error message with the new color pair
                         stdscr.addstr(
                             warning_line,
-                            curses.COLS // 2 - 11,
+                            curses.COLS // 2 - 14,
                             "{} distro not found. Please try again.".format(
                                 linux_distribution
                             ),
                             curses.color_pair(2) | curses.A_BOLD,
                         )
-                        clean_line(stdscr, curses.COLS // 2 - 11, curses.LINES // 2 + 3)
+                        clean_line(stdscr, curses.COLS // 2 - 14, curses.LINES // 2 + 3)
     except curses.error:
         terminal_size_error(stdscr)
 
