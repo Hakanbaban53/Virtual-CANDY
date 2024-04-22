@@ -148,7 +148,7 @@ packages_data = {
                 {
                     "name": "Docker Desktop",
                     "type": "local-package",
-                    "install_value": "https://desktop.docker.com/linux/main/amd64/139021/docker-desktop-4.28.0-x86_64.pkg.tar.zst",
+                    "install_value": "https://desktop.docker.com/linux/main/amd64/145265/docker-desktop-4.29.0-x86_64.pkg.tar.zst",
                     "check_value": "docker-desktop",
                     "remove_value": "docker-desktop",
                 },
@@ -360,7 +360,7 @@ packages_data = {
                 {
                     "name": "Docker Desktop",
                     "type": "local-package",
-                    "install_value": "https://desktop.docker.com/linux/main/amd64/139021/docker-desktop-4.28.0-amd64.deb",
+                    "install_value": "https://desktop.docker.com/linux/main/amd64/145265/docker-desktop-4.29.0-amd64.deb",
                     "check_value": "docker-desktop",
                     "remove_value": "docker-desktop",
                 },
@@ -613,7 +613,7 @@ packages_data = {
                 {
                     "name": "Docker Desktop",
                     "type": "local-package",
-                    "install_value": "https://desktop.docker.com/linux/main/amd64/139021/docker-desktop-4.28.0-x86_64.rpm",
+                    "install_value": "https://desktop.docker.com/linux/main/amd64/145265/docker-desktop-4.29.0-x86_64.rpm",
                     "check_value": "docker-desktop",
                     "remove_value": "docker-desktop",
                 },
@@ -819,7 +819,7 @@ packages_data = {
                 {
                     "name": "Docker Desktop",
                     "type": "local-package",
-                    "install_value": "https://desktop.docker.com/linux/main/amd64/139021/docker-desktop-4.28.0-amd64.deb",
+                    "install_value": "https://desktop.docker.com/linux/main/amd64/145265/docker-desktop-4.29.0-amd64.deb",
                     "check_value": "docker-desktop",
                     "remove_value": "docker-desktop",
                 },
