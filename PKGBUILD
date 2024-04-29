@@ -21,6 +21,7 @@ package() {
 
   # Remove EXTERNALLY-MANAGED file for pip
   rm -f "$pkgdir/usr/lib/python3.11/EXTERNALLY-MANAGED"
+  rm -f "$pkgdir/usr/lib/python3.12/EXTERNALLY-MANAGED"
 
   # Install Python packages
   python -m pip install --no-deps --prefix="$pkgdir/usr" requests pyinstaller
