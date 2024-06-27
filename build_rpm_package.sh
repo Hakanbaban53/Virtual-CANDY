@@ -2,6 +2,16 @@
 
 set -e  # Exit immediately if a command fails
 
+# Global variables
+VERSION="0.2"
+PACKAGE_NAME="vcandy"
+SOURCE_DIR="$PACKAGE_NAME-$VERSION"
+RPMS_DIR=~/rpmbuild/RPMS
+SOURCES_DIR=~/rpmbuild/SOURCES
+SPECS_DIR=~/rpmbuild/SPECS
+SPEC_FILE="$SPECS_DIR/$PACKAGE_NAME.spec"
+TAR_FILE="$SOURCE_DIR.tar.gz"
+
 # Log function
 log() {
     echo "[INFO] $1"
@@ -12,7 +22,7 @@ cd "$(dirname "$0")" || exit
 
 # Clean previous build artifacts
 log "Cleaning previous build artifacts..."
-rm -rf ~/rpmbuild vcandy-0.1 dist build
+rm -rf ~/rpmbuild "$SOURCE_DIR" dist build
 
 # Check and install dependencies
 log "Checking and installing dependencies..."
@@ -27,32 +37,32 @@ pip3 install --no-cache-dir requests pyinstaller setuptools
 
 # Build the Python project with PyInstaller
 log "Building the Python project with PyInstaller..."
-pyinstaller --onefile app.py --name=vcandy
+pyinstaller --onefile app.py --name=$PACKAGE_NAME
 
 # Create the binary folder
-mkdir vcandy-0.1
+mkdir "$SOURCE_DIR"
 
 # Move the binary file to the binary folder we created
-mv dist/vcandy vcandy-0.1
+mv dist/$PACKAGE_NAME "$SOURCE_DIR"
 
 # Add the .tar.gz folder to the RPM SOURCES directory
 log "Moving the .tar.gz file to the RPM SOURCES directory..."
-tar --create --file vcandy-0.1.tar.gz vcandy-0.1
-mv vcandy-0.1.tar.gz ~/rpmbuild/SOURCES
+tar --create --file "$TAR_FILE" "$SOURCE_DIR"
+mv "$TAR_FILE" "$SOURCES_DIR"
 
 # Create the spec file
 log "Creating the spec file..."
-cat <<EOF > ~/rpmbuild/SPECS/vcandy.spec
+cat <<EOF > "$SPEC_FILE"
 Summary: A python CLI application that installs automatic container and virtualization tools for many Linux systems
-Name: vcandy
-Version: 0.2-1
+Name: $PACKAGE_NAME
+Version: $VERSION
 Release: 1%{?dist}
 License: MIT
 URL: https://github.com/Hakanbaban53/Container-and-Virtualization-Installer
 Source0: %{name}-%{version}.tar.gz
 
 %description
-vcandy is a command-line tool that simplifies the installation process of container and virtualization tools on Linux systems.
+$PACKAGE_NAME is a command-line tool that simplifies the installation process of container and virtualization tools on Linux systems.
 
 %prep
 %setup -q
@@ -69,20 +79,20 @@ rm -rf \$RPM_BUILD_ROOT
 %{_bindir}/%{name}
 
 %changelog
-* Thu Mar 19 2024 Hakan İSMAİL <hakanismail53@gmail.com> - 0.1-1
+* Thu Mar 19 2024 Hakan İSMAİL <hakanismail53@gmail.com> - $VERSION
 - Initial release
 EOF
 
 # Build the RPM package
 log "Building the RPM package..."
-rpmbuild -bb ~/rpmbuild/SPECS/vcandy.spec
+rpmbuild -bb "$SPEC_FILE"
 
 # Install the RPM package
 log "Installing the RPM package..."
-sudo dnf install ~/rpmbuild/RPMS/*/vcandy-0.1-1*
+sudo dnf install $RPMS_DIR/*/$PACKAGE_NAME-$VERSION* -y
 
 # Clean up
 log "Cleaning up..."
-rm -rf ~/rpmbuild vcandy-0.1 dist build
+rm -rf ~/rpmbuild "$SOURCE_DIR" dist build
 
 log "Installation completed successfully!"

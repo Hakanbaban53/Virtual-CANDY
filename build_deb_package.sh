@@ -2,8 +2,13 @@
 
 set -e  # Exit immediately if a command fails
 
-# Directory of the script
+# Global variables
 SCRIPT_DIR="$(dirname "$0")"
+VERSION="0.2"
+PACKAGE_NAME="vcandy"
+BIN_DIR="$SCRIPT_DIR/$PACKAGE_NAME/bin"
+DEBIAN_DIR="$SCRIPT_DIR/$PACKAGE_NAME/DEBIAN"
+VENV_DIR="$SCRIPT_DIR/venv"
 
 # Log function
 log() {
@@ -13,7 +18,7 @@ log() {
 # Check if dependencies are installed
 check_dependencies() {
     log "Checking dependencies..."
-    if ! dpkg -s python3-pip debhelper &> /dev/null; then
+    if ! dpkg -s python3-pip debhelper python3-venv &> /dev/null; then
         log "Installing dependencies..."
         sudo apt update
         sudo apt install python3-pip debhelper python3-venv -y
@@ -25,15 +30,15 @@ check_dependencies() {
 # Install required Python libraries in a virtual environment
 install_python_dependencies() {
     log "Installing Python dependencies..."
-    python3 -m venv "$SCRIPT_DIR/venv"
-    source "$SCRIPT_DIR/venv/bin/activate"
+    python3 -m venv "$VENV_DIR"
+    source "$VENV_DIR/bin/activate"
     pip install --no-cache-dir requests pyinstaller setuptools
     deactivate
 }
 
 # Clean previous build artifacts
 log "Cleaning previous build artifacts..."
-rm -rf "$SCRIPT_DIR/vcandy"
+rm -rf "$SCRIPT_DIR/$PACKAGE_NAME"
 
 # Ensure we're in the correct directory
 cd "$SCRIPT_DIR" || exit
@@ -41,30 +46,37 @@ cd "$SCRIPT_DIR" || exit
 # Check and install dependencies
 check_dependencies
 
-# Remove the externally managed file for Python pip
-sudo rm -f /usr/lib/python3.11/EXTERNALLY-MANAGED || true
+# Remove the externally managed file for Python pip if it exists
+if [ -f /usr/lib/python3.11/EXTERNALLY-MANAGED ]; then
+    sudo rm -f /usr/lib/python3.11/EXTERNALLY-MANAGED
+fi
 
 # Install required Python libraries
-install_python_dependencies
+if [ ! -d "$VENV_DIR" ]; then
+    install_python_dependencies
+fi
+
+# Source the virtual environment
+source "$VENV_DIR/bin/activate"
 
 # Create necessary directories
-mkdir -p "$SCRIPT_DIR/vcandy/bin"
+mkdir -p "$BIN_DIR"
 
 # Build the Python project
 log "Building the Python project..."
-pyinstaller --onefile app.py --name=vcandy
+pyinstaller --onefile app.py --name=$PACKAGE_NAME
 
 # Move the binary file to the build directory
-mv dist/vcandy "$SCRIPT_DIR/vcandy/bin"
+mv dist/$PACKAGE_NAME "$BIN_DIR"
 
 # Create the Debian control file location
-mkdir -p "$SCRIPT_DIR/vcandy/DEBIAN"
+mkdir -p "$DEBIAN_DIR"
 
 # Create the control file
 log "Creating the Debian control file..."
-cat <<EOF > "$SCRIPT_DIR/vcandy/DEBIAN/control"
-Package: vcandy
-Version: 0.2-1
+cat <<EOF > "$DEBIAN_DIR/control"
+Package: $PACKAGE_NAME
+Version: $VERSION
 Architecture: all
 Section: python
 Priority: optional
@@ -75,15 +87,14 @@ EOF
 
 # Build the package
 log "Building the package..."
-dpkg-deb --root-owner-group --build vcandy
+dpkg-deb --root-owner-group --build "$SCRIPT_DIR/$PACKAGE_NAME"
 
 # Install the package
 log "Installing the package..."
-sudo dpkg -i vcandy.deb
+sudo dpkg -i "$SCRIPT_DIR/$PACKAGE_NAME.deb"
 
 # Clean up
 log "Cleaning up..."
-rm -rf vcandy*
+rm -rf "$SCRIPT_DIR/$PACKAGE_NAME" dist build "$SCRIPT_DIR/$PACKAGE_NAME.deb"
 
 log "Installation completed successfully!"
-

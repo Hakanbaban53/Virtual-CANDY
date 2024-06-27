@@ -2,7 +2,7 @@ from linux_distros.__arch__ import arch_package_manager
 from linux_distros.__debian__ import debian_package_manager
 from linux_distros.__fedora__ import fedora_package_manager
 from linux_distros.__ubuntu__ import ubuntu_package_manager
-from packages.packages import packages_data
+from functions._get_packages_data_ import PackagesJSONHandler
 
 
 
@@ -37,6 +37,9 @@ def identify_distribution():
 
 
 def get_linux_package_manager(linux_distribution, package_name, hide_output, action):
+    handler = PackagesJSONHandler()
+    packages_data = handler.load_json_data()
+
     package_manager_func = globals().get(f"{linux_distribution.lower()}_package_manager")
 
     if package_manager_func:
