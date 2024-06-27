@@ -412,7 +412,7 @@
     ],
     "fedora": [
         {
-            "name": "Rpm_Fusion",
+            "name": "My_Apps",
             "values": [
                 {
                     "name": "DNF repository manager",
@@ -434,12 +434,7 @@
                     "install_value": "https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm",
                     "check_value": "rpmfusion-nonfree-release",
                     "remove_value": "rpmfusion-nonfree-release"
-                }
-            ]
-        },
-        {
-            "name": "My_Apps",
-            "values": [
+                },
                 {
                     "name": "Nvidia akmod",
                     "type": "package",
@@ -530,20 +525,25 @@
             "name": "VirtualBox-7.0",
             "values": [
                 {
-                    "name": "Virtual Box Repository",
-                    "type": "get-keys",
-                    "install_script": [
-                        "sudo dnf -y install @development-tools",
-                        "sudo dnf -y install kernel-devel kernel-headers dkms qt5-qtx11extras elfutils-libelf-devel zlib-devel",
-                        "sudo wget http://download.virtualbox.org/virtualbox/rpm/fedora/virtualbox.repo -P /etc/yum.repos.d/",
-                        "sudo dnf makecache -y"
-                    ],
-                    "check_script": [
-                        "/etc/yum.repos.d/virtualbox.repo"
-                    ],
-                    "remove_script": [
-                        "sudo rm -rf /etc/yum.repos.d/virtualbox.repo"
-                    ]
+                    "name": "DNF repository manager",
+                    "type": "package",
+                    "install_value": "dnf-plugins-core",
+                    "check_value": "dnf-plugins-core",
+                    "remove_value": ""
+                },
+                {
+                    "name": "Enable RPM Fusion free",
+                    "type": "url-package",
+                    "install_value": "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm",
+                    "check_value": "rpmfusion-free-release",
+                    "remove_value": "rpmfusion-free-release"
+                },
+                {
+                    "name": "Enable RPM Fusion non-free",
+                    "type": "url-package",
+                    "install_value": "https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm",
+                    "check_value": "rpmfusion-nonfree-release",
+                    "remove_value": "rpmfusion-nonfree-release"
                 },
                 {
                     "name": "Virtual Box",
