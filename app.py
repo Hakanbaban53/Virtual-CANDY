@@ -1,4 +1,4 @@
-from functions.__cli_dependencies_install__ import handle_dependencies
+from functions.__cli_dependencies_install__ import DependencyManager
 from scripts.__arguments__ import parse_arguments
 from functions.__check_repository_connection__ import check_linux_package_manager_connection
 from functions.__get_os_package_manager__ import get_linux_package_manager
@@ -32,5 +32,5 @@ def app():
 
 
 if __name__ == "__main__":
-    handle_dependencies()
+    DependencyManager().handle_dependencies()
     app()
