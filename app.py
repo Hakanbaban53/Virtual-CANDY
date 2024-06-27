@@ -5,6 +5,7 @@ from functions.__get_os_package_manager__ import get_linux_package_manager
 from functions.__get_os_package_manager__ import identify_distribution
 from scripts.__command_GUI__ import start_terminal_gui
 
+
 def app():
 
     """Main application logic."""

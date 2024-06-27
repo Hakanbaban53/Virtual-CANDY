@@ -1,5 +1,4 @@
 import curses
-from packages.packages import packages_data
 from time import sleep
 
 from functions.__check_repository_connection__ import check_linux_package_manager_connection
@@ -8,6 +7,7 @@ from functions.__get_os_package_manager__ import (
     get_linux_package_manager,
     identify_distribution,
 )
+from functions._get_packages_data_ import PackagesJSONHandler
 
 OPTIONS_YES_NO = ["Yes", "No"]
 OPTIONS_INSTALL_REMOVE = ["install", "remove"]
@@ -78,12 +78,12 @@ def get_user_input_string(stdscr, prompt, y, x):
 
 
 def packages(linux_distro):
-    if linux_distro in packages_data:
-        package_list = packages_data[linux_distro]
-        relevant_packages = []
+    handler = PackagesJSONHandler()
+    instructions_data = handler.load_json_data()
 
-        for package in package_list:
-            relevant_packages.append(package.get("name", ""))
+    if linux_distro in instructions_data:
+        package_list = instructions_data[linux_distro]
+        relevant_packages = [package.get("name", "") for package in package_list]
         return relevant_packages
     else:
         return []
