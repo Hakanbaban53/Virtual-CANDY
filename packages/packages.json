@@ -96,6 +96,20 @@
                     "name": "Add User to vboxusers Group",
                     "type": "group",
                     "install_value": "vboxusers"
+                },
+                {
+                    "name": "Virtual Box Extensions",
+                    "type": "get-keys",
+                    "install_script": [
+                        "wget https://download.virtualbox.org/virtualbox/7.0.14/Oracle_VM_VirtualBox_Extension_Pack-7.0.14.vbox-extpack",
+                        "echo 'y' | sudo vboxmanage extpack install Oracle_VM_VirtualBox_Extension_Pack-7.0.14.vbox-extpack"
+                    ],
+                    "check_script": [
+                        ""
+                    ],
+                    "remove_script": [
+                        ""
+                    ]
                 }
             ]
         },
@@ -289,6 +303,20 @@
                     "name": "Add User to vboxusers Group",
                     "type": "group",
                     "install_value": "vboxusers"
+                },
+                {
+                    "name": "Virtual Box Extensions",
+                    "type": "get-keys",
+                    "install_script": [
+                        "wget https://download.virtualbox.org/virtualbox/7.0.14/Oracle_VM_VirtualBox_Extension_Pack-7.0.14.vbox-extpack",
+                        "echo 'y' | sudo vboxmanage extpack install Oracle_VM_VirtualBox_Extension_Pack-7.0.14.vbox-extpack"
+                    ],
+                    "check_script": [
+                        ""
+                    ],
+                    "remove_script": [
+                        ""
+                    ]
                 }
             ]
         },
@@ -548,9 +576,9 @@
                 {
                     "name": "Virtual Box",
                     "type": "package",
-                    "install_value": "VirtualBox-7.0",
-                    "check_value": "VirtualBox-7.0",
-                    "remove_value": "VirtualBox-7.0"
+                    "install_value": "VirtualBox",
+                    "check_value": "VirtualBox",
+                    "remove_value": "VirtualBox"
                 },
                 {
                     "name": "Start and Enable vboxdrv",
@@ -769,6 +797,20 @@
                     "name": "Add User to vboxusers Group",
                     "type": "group",
                     "install_value": "vboxusers"
+                },
+                {
+                    "name": "Virtual Box Extensions",
+                    "type": "get-keys",
+                    "install_script": [
+                        "wget https://download.virtualbox.org/virtualbox/7.0.14/Oracle_VM_VirtualBox_Extension_Pack-7.0.14.vbox-extpack",
+                        "echo 'y' | sudo vboxmanage extpack install Oracle_VM_VirtualBox_Extension_Pack-7.0.14.vbox-extpack"
+                    ],
+                    "check_script": [
+                        ""
+                    ],
+                    "remove_script": [
+                        ""
+                    ]
                 }
             ]
         },

@@ -46,8 +46,14 @@ def fedora_package_manager(packages, hide_output, action):
 
             elif package_type == "get-keys":
                 for path_keys in check_script:
-                    if not path_keys:
-                        print("Skipped...")
+                    if path_keys == "":
+                        if action == "install":
+                            print(f"{name} Installing...")
+                            package_installer(data, hide)
+                        elif action == "remove":
+                            print(f"{name} Skipping...")
+                    elif not path_keys:
+                        print("Skipping...")
                     elif path.exists(path_keys):
                         if action == "install":
                             print(f"{name} repo key installed. Skipping...")

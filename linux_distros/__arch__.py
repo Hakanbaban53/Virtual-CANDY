@@ -1,5 +1,5 @@
 from subprocess import run, PIPE, CalledProcessError
-from os import devnull, getenv
+from os import devnull, getenv, path
 
 def arch_package_manager(packages, hide_output, action):
     hide = open(devnull, "w") if hide_output else None
@@ -8,6 +8,8 @@ def arch_package_manager(packages, hide_output, action):
         name = data.get("name", "")
         check_value = data.get("check_value", "")
         package_type = data.get("type", "")
+        check_script = data.get("check_script", [])
+
 
         try:
             if package_type in {"package", "AUR-package", "local-package"}:
@@ -32,6 +34,30 @@ def arch_package_manager(packages, hide_output, action):
                     package_installer(data, hide)
                 elif action == "remove":
                     print("Skipping the service/group...")
+
+            elif package_type == "get-keys":
+                for path_keys in check_script:
+                    if path_keys == "":
+                        if action == "install":
+                            print(f"{name} Installing...")
+                            package_installer(data, hide)
+                        elif action == "remove":
+                            print(f"{name} Skipping...")
+                    elif not path_keys:
+                        print("Skipping...")
+                    elif path.exists(path_keys):
+                        if action == "install":
+                            print(f"{name} repo key installed. Skipping...")
+                        elif action == "remove":
+                            print(f"{name} repo key removing...")
+                            package_remover(data, hide)
+                    else:
+                        if action == "install":
+                            print(f"{name} repo key not installed. Installing...")
+                            package_installer(data, hide)
+                        elif action == "remove":
+                            print(f"{name} repo key not installed. Skipping...")
+                            
 
             elif package_type == "package-flatpak":
                 result = run(["flatpak", "list"], stdout=PIPE, stderr=PIPE, check=True)
