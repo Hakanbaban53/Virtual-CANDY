@@ -16,6 +16,11 @@ def download_file(url, filename):
     run_command(f"wget -O {filename} {url}")
     print(f"Downloaded {filename}.")
 
+def extract_tar(filename, exrated_dir):
+    """Extract a tar file."""
+    print(f"Extracting {filename} to {exrated_dir}...")
+    run_command(f"tar -xf {filename} -C {exrated_dir}")
+
 def install_vmware_fedora():
     # Set up URLs and filenames
     pkgver = "17.5.2"
@@ -38,51 +43,45 @@ def install_vmware_fedora():
     component_urls = [f"{base_url}/{filename}" for filename in component_filenames]
 
     # Step 1: Download the VMware Workstation installer and components
-    bundle_filename = f"VMware-Workstation-{pkgver}.{CARCH}.bundle.tar"
+    bundle_filename = f"VMware-Workstation-{pkgver}-{buildver}.{CARCH}.bundle.tar"
     download_file(bundle_url, bundle_filename)
     for url, filename in zip(component_urls, component_filenames):
         download_file(url, filename)
     
-    # Step 2: Extract the bundle file
+    # # Step 2: Extract the bundle file
     print("Extracting the bundle file...")
     run_command(f"tar -xf {bundle_filename}")
 
+    extracted_dir = os.path.join(os.getcwd(), "extracted_components")
+    os.makedirs(extracted_dir, exist_ok=True)
+    for filename in component_filenames:
+        extract_tar(filename, extracted_dir)
+
     # Step 3: Make the installer executable
     print("Making the installer executable...")
-    bundle_installer = f"VMware-Workstation-{pkgver}.{CARCH}.bundle"
+    bundle_installer = f"VMware-Workstation-{pkgver}-{buildver}.{CARCH}.bundle"
     run_command(f"chmod +x {bundle_installer}")
-    
-    # Step 4: Run the installer with component installation
-    print("Running the VMware Workstation installer with components...")
-    install_command = f"sudo ./{bundle_installer} --console --required --eulas-agreed " + " ".join(
-        [f'--install-component "{os.path.abspath(filename)}"' for filename in component_filenames]
-    )
-    run_command(install_command)
 
-    # Step 5: Install necessary dependencies
     print("Installing dependencies...")
     dependencies = [
         "kernel-devel",
         "kernel-headers",
         "gcc",
         "make",
-        "perl",
         "patch",
         "net-tools",
-        "libx11",
-        "libXtst",
-        "libXinerama",
-        "libXrandr",
-        "libXrender",
-        "libXext",
-        "libXi",
-        "libXt",
-        "libcanberra-gtk2",
-        "libcanberra-gtk3"
     ]
     run_command(f"sudo dnf install -y {' '.join(dependencies)}")
     
-    # Step 6: Compile kernel modules
+    # Step 4: Run the installer with component installation
+    print("Running the VMware Workstation installer with components...")
+    extracted_components = [os.path.join(extracted_dir, filename) for filename in os.listdir(extracted_dir)]
+    install_command = f"sudo ./{bundle_installer} --console --required --eulas-agreed " + " ".join(
+        [f'--install-component "{os.path.abspath(filename)}"' for filename in extracted_components]
+    )
+    run_command(install_command)
+
+
     print("Compiling kernel modules...")
     run_command("sudo vmware-modconfig --console --install-all")
     
@@ -105,3 +104,9 @@ def install_vmware_fedora():
 
 if __name__ == "__main__":
     install_vmware_fedora()
+
+#     I need the use this:
+#     git clone -b tmp/workstation-17.5.2-k6.9.1 https://github.com/nan0desu/vmware-host-modules.git
+# cd vmware-host-modules/
+# sudo make tarballs && sudo cp -v vmmon.tar vmnet.tar /usr/lib/vmware/modules/source/
+# sudo vmware-modconfig --console --install-all
