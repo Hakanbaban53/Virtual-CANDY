@@ -26,6 +26,7 @@ class VMwareInstaller:
             "kernel-devel",
             "kernel-headers",
             "gcc",
+            "dkms",
             "make",
             "patch",
             "net-tools",
@@ -53,14 +54,39 @@ class VMwareInstaller:
         self.run_command(f"find {self.extracted_dir} -name '*.xml' -type f -delete")
 
     def install_vmware_modules(self):
+        # Clone the repository
         print("Cloning vmware-host-modules repository...")
         self.run_command("git clone -b tmp/workstation-17.5.2-k6.9.1 https://github.com/nan0desu/vmware-host-modules.git")
+        
+        # Navigate into the cloned directory
         os.chdir("vmware-host-modules")
-        print("Making and copying vmmon.tar and vmnet.tar...")
-        self.run_command("sudo make tarballs && sudo cp -v vmmon.tar vmnet.tar /usr/lib/vmware/modules/source/")
-        print("Running vmware-modconfig to install all modules...")
-        self.run_command("sudo vmware-modconfig --console --install-all")
-        os.chdir("..")  # Return to previous directory
+
+        # Create DKMS configuration
+        dkms_conf_content = """
+PACKAGE_NAME="vmware-host-modules"
+PACKAGE_VERSION="17.5.2"
+CLEAN="make clean"
+MAKE="make"
+BUILT_MODULE_NAME[0]="vmmon"
+BUILT_MODULE_NAME[1]="vmnet"
+DEST_MODULE_LOCATION[0]="/extra/vmware"
+DEST_MODULE_LOCATION[1]="/extra/vmware"
+AUTOINSTALL="yes"
+"""
+        with open("dkms.conf", 'w') as dkms_conf:
+            dkms_conf.write(dkms_conf_content)
+
+        # Add the module to DKMS
+        print("Adding VMware modules to DKMS...")
+        self.run_command("sudo dkms add .")
+
+        # Build and install the modules using DKMS
+        print("Building and installing VMware modules using DKMS...")
+        self.run_command("sudo dkms build vmware-host-modules/17.5.2")
+        self.run_command("sudo dkms install vmware-host-modules/17.5.2")
+
+        # Return to the previous directory
+        os.chdir("..")
 
     def create_service_files(self):
         services = {
