@@ -7,7 +7,7 @@ from functions.__get_os_package_manager__ import (
     get_linux_package_manager,
     identify_distribution,
 )
-from functions._get_packages_data_ import PackagesJSONHandler
+from functions.__get_packages_data__ import PackagesJSONHandler
 
 OPTIONS_YES_NO = ["Yes", "No"]
 OPTIONS_INSTALL_REMOVE = ["install", "remove"]

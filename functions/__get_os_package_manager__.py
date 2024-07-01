@@ -2,7 +2,7 @@ from linux_distros.__arch__ import arch_package_manager
 from linux_distros.__debian__ import debian_package_manager
 from linux_distros.__fedora__ import fedora_package_manager
 from linux_distros.__ubuntu__ import ubuntu_package_manager
-from functions._get_packages_data_ import PackagesJSONHandler
+from functions.__get_packages_data__ import PackagesJSONHandler
 
 
 

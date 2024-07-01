@@ -2,7 +2,7 @@ import subprocess
 import logging
 import time
 import sys
-from functions._get_packages_data_ import PackagesJSONHandler
+from functions.__get_packages_data__ import PackagesJSONHandler
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

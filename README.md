@@ -166,7 +166,7 @@ And one more thing. Arguments are case-sensitive. You need to give the package n
 │  ├── 🗎 __fedora__.py
 │  └── 🗎 __ubuntu__.py
 ├── 🖿 packages
-│  └── 🗎 packages.py
+│  └── 🗎 packages.json
 ├── 🖿 scripts
 │  ├── 🗎 __arguments__.py
 │  └── 🗎 __command_GUI__.py

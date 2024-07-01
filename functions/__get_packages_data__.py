@@ -7,7 +7,7 @@ import time
 
 class PackagesJSONHandler:
     def __init__(self):
-        self.json_file_url = "https://raw.githubusercontent.com/Hakanbaban53/Container-and-Virtualization-Installer/main/packages/packeges.json"
+        self.json_file_url = "https://raw.githubusercontent.com/Hakanbaban53/Container-and-Virtualization-Installer/main/packages/packages.json"
         self.json_file_path = self.get_cache_file_path()
 
     def get_cache_file_path(self):
