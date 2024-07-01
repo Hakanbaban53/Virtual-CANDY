@@ -75,10 +75,12 @@ WantedBy=multi-user.target
 """
     }
 
+
     for filename, content in services.items():
-        with open(f"/etc/systemd/system/{filename}", 'w') as file:
+        with open(f"/tmp/{filename}", 'w') as file:
             file.write(content)
         print(f"Created {filename}.")
+        run_command(f"sudo mv /tmp/{filename} /etc/systemd/system/{filename}")
 
 def install_vmware_fedora():
     # Set up URLs and filenames for VMware Workstation
