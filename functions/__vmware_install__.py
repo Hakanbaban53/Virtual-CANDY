@@ -39,6 +39,47 @@ def install_vmware_modules():
     print("Running vmware-modconfig to install all modules...")
     run_command("sudo vmware-modconfig --console --install-all")
 
+def create_service_files():
+    """Create systemd service files for VMware."""
+    services = {
+        'vmware-networks-configuration.service': """
+[Unit]
+Description=VMware Networks Configuration Generation
+ConditionPathExists=!/etc/vmware/networking
+
+[Service]
+UMask=0077
+ExecStart=/usr/bin/vmware-networks --postinstall vmware-player,0,1
+Type=oneshot
+RemainAfterExit=yes
+""",
+        'vmware-usbarbitrator.path': """
+[Unit]
+Description=Monitor to Load-On-Demand the VMware USB Arbitrator
+
+[Path]
+PathExistsGlob=/var/run/vmware/*/*
+
+[Install]
+WantedBy=paths.target
+""",
+        'vmware-usbarbitrator.service': """
+[Unit]
+Description=VMware USB Arbitrator
+
+[Service]
+ExecStart=/usr/lib/vmware/bin/vmware-usbarbitrator -f
+
+[Install]
+WantedBy=multi-user.target
+"""
+    }
+
+    for filename, content in services.items():
+        with open(f"/etc/systemd/system/{filename}", 'w') as file:
+            file.write(content)
+        print(f"Created {filename}.")
+
 def install_vmware_fedora():
     # Set up URLs and filenames for VMware Workstation
     pkgver = "17.5.2"
@@ -81,10 +122,8 @@ def install_vmware_fedora():
     bundle_installer = f"VMware-Workstation-{pkgver}-{buildver}.{CARCH}.bundle"
     run_command(f"chmod +x {bundle_installer}")
 
-    # # Step 4: Install VMware host modules
-    # install_vmware_modules()
 
-    # Step 5: Run the installer with extracted components
+    # Step 4: Run the installer with extracted components
     print("Running the VMware Workstation installer with extracted components...")
     extracted_components = [os.path.join(extracted_dir, filename) for filename in os.listdir(extracted_dir)]
     install_command = f"sudo ./{bundle_installer} --console --required --eulas-agreed " + " ".join(
@@ -92,7 +131,7 @@ def install_vmware_fedora():
     )
     run_command(install_command)
 
-    # Step 6: Install necessary dependencies
+    # Step 5: Install necessary dependencies
     print("Installing dependencies...")
     dependencies = [
         "kernel-devel",
@@ -104,21 +143,25 @@ def install_vmware_fedora():
     ]
     run_command(f"sudo dnf install -y {' '.join(dependencies)}")
     
-    # Step 7: Compile kernel modules
+    # Step 6: Compile kernel modules
     print("Compiling kernel modules...")
     install_vmware_modules()
     
-    # Step 8: Enable and start VMware services
+    # Step 7: Create and enable systemd service files
+    print("Creating systemd service files...")
+    create_service_files()
+
+    # Step 7: Enable and start the newly created services
     print("Enabling and starting VMware services...")
     services = [
-        "vmware-networks.service",
-        "vmware-usbarbitrator.service",
-        "vmware-hostd.service"
+        "vmware-networks-configuration.service",
+        "vmware-usbarbitrator.path",
+        "vmware-usbarbitrator.service"
     ]
     for service in services:
         run_command(f"sudo systemctl enable --now {service}")
     
-    # Step 9: Add the user to the vmware group
+    # Step 8: Add the user to the vmware group
     user = os.getlogin()
     print(f"Adding {user} to the vmware group...")
     run_command(f"sudo usermod -aG vmware {user}")
