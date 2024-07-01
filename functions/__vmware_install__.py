@@ -53,40 +53,62 @@ class VMwareInstaller:
         self.run_command(f"tar -xf {filename} -C {self.extracted_dir}")
         self.run_command(f"find {self.extracted_dir} -name '*.xml' -type f -delete")
 
+
     def install_vmware_modules(self):
-        # Clone the repository
         print("Cloning vmware-host-modules repository...")
         self.run_command("git clone -b tmp/workstation-17.5.2-k6.9.1 https://github.com/nan0desu/vmware-host-modules.git")
         
-        # Navigate into the cloned directory
         os.chdir("vmware-host-modules")
-
-        # Create DKMS configuration
-        dkms_conf_content = """
-PACKAGE_NAME="vmware-host-modules"
+        print("Making and copying vmmon.tar and vmnet.tar...")
+        self.run_command("make tarballs && sudo cp -v vmmon.tar vmnet.tar /usr/lib/vmware/modules/source/")
+        
+        print("Extracting vmmon.tar and vmnet.tar...")
+        os.chdir("/usr/lib/vmware/modules/source/")
+        self.run_command("sudo tar -xvf vmmon.tar")
+        self.run_command("sudo tar -xvf vmnet.tar")
+        
+        print("Creating directories for DKMS...")
+        self.run_command("sudo mkdir -p /usr/src/vmmon-17.5.2")
+        self.run_command("sudo mkdir -p /usr/src/vmnet-17.5.2")
+        
+        print("Creating DKMS configuration for vmmon...")
+        dkms_conf_vmmon = """
+PACKAGE_NAME="vmmon"
 PACKAGE_VERSION="17.5.2"
-CLEAN="make clean"
-MAKE="make"
 BUILT_MODULE_NAME[0]="vmmon"
-BUILT_MODULE_NAME[1]="vmnet"
-DEST_MODULE_LOCATION[0]="/extra/vmware"
-DEST_MODULE_LOCATION[1]="/extra/vmware"
+DEST_MODULE_LOCATION[0]="/kernel/drivers/misc/"
 AUTOINSTALL="yes"
-"""
-        with open("dkms.conf", 'w') as dkms_conf:
-            dkms_conf.write(dkms_conf_content)
-
-        # Add the module to DKMS
-        print("Adding VMware modules to DKMS...")
-        self.run_command("sudo dkms add .")
-
-        # Build and install the modules using DKMS
-        print("Building and installing VMware modules using DKMS...")
-        self.run_command("sudo dkms build vmware-host-modules/17.5.2")
-        self.run_command("sudo dkms install vmware-host-modules/17.5.2")
-
-        # Return to the previous directory
-        os.chdir("..")
+        """
+        with open("/tmp/vmmon-17.5.2-dkms.conf", "w") as f:
+            f.write(dkms_conf_vmmon)
+        self.run_command("sudo mv /tmp/vmmon-17.5.2-dkms.conf /usr/src/vmmon-17.5.2/dkms.conf")
+        
+        print("Creating DKMS configuration for vmnet...")
+        dkms_conf_vmnet = """
+PACKAGE_NAME="vmnet"
+PACKAGE_VERSION="17.5.2"
+BUILT_MODULE_NAME[0]="vmnet"
+DEST_MODULE_LOCATION[0]="/kernel/drivers/misc/"
+AUTOINSTALL="yes"
+        """
+        with open("/tmp/vmnet-17.5.2-dkms.conf", "w") as f:
+            f.write(dkms_conf_vmnet)
+        self.run_command("sudo mv /tmp/vmnet-17.5.2-dkms.conf /usr/src/vmnet-17.5.2/dkms.conf")
+        
+        print("Adding and building vmmon module with DKMS...")
+        self.run_command("sudo dkms add -m vmmon -v 17.5.2")
+        self.run_command("sudo dkms build -m vmmon -v 17.5.2")
+        self.run_command("sudo dkms install -m vmmon -v 17.5.2")
+        
+        print("Adding and building vmnet module with DKMS...")
+        self.run_command("sudo dkms add -m vmnet -v 17.5.2")
+        self.run_command("sudo dkms build -m vmnet -v 17.5.2")
+        self.run_command("sudo dkms install -m vmnet -v 17.5.2")
+        
+        print("Running vmware-modconfig to install all modules...")
+        self.run_command("sudo vmware-modconfig --console --install-all")
+        
+        os.chdir("..")  # Return to previous directory
 
     def create_service_files(self):
         services = {
@@ -229,5 +251,5 @@ WantedBy=multi-user.target
 
 if __name__ == "__main__":
     installer = VMwareInstaller()
-    # installer.install_vmware_fedora()  # Uncomment to install
-    installer.uninstall_vmware_fedora()  # Uncomment to uninstall
+    installer.install_vmware_fedora()  # Uncomment to install
+    # installer.uninstall_vmware_fedora()  # Uncomment to uninstall
