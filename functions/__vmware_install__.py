@@ -21,6 +21,8 @@ def extract_tar(filename, extracted_dir):
     print(f"Extracting {filename} to {extracted_dir}...")
     run_command(f"tar -xf {filename} -C {extracted_dir}")
 
+    run_command(f"find {extracted_dir} -name '*.xml' -type f -delete") 
+
 def install_vmware_modules():
     # Clone the repository for VMware host modules
     print("Cloning vmware-host-modules repository...")
