@@ -192,7 +192,7 @@ WantedBy=multi-user.target
         print("Running the uninstallation script...")
         uninstall_script = "/usr/bin/vmware-installer"
         if os.path.exists(uninstall_script):
-            self.run_command(f"sudo {uninstall_script} --uninstall-product vmware-workstation")
+            self.run_command(f'echo "yes" | sudo {uninstall_script} --uninstall-product vmware-workstation')
 
         # Step 5: Remove extracted components directory
         print("Removing extracted components directory...")
