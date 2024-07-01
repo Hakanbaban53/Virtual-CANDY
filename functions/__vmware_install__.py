@@ -1,48 +1,70 @@
 import os
 import subprocess
+import shutil
 
-def run_command(command):
-    """Run a shell command and print its output."""
-    result = subprocess.run(command, shell=True, text=True, capture_output=True)
-    if result.returncode != 0:
-        print(f"Command failed: {command}")
-        print(result.stderr)
-    else:
-        print(result.stdout)
+class VMwareInstaller:
+    def __init__(self):
+        self.pkgver = "17.5.2"
+        self.buildver = "23775571"
+        self.tools_version = "12.4.0-23259341"
+        self.CARCH = "x86_64"
+        self.base_url = f"https://softwareupdate.vmware.com/cds/vmw-desktop/ws/{self.pkgver}/{self.buildver}/linux/packages"
+        self.bundle_url = f"https://softwareupdate.vmware.com/cds/vmw-desktop/ws/{self.pkgver}/{self.buildver}/linux/core/VMware-Workstation-{self.pkgver}-{self.buildver}.{self.CARCH}.bundle.tar"
+        self.bundle_filename = f"VMware-Workstation-{self.pkgver}-{self.buildver}.{self.CARCH}.bundle.tar"
+        self.component_filenames = [
+            f"vmware-tools-linux-{self.tools_version}.{self.CARCH}.component.tar",
+            f"vmware-tools-linuxPreGlibc25-{self.tools_version}.{self.CARCH}.component.tar",
+            f"vmware-tools-netware-{self.tools_version}.{self.CARCH}.component.tar",
+            f"vmware-tools-solaris-{self.tools_version}.{self.CARCH}.component.tar",
+            f"vmware-tools-windows-{self.tools_version}.{self.CARCH}.component.tar",
+            f"vmware-tools-winPre2k-{self.tools_version}.{self.CARCH}.component.tar",
+            f"vmware-tools-winPreVista-{self.tools_version}.{self.CARCH}.component.tar"
+        ]
+        self.component_urls = [f"{self.base_url}/{filename}" for filename in self.component_filenames]
+        self.extracted_dir = os.path.join(os.getcwd(), "extracted_components")
+        self.dependencies = [
+            "kernel-devel",
+            "kernel-headers",
+            "gcc",
+            "make",
+            "patch",
+            "net-tools",
+        ]
 
-def download_file(url, filename):
-    """Download a file from a URL using wget."""
-    print(f"Downloading {filename} from {url}...")
-    run_command(f"wget -O {filename} {url}")
-    print(f"Downloaded {filename}.")
+    def run_command(self, command):
+        """Run a shell command and print its output."""
+        result = subprocess.run(command, shell=True, text=True, capture_output=True)
+        if result.returncode != 0:
+            print(f"Command failed: {command}")
+            print(result.stderr)
+        else:
+            print(result.stdout)
 
-def extract_tar(filename, extracted_dir):
-    """Extract a tar file."""
-    print(f"Extracting {filename} to {extracted_dir}...")
-    run_command(f"tar -xf {filename} -C {extracted_dir}")
+    def download_file(self, url, filename):
+        """Download a file from a URL using wget."""
+        print(f"Downloading {filename} from {url}...")
+        self.run_command(f"wget -O {filename} {url}")
+        print(f"Downloaded {filename}.")
 
-    run_command(f"find {extracted_dir} -name '*.xml' -type f -delete") 
+    def extract_tar(self, filename):
+        """Extract a tar file."""
+        print(f"Extracting {filename} to {self.extracted_dir}...")
+        self.run_command(f"tar -xf {filename} -C {self.extracted_dir}")
+        self.run_command(f"find {self.extracted_dir} -name '*.xml' -type f -delete")
 
-def install_vmware_modules():
-    # Clone the repository for VMware host modules
-    print("Cloning vmware-host-modules repository...")
-    run_command("git clone -b tmp/workstation-17.5.2-k6.9.1 https://github.com/nan0desu/vmware-host-modules.git")
-    
-    # Navigate into the cloned directory
-    os.chdir("vmware-host-modules")
-    
-    # Make tarballs and copy to the VMware modules source directory
-    print("Making and copying vmmon.tar and vmnet.tar...")
-    run_command("sudo make tarballs && sudo cp -v vmmon.tar vmnet.tar /usr/lib/vmware/modules/source/")
-    
-    # Run vmware-modconfig to install all modules
-    print("Running vmware-modconfig to install all modules...")
-    run_command("sudo vmware-modconfig --console --install-all")
+    def install_vmware_modules(self):
+        print("Cloning vmware-host-modules repository...")
+        self.run_command("git clone -b tmp/workstation-17.5.2-k6.9.1 https://github.com/nan0desu/vmware-host-modules.git")
+        os.chdir("vmware-host-modules")
+        print("Making and copying vmmon.tar and vmnet.tar...")
+        self.run_command("sudo make tarballs && sudo cp -v vmmon.tar vmnet.tar /usr/lib/vmware/modules/source/")
+        print("Running vmware-modconfig to install all modules...")
+        self.run_command("sudo vmware-modconfig --console --install-all")
+        os.chdir("..")  # Return to previous directory
 
-def create_service_files():
-    """Create systemd service files for VMware."""
-    services = {
-        'vmware-networks-configuration.service': """
+    def create_service_files(self):
+        services = {
+            'vmware-networks-configuration.service': """
 [Unit]
 Description=VMware Networks Configuration Generation
 ConditionPathExists=!/etc/vmware/networking
@@ -53,7 +75,7 @@ ExecStart=/usr/bin/vmware-networks --postinstall vmware-player,0,1
 Type=oneshot
 RemainAfterExit=yes
 """,
-        'vmware-usbarbitrator.path': """
+            'vmware-usbarbitrator.path': """
 [Unit]
 Description=Monitor to Load-On-Demand the VMware USB Arbitrator
 
@@ -63,7 +85,7 @@ PathExistsGlob=/var/run/vmware/*/*
 [Install]
 WantedBy=paths.target
 """,
-        'vmware-usbarbitrator.service': """
+            'vmware-usbarbitrator.service': """
 [Unit]
 Description=VMware USB Arbitrator
 
@@ -73,102 +95,113 @@ ExecStart=/usr/lib/vmware/bin/vmware-usbarbitrator -f
 [Install]
 WantedBy=multi-user.target
 """
-    }
+        }
 
+        for filename, content in services.items():
+            with open(f"/tmp/{filename}", 'w') as file:
+                file.write(content)
+            print(f"Created {filename}.")
+            self.run_command(f"sudo mv /tmp/{filename} /etc/systemd/system/{filename}")
 
-    for filename, content in services.items():
-        with open(f"/tmp/{filename}", 'w') as file:
-            file.write(content)
-        print(f"Created {filename}.")
-        run_command(f"sudo mv /tmp/{filename} /etc/systemd/system/{filename}")
+    def install_dependencies(self):
+        print("Installing dependencies...")
+        self.run_command(f"sudo dnf install -y {' '.join(self.dependencies)}")
 
-def install_vmware_fedora():
-    # Set up URLs and filenames for VMware Workstation
-    pkgver = "17.5.2"
-    buildver = "23775571"
-    tools_version = "12.4.0-23259341"
-    CARCH = "x86_64"
-    base_url = f"https://softwareupdate.vmware.com/cds/vmw-desktop/ws/{pkgver}/{buildver}/linux/packages"
-    bundle_url = f"https://softwareupdate.vmware.com/cds/vmw-desktop/ws/{pkgver}/{buildver}/linux/core/VMware-Workstation-{pkgver}-{buildver}.{CARCH}.bundle.tar"
+    def enable_services(self):
+        print("Enabling and starting VMware services...")
+        services = [
+            "vmware-networks-configuration.service",
+            "vmware-usbarbitrator.path",
+            "vmware-usbarbitrator.service"
+        ]
+        for service in services:
+            self.run_command(f"sudo systemctl enable --now {service}")
 
-    component_filenames = [
-        f"vmware-tools-linux-{tools_version}.{CARCH}.component.tar",
-        f"vmware-tools-linuxPreGlibc25-{tools_version}.{CARCH}.component.tar",
-        f"vmware-tools-netware-{tools_version}.{CARCH}.component.tar",
-        f"vmware-tools-solaris-{tools_version}.{CARCH}.component.tar",
-        f"vmware-tools-windows-{tools_version}.{CARCH}.component.tar",
-        f"vmware-tools-winPre2k-{tools_version}.{CARCH}.component.tar",
-        f"vmware-tools-winPreVista-{tools_version}.{CARCH}.component.tar"
-    ]
+    def add_user_to_vmware_group(self):
+        user = os.getlogin()
+        print(f"Adding {user} to the vmware group...")
+        self.run_command(f"sudo usermod -aG vmware {user}")
 
-    component_urls = [f"{base_url}/{filename}" for filename in component_filenames]
+    def install_vmware_fedora(self):
+        print("Step 1: Downloading the VMware Workstation installer and components...")
+        self.download_file(self.bundle_url, self.bundle_filename)
+        for url, filename in zip(self.component_urls, self.component_filenames):
+            self.download_file(url, filename)
 
-    # Step 1: Download the VMware Workstation installer and components
-    bundle_filename = f"VMware-Workstation-{pkgver}-{buildver}.{CARCH}.bundle.tar"
-    download_file(bundle_url, bundle_filename)
-    for url, filename in zip(component_urls, component_filenames):
-        download_file(url, filename)
-    
-    # Step 2: Extract the bundle file
-    print("Extracting the bundle file...")
-    run_command(f"tar -xf {bundle_filename}")
+        print("Step 2: Extracting the bundle file...")
+        self.run_command(f"tar -xf {self.bundle_filename}")
 
-    # Extracted components directory
-    extracted_dir = os.path.join(os.getcwd(), "extracted_components")
-    os.makedirs(extracted_dir, exist_ok=True)
-    for filename in component_filenames:
-        extract_tar(filename, extracted_dir)
+        os.makedirs(self.extracted_dir, exist_ok=True)
+        for filename in self.component_filenames:
+            self.extract_tar(filename)
 
-    # Step 3: Make the installer executable
-    print("Making the installer executable...")
-    bundle_installer = f"VMware-Workstation-{pkgver}-{buildver}.{CARCH}.bundle"
-    run_command(f"chmod +x {bundle_installer}")
+        print("Step 3: Making the installer executable...")
+        bundle_installer = f"VMware-Workstation-{self.pkgver}-{self.buildver}.{self.CARCH}.bundle"
+        self.run_command(f"chmod +x {bundle_installer}")
 
+        print("Step 4: Running the VMware Workstation installer with extracted components...")
+        extracted_components = [os.path.join(self.extracted_dir, filename) for filename in os.listdir(self.extracted_dir)]
+        install_command = f"sudo ./{bundle_installer} --console --required --eulas-agreed " + " ".join(
+            [f'--install-component "{os.path.abspath(filename)}"' for filename in extracted_components]
+        )
+        self.run_command(install_command)
 
-    # Step 4: Run the installer with extracted components
-    print("Running the VMware Workstation installer with extracted components...")
-    extracted_components = [os.path.join(extracted_dir, filename) for filename in os.listdir(extracted_dir)]
-    install_command = f"sudo ./{bundle_installer} --console --required --eulas-agreed " + " ".join(
-        [f'--install-component "{os.path.abspath(filename)}"' for filename in extracted_components]
-    )
-    run_command(install_command)
+        print("Step 5: Installing necessary dependencies...")
+        self.install_dependencies()
 
-    # Step 5: Install necessary dependencies
-    print("Installing dependencies...")
-    dependencies = [
-        "kernel-devel",
-        "kernel-headers",
-        "gcc",
-        "make",
-        "patch",
-        "net-tools",
-    ]
-    run_command(f"sudo dnf install -y {' '.join(dependencies)}")
-    
-    # Step 6: Compile kernel modules
-    print("Compiling kernel modules...")
-    install_vmware_modules()
-    
-    # Step 7: Create and enable systemd service files
-    print("Creating systemd service files...")
-    create_service_files()
+        print("Step 6: Compiling kernel modules...")
+        self.install_vmware_modules()
 
-    # Step 7: Enable and start the newly created services
-    print("Enabling and starting VMware services...")
-    services = [
-        "vmware-networks-configuration.service",
-        "vmware-usbarbitrator.path",
-        "vmware-usbarbitrator.service"
-    ]
-    for service in services:
-        run_command(f"sudo systemctl enable --now {service}")
-    
-    # Step 8: Add the user to the vmware group
-    user = os.getlogin()
-    print(f"Adding {user} to the vmware group...")
-    run_command(f"sudo usermod -aG vmware {user}")
-    
-    print("VMware installation and setup on Fedora is complete.")
+        print("Step 7: Creating systemd service files...")
+        self.create_service_files()
+
+        print("Step 8: Enabling and starting VMware services...")
+        self.enable_services()
+
+        print("Step 9: Adding the user to the vmware group...")
+        self.add_user_to_vmware_group()
+
+        print("VMware installation and setup on Fedora is complete.")
+
+    def uninstall_vmware_fedora(self):
+        print("Uninstalling VMware Workstation...")
+        
+        # Step 1: Stop and disable VMware services
+        print("Stopping and disabling VMware services...")
+        services = [
+            "vmware-networks-configuration.service",
+            "vmware-usbarbitrator.path",
+            "vmware-usbarbitrator.service"
+        ]
+        for service in services:
+            self.run_command(f"sudo systemctl stop {service}")
+            self.run_command(f"sudo systemctl disable {service}")
+
+        # Step 2: Remove systemd service files
+        print("Removing systemd service files...")
+        for service in services:
+            service_file = f"/etc/systemd/system/{service}"
+            if os.path.exists(service_file):
+                self.run_command(f"sudo rm {service_file}")
+
+        # Step 3: Remove VMware modules
+        print("Removing VMware modules...")
+        self.run_command("sudo rm -rf /usr/lib/vmware")
+
+        # Step 4: Uninstall VMware Workstation
+        print("Running the uninstallation script...")
+        uninstall_script = "/usr/bin/vmware-installer"
+        if os.path.exists(uninstall_script):
+            self.run_command(f"sudo {uninstall_script} --uninstall-product vmware-workstation")
+
+        # Step 5: Remove extracted components directory
+        print("Removing extracted components directory...")
+        if os.path.exists(self.extracted_dir):
+            shutil.rmtree(self.extracted_dir)
+
+        print("VMware uninstallation on Fedora is complete.")
 
 if __name__ == "__main__":
-    install_vmware_fedora()
+    installer = VMwareInstaller()
+    # installer.install_vmware_fedora()  # Uncomment to install
+    installer.uninstall_vmware_fedora()  # Uncomment to uninstall
