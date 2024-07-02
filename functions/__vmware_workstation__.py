@@ -111,12 +111,12 @@ class VMwareInstaller:
     def install_vmware_modules(self):
         """Install VMware modules."""
         logging.info(f"Cloning {self.PACKAGE_NAME} repository...")
-        self.run_command(f"git clone -b tmp/workstation-17.5.0-k6.8 https://github.com/mkubecek/{self.PACKAGE_NAME}.git")
+        self.run_command(f"git clone -b tmp/workstation-17.5.0-k6.8 https://github.com/mkubecek/{self.PACKAGE_NAME}.git {self.CACHE_DIR}")
 
         logging.info("Getting the DKMS modules")
         self.sparse_checkout("https://github.com/Hakanbaban53/Container-and-Virtualization-Installer", "Adding_the_vmware_worksitation_support_fedora", "vmware_dkms_files", f"{self.CACHE_DIR}/vmware_dkms_files")
 
-        os.chdir(f"{self.CACHE_DIR}/vmware_dkms_files")
+        os.chdir(f"{self.CACHE_DIR}")
         logging.info("Making and copying vmmon.tar and vmnet.tar...")
         self.run_command("make tarballs")
         self.run_command(f"sudo cp -v vmmon.tar vmnet.tar /usr/lib/vmware/modules/source/")
@@ -310,3 +310,5 @@ WantedBy=multi-user.target
         if os.path.exists(self.EXTRACTED_DIR):
             shutil.rmtree(self.EXTRACTED_DIR)
 
+if __name__ == "__main__":
+    VMwareInstaller(hide=False, action="install", linux_distro="fedora")
