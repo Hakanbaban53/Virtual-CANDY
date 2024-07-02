@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 import subprocess
 import shutil
 import logging
@@ -14,7 +15,9 @@ class VMwareInstaller:
     BASE_URL = f"https://softwareupdate.vmware.com/cds/vmw-desktop/ws/{PKGVER}/{BUILDVER}/linux/packages"
     BUNDLE_URL = f"https://softwareupdate.vmware.com/cds/vmw-desktop/ws/{PKGVER}/{BUILDVER}/linux/core/VMware-Workstation-{PKGVER}-{BUILDVER}.{CARCH}.bundle.tar"
     BUNDLE_FILENAME = f"VMware-Workstation-{PKGVER}-{BUILDVER}.{CARCH}.bundle.tar"
-    CACHE_DIR = f"~/.cache/vcandy/VMware"
+    CACHE_DIR = Path(os.path.expanduser("~")) / ".cache" / "vcandy" / "VMware"
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    DEPENDENCIES = []
     EXTRACTED_DIR = os.path.join(CACHE_DIR, "extracted_components")
     COMPONENT_FILENAMES = [
         f"vmware-tools-linux-{TOOLS_VERSION}.{CARCH}.component.tar",
@@ -82,18 +85,25 @@ class VMwareInstaller:
         self.run_command(f"find {self.EXTRACTED_DIR} -name '*.xml' -type f -delete")
 
     def sparse_checkout(self, repo_url, branch, folder_to_clone, clone_location):
-            commands = [
-                f"git clone --no-checkout -b {branch} {repo_url} {clone_location}",
-                f"cd {clone_location}",
-                "git sparse-checkout init --cone",
-                f"git sparse-checkout set {folder_to_clone}",
-                "git checkout"
-            ]
-            
-            for command in commands:
-                self.run_command(command)
-            
-            logging.info(f"Folder {folder_to_clone} has been cloned to {clone_location}/{folder_to_clone}")
+        # Step 1: Clone the repository
+        clone_command = f"git clone --no-checkout -b {branch} {repo_url} {clone_location}"
+        self.run_command(clone_command)
+
+        # Step 2: Change directory to the cloned repository
+        os.chdir(clone_location)
+
+        # Step 3: Perform sparse checkout
+        commands = [
+            "git sparse-checkout init --cone",
+            f"git sparse-checkout set {folder_to_clone}",
+            f"git checkout {branch}"  # Specify the branch explicitly here
+        ]
+        
+        for command in commands:
+            self.run_command(command)
+        
+        logging.info(f"Folder {folder_to_clone} has been cloned to {clone_location}/{folder_to_clone}")
+
 
     def install_vmware_modules(self):
         logging.info("Cloning vmware-host-modules repository...")
@@ -117,13 +127,13 @@ class VMwareInstaller:
         self.run_command(f"sudo cp -r vmnet-only /usr/src/{self.DKMS_MODULE}-{self.PKGVER}/")
 
         logging.info("Getting the DKMS modules")
-        self.sparse_checkout("https://github.com/Hakanbaban53/Container-and-Virtualization-Installer", "Adding_the_vmware_worksitation_support_fedora" "vmware_dkms_files", f"{self.CACHE_DIR}/vmware_dkms_files")
+        self.sparse_checkout("https://github.com/Hakanbaban53/Container-and-Virtualization-Installer", "Adding_the_vmware_worksitation_support_fedora" "vmware_dkms_files", f"{self.CACHE_DIR}/vmware_dkms_files/vmware_dkms_files")
 
         logging.info("Copying Makefile to DKMS directory...")
-        self.run_command(f"sudo cp -r {self.CACHE_DIR}/vmware_dkms_files/Makefile /usr/src/{self.DKMS_MODULE}-{self.PKGVER}/")
+        self.run_command(f"sudo cp -r {self.CACHE_DIR}/vmware_dkms_files/vmware_dkms_files/Makefile /usr/src/{self.DKMS_MODULE}-{self.PKGVER}/")
 
         logging.info("Creating DKMS configuration for vmware-host-modules...")
-        with open(f"{self.CACHE_DIR}/vmware_dkms_files/dkms.conf", "r") as template_file:
+        with open(f"{self.CACHE_DIR}/vmware_dkms_files/vmware_dkms_files/dkms.conf", "r") as template_file:
             dkms_conf_template = template_file.read()
 
         dkms_conf_vmware_host_modules = dkms_conf_template.format(
@@ -139,8 +149,8 @@ class VMwareInstaller:
         logging.info(f"DKMS configuration file created at /usr/src/{self.DKMS_MODULE}-{self.PKGVER}/dkms.conf")
 
         logging.info("Applying patches...")
-        self.run_command(f"sudo patch -p2 -d /usr/src/{self.DKMS_MODULE}-{self.PKGVER}/vmmon-only < {self.CACHE_DIR}/vmware_dkms_files/vmmon.patch --force")
-        self.run_command(f"sudo patch -p2 -d /usr/src/{self.DKMS_MODULE}-{self.PKGVER}/vmnet-only < {self.CACHE_DIR}/vmware_dkms_files/vmnet.patch --force")
+        self.run_command(f"sudo patch -p2 -d /usr/src/{self.DKMS_MODULE}-{self.PKGVER}/vmmon-only < {self.CACHE_DIR}/vmware_dkms_files/vmware_dkms_files/vmmon.patch --force")
+        self.run_command(f"sudo patch -p2 -d /usr/src/{self.DKMS_MODULE}-{self.PKGVER}/vmnet-only < {self.CACHE_DIR}/vmware_dkms_files/vmware_dkms_files/vmnet.patch --force")
 
         logging.info("Adding and building vmware-host-modules module with DKMS...")
         self.run_command(f"sudo dkms add -m {self.DKMS_MODULE} -v {self.PKGVER}")
@@ -224,7 +234,7 @@ WantedBy=multi-user.target
             self.download_file(url, filename)
 
         logging.info("Step 2: Extracting the bundle file...")
-        self.run_command(f"tar -xf {os.path.join(self.CACHE_DIR, self.BUNDLE_FILENAME)}")
+        self.run_command(f"tar -xf {os.path.join(self.CACHE_DIR, self.BUNDLE_FILENAME)} -C {self.CACHE_DIR}")
 
         os.makedirs(self.EXTRACTED_DIR, exist_ok=True)
         for filename in self.COMPONENT_FILENAMES:
@@ -290,3 +300,6 @@ WantedBy=multi-user.target
             shutil.rmtree(self.EXTRACTED_DIR)
 
         logging.info(f"VMware uninstallation on {self.linux_distro} is complete.")
+
+if __name__ == "__main__":
+    VMwareInstaller(False, "remove", "fedora")

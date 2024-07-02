@@ -11,7 +11,7 @@ class PackagesJSONHandler:
         self.json_file_path = self.get_cache_file_path()
 
     def get_cache_file_path(self):
-        cache_dir = Path(os.path.expanduser("~")) / ".cache" / "vcany"
+        cache_dir = Path(os.path.expanduser("~")) / ".cache" / "vcandy"
         cache_dir.mkdir(parents=True, exist_ok=True)
         return cache_dir / "packages.json"
 
