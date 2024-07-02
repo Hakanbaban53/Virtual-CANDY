@@ -153,8 +153,8 @@ class VMwareInstaller:
         logging.info(f"DKMS configuration file created at /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/dkms.conf")
 
         logging.info("Applying patches...")
-        self.run_command(f"sudo patch -p2 -d /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/vmmon-only < {self.CACHE_DIR}/vmware_dkms_files/vmware_dkms_files/vmmon.patch")
-        self.run_command(f"sudo patch -p2 -d /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/vmnet-only < {self.CACHE_DIR}/vmware_dkms_files/vmware_dkms_files/vmnet.patch")
+        self.run_command(f"sudo patch -p2 -d /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/vmmon-only < {self.CACHE_DIR}/vmware_dkms_files/vmware_dkms_files/vmmon.patch --force")
+        self.run_command(f"sudo patch -p2 -d /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/vmnet-only < {self.CACHE_DIR}/vmware_dkms_files/vmware_dkms_files/vmnet.patch --force")
 
         logging.info("Adding and building vmware-host-modules module with DKMS...")
         self.run_command(f"sudo dkms add -m {self.PACKAGE_NAME} -v {self.PACKAGE_VERSION}")
@@ -231,12 +231,12 @@ WantedBy=multi-user.target
         self.run_command(f"sudo usermod -aG vmware {user}")
 
     def install_vmware(self):
-        """Perform the full VMware installation."""
-        logging.info("Step 1: Downloading the VMware Workstation installer and components...")
-        os.makedirs(self.CACHE_DIR, exist_ok=True)
-        self.download_file(self.BUNDLE_URL, self.BUNDLE_FILENAME)
-        for url, filename in zip(self.COMPONENT_URLS, self.COMPONENT_FILENAMES):
-            self.download_file(url, filename)
+        # """Perform the full VMware installation."""
+        # logging.info("Step 1: Downloading the VMware Workstation installer and components...")
+        # os.makedirs(self.CACHE_DIR, exist_ok=True)
+        # self.download_file(self.BUNDLE_URL, self.BUNDLE_FILENAME)
+        # for url, filename in zip(self.COMPONENT_URLS, self.COMPONENT_FILENAMES):
+        #     self.download_file(url, filename)
 
         logging.info("Step 2: Extracting the bundle file...")
         self.run_command(f"tar -xf {os.path.join(self.CACHE_DIR, self.BUNDLE_FILENAME)} -C {self.CACHE_DIR}")
