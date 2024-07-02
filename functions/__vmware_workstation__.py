@@ -130,20 +130,24 @@ class VMwareInstaller:
         self.run_command(f"sudo cp -r {self.CACHE_DIR}/vmware_dkms_files/vmware_dkms_files/Makefile /usr/src/{self.DKMS_MODULE}-{self.PKGVER}/")
 
         logging.info("Creating DKMS configuration for vmware-host-modules...")
-        with open(f"{self.CACHE_DIR}/vmware_dkms_files/vmware_dkms_files/dkms.conf", "r") as template_file:
-            dkms_conf_template = template_file.read()
+        dkms_conf_vmware_host_modules = """
+PACKAGE_NAME="vmware-host-modules"
+PACKAGE_VERSION="17.5.2"
+MAKE="make KVERSION=$kernelver SRCDIR=/usr/src/$PACKAGE_NAME-$PACKAGE_VERSION"
+CLEAN="make clean"
+AUTOINSTALL="YES"
 
-        dkms_conf_vmware_host_modules = dkms_conf_template.format(
-            PACKAGE_NAME=self.DKMS_MODULE,
-            PACKAGE_VERSION=self.PKGVER
-        )
-        
-        temp_conf_path = f"/tmp/{self.DKMS_MODULE}-{self.PKGVER}-dkms.conf"
-        with open(temp_conf_path, "w") as conf_file:
-            conf_file.write(dkms_conf_vmware_host_modules)
-        
-        self.run_command(f"sudo mv {temp_conf_path} /usr/src/{self.DKMS_MODULE}-{self.PKGVER}/dkms.conf")
-        logging.info(f"DKMS configuration file created at /usr/src/{self.DKMS_MODULE}-{self.PKGVER}/dkms.conf")
+BUILT_MODULE_NAME[0]="vmmon"
+BUILT_MODULE_LOCATION[0]='vmmon-only'
+DEST_MODULE_LOCATION[0]="/kernel/drivers/misc"
+
+BUILT_MODULE_NAME[1]="vmnet"
+BUILT_MODULE_LOCATION[1]='vmnet-only'
+DEST_MODULE_LOCATION[1]="/kernel/drivers/net"
+        """
+        with open("/tmp/vmware-host-modules-17.5.2-dkms.conf", "w") as f:
+            f.write(dkms_conf_vmware_host_modules)
+        self.run_command("sudo mv /tmp/vmware-host-modules-17.5.2-dkms.conf /usr/src/vmware-host-modules-17.5.2/dkms.conf")
 
         logging.info("Applying patches...")
         self.run_command(f"sudo patch -p2 -d /usr/src/{self.DKMS_MODULE}-{self.PKGVER}/vmmon-only < {self.CACHE_DIR}/vmware_dkms_files/vmware_dkms_files/vmmon.patch --force")
