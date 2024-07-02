@@ -111,7 +111,7 @@ class VMwareInstaller:
     def install_vmware_modules(self):
         """Install VMware modules."""
         logging.info(f"Cloning {self.PACKAGE_NAME} repository...")
-        self.run_command(f"git clone -b tmp/workstation-17.5.0-k6.8 https://github.com/mkubecek/{self.PACKAGE_NAME}.git {self.CACHE_DIR}/vmware_host_modules")
+        self.run_command(f"git clone -b tmp/workstation-17.5.2-k6.9.1 https://github.com/nan0desu/{self.PACKAGE_NAME}.git {self.CACHE_DIR}/vmware_host_modules")
 
         logging.info("Getting the DKMS modules")
         self.sparse_checkout("https://github.com/Hakanbaban53/Container-and-Virtualization-Installer", "Adding_the_vmware_worksitation_support_fedora", "vmware_dkms_files", f"{self.CACHE_DIR}/vmware_dkms_files")
@@ -153,8 +153,8 @@ class VMwareInstaller:
         logging.info(f"DKMS configuration file created at /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/dkms.conf")
 
         logging.info("Applying patches...")
-        self.run_command(f"sudo patch -p2 -d /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/vmmon-only < {self.CACHE_DIR}/vmware_dkms_files/vmware_dkms_files/vmmon.patch --force")
-        self.run_command(f"sudo patch -p2 -d /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/vmnet-only < {self.CACHE_DIR}/vmware_dkms_files/vmware_dkms_files/vmnet.patch --force")
+        self.run_command(f"sudo patch -p2 -d /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/vmmon-only < {self.CACHE_DIR}/vmware_dkms_files/vmware_dkms_files/vmmon.patch")
+        self.run_command(f"sudo patch -p2 -d /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/vmnet-only < {self.CACHE_DIR}/vmware_dkms_files/vmware_dkms_files/vmnet.patch")
 
         logging.info("Adding and building vmware-host-modules module with DKMS...")
         self.run_command(f"sudo dkms add -m {self.PACKAGE_NAME} -v {self.PACKAGE_VERSION}")
