@@ -310,8 +310,3 @@ WantedBy=multi-user.target
         if os.path.exists(self.EXTRACTED_DIR):
             shutil.rmtree(self.EXTRACTED_DIR)
 
-        logging.info(f"VMware uninstallation on {self.linux_distro} is complete.")
-
-
-if __name__ == "__main__":
-    VMwareInstaller(False, "install", "fedora")
