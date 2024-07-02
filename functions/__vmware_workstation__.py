@@ -66,7 +66,7 @@ class VMwareInstaller:
         """Setup logging configuration."""
         logging.basicConfig(level=logging.INFO,
                             format='%(asctime)s - %(levelname)s - %(message)s',
-                            handlers=[logging.FileHandler("vmware_installer.log"),
+                            handlers=[logging.FileHandler(f"{self.CACHE_DIR}/vmware_installer.log"),
                                       logging.StreamHandler()])
 
     def run_command(self, command):
