@@ -44,7 +44,6 @@ class VMwareInstaller:
         except subprocess.CalledProcessError as e:
             logging.error(f"Command failed: {command}")
             logging.error(e.stderr)
-            raise
 
     def download_file(self, url, filename):
         """Download a file from a URL using wget."""
