@@ -1,6 +1,8 @@
 from subprocess import run, PIPE, CalledProcessError
 from os import path, devnull, getenv
 
+from functions.__special_install_selector__ import SelectSpecialInstaller
+
 
 def ubuntu_package_manager(packages, hide_output, action):
     hide = open(devnull, "w") if hide_output else None
@@ -43,6 +45,9 @@ def ubuntu_package_manager(packages, hide_output, action):
                     elif action == "remove":
                         print(f"{name} removing...")
                         package_remover(data, hide)
+
+            if package_type == "special-package":
+                SelectSpecialInstaller(hide, action, data, "ubuntu")
 
             if package_type == "remove-package":
                 packages_to_check = check_value.split()

@@ -1,5 +1,6 @@
 from subprocess import run, PIPE, CalledProcessError, check_output
 from os import path, devnull, getenv
+from functions.__special_install_selector__ import SelectSpecialInstaller
 
 
 def fedora_package_manager(packages, hide_output, action):
@@ -27,6 +28,9 @@ def fedora_package_manager(packages, hide_output, action):
                     elif action == "remove":
                         print(f"{name} removing...")
                         package_remover(data, hide)
+
+            if package_type == "special-package":
+                SelectSpecialInstaller(hide, action, data, "fedora")
 
             if package_type == "remove-package":
                 packages_to_check = check_value.split()

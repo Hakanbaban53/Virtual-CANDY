@@ -76,6 +76,18 @@
             ]
         },
         {
+            "name": "VMware_Workstation 17.5.2",
+            "values":[
+                {
+                    "name": "VMware Workstation",
+                    "type": "AUR-package",
+                    "install_value": "vmware-workstation",
+                    "check_value": "vmware-workstation",
+                    "remove_value": "vmware-workstation"
+                }
+            ]
+        },
+        {
             "name": "VirtualBox-7.0",
             "values": [
                 {
@@ -263,6 +275,18 @@
                     "install_value": "github-desktop",
                     "check_value": "github-desktop",
                     "remove_value": "github-desktop"
+                }
+            ]
+        },
+        {
+            "name": "VMware_Workstation 17.5.2",
+            "values":[
+                {
+                    "name": "VMware Workstation",
+                    "type": "special-package",
+                    "install_value": "vmware-workstation",
+                    "check_value": "vmware-workstation",
+                    "remove_value": "vmware-workstation"
                 }
             ]
         },
@@ -550,6 +574,18 @@
             ]
         },
         {
+            "name": "VMware_Workstation 17.5.2",
+            "values":[
+                {
+                    "name": "VMware Workstation",
+                    "type": "special-package",
+                    "install_value": "vmware-workstation",
+                    "check_value": "vmware-workstation",
+                    "remove_value": "vmware-workstation"
+                }
+            ]
+        },
+        {
             "name": "VirtualBox-7.0",
             "values": [
                 {
@@ -757,6 +793,18 @@
                     "install_value": "github-desktop",
                     "check_value": "github-desktop",
                     "remove_value": "github-desktop"
+                }
+            ]
+        },
+        {
+            "name": "VMware_Workstation_17.5.2",
+            "values":[
+                {
+                    "name": "VMware Workstation",
+                    "type": "special-package",
+                    "install_value": "vmware-workstation",
+                    "check_value": "vmware-workstation",
+                    "remove_value": "vmware-workstation"
                 }
             ]
         },
