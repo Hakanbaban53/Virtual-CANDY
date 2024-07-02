@@ -104,7 +104,7 @@ class VMwareInstaller:
 
     def install_vmware_modules(self):
         logging.info("Cloning vmware-host-modules repository...")
-        self.run_command(f"git clone -b workstation-17.5.1 https://github.com/mkubecek/vmware-host-modules {self.CACHE_DIR}/vmware-host-modules")
+        self.run_command(f"git clone -b tmp/workstation-17.5.2-k6.9.1 https://github.com/nan0desu/vmware-host-modules.git {self.CACHE_DIR}/vmware-host-modules")
 
         os.chdir(f"{self.CACHE_DIR}/vmware-host-modules")
         logging.info("Making and copying vmmon.tar and vmnet.tar...")
