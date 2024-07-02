@@ -81,6 +81,20 @@ class VMwareInstaller:
         self.run_command(f"tar -xf {os.path.join(self.CACHE_DIR, filename)} -C {self.EXTRACTED_DIR}")
         self.run_command(f"find {self.EXTRACTED_DIR} -name '*.xml' -type f -delete")
 
+    def sparse_checkout(self, repo_url, branch, folder_to_clone, clone_location):
+            commands = [
+                f"git clone --no-checkout -b {branch} {repo_url} {clone_location}",
+                f"cd {clone_location}",
+                "git sparse-checkout init --cone",
+                f"git sparse-checkout set {folder_to_clone}",
+                "git checkout"
+            ]
+            
+            for command in commands:
+                self.run_command(command)
+            
+            logging.info(f"Folder {folder_to_clone} has been cloned to {clone_location}/{folder_to_clone}")
+
     def install_vmware_modules(self):
         logging.info("Cloning vmware-host-modules repository...")
         self.run_command(f"git clone -b workstation-17.5.1 https://github.com/mkubecek/vmware-host-modules {self.CACHE_DIR}/vmware-host-modules")
@@ -101,10 +115,15 @@ class VMwareInstaller:
         logging.info("Moving source files to DKMS directory...")
         self.run_command(f"sudo cp -r vmmon-only /usr/src/{self.DKMS_MODULE}-{self.PKGVER}/")
         self.run_command(f"sudo cp -r vmnet-only /usr/src/{self.DKMS_MODULE}-{self.PKGVER}/")
-        self.run_command(f"sudo cp -r ~/Belgeler/GitHub/Container-and-Virtualization-Installer/functions/Makefile /usr/src/{self.DKMS_MODULE}-{self.PKGVER}/")
+
+        logging.info("Getting the DKMS modules")
+        self.sparse_checkout("https://github.com/Hakanbaban53/Container-and-Virtualization-Installer", "Adding_the_vmware_worksitation_support_fedora" "vmware_dkms_files", f"{self.CACHE_DIR}/vmware_dkms_files")
+
+        logging.info("Copying Makefile to DKMS directory...")
+        self.run_command(f"sudo cp -r {self.CACHE_DIR}/vmware_dkms_files/Makefile /usr/src/{self.DKMS_MODULE}-{self.PKGVER}/")
 
         logging.info("Creating DKMS configuration for vmware-host-modules...")
-        with open(template_path, "r") as template_file:
+        with open(f"{self.CACHE_DIR}/vmware_dkms_files/dkms.conf", "r") as template_file:
             dkms_conf_template = template_file.read()
 
         dkms_conf_vmware_host_modules = dkms_conf_template.format(
@@ -120,8 +139,8 @@ class VMwareInstaller:
         logging.info(f"DKMS configuration file created at /usr/src/{self.DKMS_MODULE}-{self.PKGVER}/dkms.conf")
 
         logging.info("Applying patches...")
-        self.run_command(f"sudo patch -p2 -d /usr/src/{self.DKMS_MODULE}-{self.PKGVER}/vmmon-only < ~/Belgeler/GitHub/Container-and-Virtualization-Installer/functions/vmmon.patch --force")
-        self.run_command(f"sudo patch -p2 -d /usr/src/{self.DKMS_MODULE}-{self.PKGVER}/vmnet-only < ~/Belgeler/GitHub/Container-and-Virtualization-Installer/functions/vmnet.patch --force")
+        self.run_command(f"sudo patch -p2 -d /usr/src/{self.DKMS_MODULE}-{self.PKGVER}/vmmon-only < {self.CACHE_DIR}/vmware_dkms_files/vmmon.patch --force")
+        self.run_command(f"sudo patch -p2 -d /usr/src/{self.DKMS_MODULE}-{self.PKGVER}/vmnet-only < {self.CACHE_DIR}/vmware_dkms_files/vmnet.patch --force")
 
         logging.info("Adding and building vmware-host-modules module with DKMS...")
         self.run_command(f"sudo dkms add -m {self.DKMS_MODULE} -v {self.PKGVER}")
@@ -131,7 +150,7 @@ class VMwareInstaller:
         logging.info("Running vmware-modconfig to install all modules...")
         self.run_command("sudo vmware-modconfig --console --install-all")
 
-        os.chdir("..")  # Return to previous directory
+        os.chdir("-")  # Return to previous directory
 
     def create_service_files(self):
         services = {
