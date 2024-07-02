@@ -53,57 +53,56 @@ class VMwareInstaller:
         self.run_command(f"tar -xf {filename} -C {self.extracted_dir}")
         self.run_command(f"find {self.extracted_dir} -name '*.xml' -type f -delete")
 
-
     def install_vmware_modules(self):
         print("Cloning vmware-host-modules repository...")
-        self.run_command("git clone -b tmp/workstation-17.5.2-k6.9.1 https://github.com/nan0desu/vmware-host-modules.git")
+        self.run_command("git clone -b workstation-17.5.1 https://github.com/mkubecek/vmware-host-modules")
         
         os.chdir("vmware-host-modules")
         print("Making and copying vmmon.tar and vmnet.tar...")
-        self.run_command("make tarballs && sudo cp -v vmmon.tar vmnet.tar /usr/lib/vmware/modules/source/")
-        
+        self.run_command("make tarballs")
+        self.run_command("sudo cp -v vmmon.tar vmnet.tar /usr/lib/vmware/modules/source/")
+
         print("Extracting vmmon.tar and vmnet.tar...")
         os.chdir("/usr/lib/vmware/modules/source/")
         self.run_command("sudo tar -xvf vmmon.tar")
         self.run_command("sudo tar -xvf vmnet.tar")
         
         print("Creating directories for DKMS...")
-        self.run_command("sudo mkdir -p /usr/src/vmmon-17.5.2")
-        self.run_command("sudo mkdir -p /usr/src/vmnet-17.5.2")
+        self.run_command("sudo mkdir -p /usr/src/vmware-host-modules-17.5.2")
         
-        print("Creating DKMS configuration for vmmon...")
-        dkms_conf_vmmon = """
-PACKAGE_NAME="vmmon"
+        print("Moving source files to DKMS directory...")
+        self.run_command("sudo cp -r vmmon-only /usr/src/vmware-host-modules-17.5.2/")
+        self.run_command("sudo cp -r vmnet-only /usr/src/vmware-host-modules-17.5.2/")
+        self.run_command("sudo cp -r /home/hakan/Belgeler/GitHub/Container-and-Virtualization-Installer/functions/Makefile /usr/src/vmware-host-modules-17.5.2/")
+
+        print("Creating DKMS configuration for vmware-host-modules...")
+        dkms_conf_vmware_host_modules = """
+PACKAGE_NAME="vmware-host-modules"
 PACKAGE_VERSION="17.5.2"
+MAKE="make KVERSION=$kernelver SRCDIR=/usr/src/$PACKAGE_NAME-$PACKAGE_VERSION"
+CLEAN="make clean"
+AUTOINSTALL="YES"
+
 BUILT_MODULE_NAME[0]="vmmon"
-DEST_MODULE_LOCATION[0]="/kernel/drivers/misc/"
-AUTOINSTALL="yes"
+BUILT_MODULE_LOCATION[0]='vmmon-only'
+DEST_MODULE_LOCATION[0]="/kernel/drivers/misc"
+
+BUILT_MODULE_NAME[1]="vmnet"
+BUILT_MODULE_LOCATION[1]='vmnet-only'
+DEST_MODULE_LOCATION[1]="/kernel/drivers/net"
         """
-        with open("/tmp/vmmon-17.5.2-dkms.conf", "w") as f:
-            f.write(dkms_conf_vmmon)
-        self.run_command("sudo mv /tmp/vmmon-17.5.2-dkms.conf /usr/src/vmmon-17.5.2/dkms.conf")
+        with open("/tmp/vmware-host-modules-17.5.2-dkms.conf", "w") as f:
+            f.write(dkms_conf_vmware_host_modules)
+        self.run_command("sudo mv /tmp/vmware-host-modules-17.5.2-dkms.conf /usr/src/vmware-host-modules-17.5.2/dkms.conf")
         
-        print("Creating DKMS configuration for vmnet...")
-        dkms_conf_vmnet = """
-PACKAGE_NAME="vmnet"
-PACKAGE_VERSION="17.5.2"
-BUILT_MODULE_NAME[0]="vmnet"
-DEST_MODULE_LOCATION[0]="/kernel/drivers/misc/"
-AUTOINSTALL="yes"
-        """
-        with open("/tmp/vmnet-17.5.2-dkms.conf", "w") as f:
-            f.write(dkms_conf_vmnet)
-        self.run_command("sudo mv /tmp/vmnet-17.5.2-dkms.conf /usr/src/vmnet-17.5.2/dkms.conf")
-        
-        print("Adding and building vmmon module with DKMS...")
-        self.run_command("sudo dkms add -m vmmon -v 17.5.2")
-        self.run_command("sudo dkms build -m vmmon -v 17.5.2")
-        self.run_command("sudo dkms install -m vmmon -v 17.5.2")
-        
-        print("Adding and building vmnet module with DKMS...")
-        self.run_command("sudo dkms add -m vmnet -v 17.5.2")
-        self.run_command("sudo dkms build -m vmnet -v 17.5.2")
-        self.run_command("sudo dkms install -m vmnet -v 17.5.2")
+        print("Applying patches...")
+        self.run_command("sudo patch -p2 -d /usr/src/vmware-host-modules-17.5.2/vmmon-only < /home/hakan/Belgeler/GitHub/Container-and-Virtualization-Installer/functions/vmmon.patch")
+        self.run_command("sudo patch -p2 -d /usr/src/vmware-host-modules-17.5.2/vmnet-only < /home/hakan/Belgeler/GitHub/Container-and-Virtualization-Installer/functions/vmnet.patch")
+
+        print("Adding and building vmware-host-modules module with DKMS...")
+        self.run_command("sudo dkms add -m vmware-host-modules -v 17.5.2")
+        self.run_command("sudo dkms build -m vmware-host-modules -v 17.5.2")
+        self.run_command("sudo dkms install -m vmware-host-modules -v 17.5.2")
         
         print("Running vmware-modconfig to install all modules...")
         self.run_command("sudo vmware-modconfig --console --install-all")
@@ -171,45 +170,45 @@ WantedBy=multi-user.target
         self.run_command(f"sudo usermod -aG vmware {user}")
 
     def install_vmware_fedora(self):
-        print("Step 1: Downloading the VMware Workstation installer and components...")
-        self.download_file(self.bundle_url, self.bundle_filename)
-        for url, filename in zip(self.component_urls, self.component_filenames):
-            self.download_file(url, filename)
+        # print("Step 1: Downloading the VMware Workstation installer and components...")
+        # self.download_file(self.bundle_url, self.bundle_filename)
+        # for url, filename in zip(self.component_urls, self.component_filenames):
+        #     self.download_file(url, filename)
 
-        print("Step 2: Extracting the bundle file...")
-        self.run_command(f"tar -xf {self.bundle_filename}")
+        # print("Step 2: Extracting the bundle file...")
+        # self.run_command(f"tar -xf {self.bundle_filename}")
 
-        os.makedirs(self.extracted_dir, exist_ok=True)
-        for filename in self.component_filenames:
-            self.extract_tar(filename)
+        # os.makedirs(self.extracted_dir, exist_ok=True)
+        # for filename in self.component_filenames:
+        #     self.extract_tar(filename)
 
-        print("Step 3: Making the installer executable...")
-        bundle_installer = f"VMware-Workstation-{self.pkgver}-{self.buildver}.{self.CARCH}.bundle"
-        self.run_command(f"chmod +x {bundle_installer}")
+        # print("Step 3: Making the installer executable...")
+        # bundle_installer = f"VMware-Workstation-{self.pkgver}-{self.buildver}.{self.CARCH}.bundle"
+        # self.run_command(f"chmod +x {bundle_installer}")
 
-        print("Step 4: Running the VMware Workstation installer with extracted components...")
-        extracted_components = [os.path.join(self.extracted_dir, filename) for filename in os.listdir(self.extracted_dir)]
-        install_command = f"sudo ./{bundle_installer} --console --required --eulas-agreed " + " ".join(
-            [f'--install-component "{os.path.abspath(filename)}"' for filename in extracted_components]
-        )
-        self.run_command(install_command)
+        # print("Step 4: Running the VMware Workstation installer with extracted components...")
+        # extracted_components = [os.path.join(self.extracted_dir, filename) for filename in os.listdir(self.extracted_dir)]
+        # install_command = f"sudo ./{bundle_installer} --console --required --eulas-agreed " + " ".join(
+        #     [f'--install-component "{os.path.abspath(filename)}"' for filename in extracted_components]
+        # )
+        # self.run_command(install_command)
 
-        print("Step 5: Installing necessary dependencies...")
-        self.install_dependencies()
+        # print("Step 5: Installing necessary dependencies...")
+        # self.install_dependencies()
 
         print("Step 6: Compiling kernel modules...")
         self.install_vmware_modules()
 
-        print("Step 7: Creating systemd service files...")
-        self.create_service_files()
+        # print("Step 7: Creating systemd service files...")
+        # self.create_service_files()
 
-        print("Step 8: Enabling and starting VMware services...")
-        self.enable_services()
+        # print("Step 8: Enabling and starting VMware services...")
+        # self.enable_services()
 
-        print("Step 9: Adding the user to the vmware group...")
-        self.add_user_to_vmware_group()
+        # print("Step 9: Adding the user to the vmware group...")
+        # self.add_user_to_vmware_group()
 
-        print("VMware installation and setup on Fedora is complete.")
+        # print("VMware installation and setup on Fedora is complete.")
 
     def uninstall_vmware_fedora(self):
         print("Uninstalling VMware Workstation...")
