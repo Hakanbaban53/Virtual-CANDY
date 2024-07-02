@@ -35,11 +35,6 @@ class VMwareInstaller:
         self.linux_distro = linux_distro
         self.COMPONENT_URLS = [f"{self.BASE_URL}/{filename}" for filename in self.COMPONENT_FILENAMES]
 
-        if self.action == "install":
-            self.install_vmware()
-        elif self.action == "remove":
-            self.uninstall_vmware()
-
         if self.linux_distro == "fedora":
             self.DEPENDENCIES = [
                 "kernel-devel",
@@ -61,6 +56,11 @@ class VMwareInstaller:
                 "net-tools",
             ]
 
+        if self.action == "install":
+            self.install_vmware()
+        elif self.action == "remove":
+            self.uninstall_vmware()
+
     @staticmethod
     def run_command(command):
         """Run a shell command and print its output."""
@@ -74,8 +74,8 @@ class VMwareInstaller:
 
     def download_file(self, url, filename):
         """Download a file from a URL using wget."""
-        logging.info(f"Downloading {filename} from {url}...")
         self.run_command(f"wget -O {os.path.join(self.CACHE_DIR, filename)} {url}")
+        logging.info(f"Downloading {filename} from {url}...")
         logging.info(f"Downloaded {filename}.")
 
     def extract_tar(self, filename):
@@ -85,14 +85,11 @@ class VMwareInstaller:
         self.run_command(f"find {self.EXTRACTED_DIR} -name '*.xml' -type f -delete")
 
     def sparse_checkout(self, repo_url, branch, folder_to_clone, clone_location):
-        # Step 1: Clone the repository
         clone_command = f"git clone --no-checkout -b {branch} {repo_url} {clone_location}"
         self.run_command(clone_command)
 
-        # Step 2: Change directory to the cloned repository
         os.chdir(clone_location)
 
-        # Step 3: Perform sparse checkout
         commands = [
             "git sparse-checkout init --cone",
             f"git sparse-checkout set {folder_to_clone}",
@@ -109,7 +106,7 @@ class VMwareInstaller:
         logging.info("Cloning vmware-host-modules repository...")
         self.run_command(f"git clone -b workstation-17.5.1 https://github.com/mkubecek/vmware-host-modules {self.CACHE_DIR}/vmware-host-modules")
 
-        os.chdir("{self.CACHE_DIR}/vmware-host-modules")
+        os.chdir(f"{self.CACHE_DIR}/vmware-host-modules")
         logging.info("Making and copying vmmon.tar and vmnet.tar...")
         self.run_command("make tarballs")
         self.run_command("sudo cp -v vmmon.tar vmnet.tar /usr/lib/vmware/modules/source/")
@@ -127,7 +124,7 @@ class VMwareInstaller:
         self.run_command(f"sudo cp -r vmnet-only /usr/src/{self.DKMS_MODULE}-{self.PKGVER}/")
 
         logging.info("Getting the DKMS modules")
-        self.sparse_checkout("https://github.com/Hakanbaban53/Container-and-Virtualization-Installer", "Adding_the_vmware_worksitation_support_fedora" "vmware_dkms_files", f"{self.CACHE_DIR}/vmware_dkms_files/vmware_dkms_files")
+        self.sparse_checkout("https://github.com/Hakanbaban53/Container-and-Virtualization-Installer", "Adding_the_vmware_worksitation_support_fedora", "vmware_dkms_files", f"{self.CACHE_DIR}/vmware_dkms_files")
 
         logging.info("Copying Makefile to DKMS directory...")
         self.run_command(f"sudo cp -r {self.CACHE_DIR}/vmware_dkms_files/vmware_dkms_files/Makefile /usr/src/{self.DKMS_MODULE}-{self.PKGVER}/")
@@ -160,7 +157,7 @@ class VMwareInstaller:
         logging.info("Running vmware-modconfig to install all modules...")
         self.run_command("sudo vmware-modconfig --console --install-all")
 
-        os.chdir("-")  # Return to previous directory
+        os.chdir("..")  # Return to previous directory
 
     def create_service_files(self):
         services = {
@@ -302,4 +299,4 @@ WantedBy=multi-user.target
         logging.info(f"VMware uninstallation on {self.linux_distro} is complete.")
 
 if __name__ == "__main__":
-    VMwareInstaller(False, "remove", "fedora")
+    VMwareInstaller(False, "install", "fedora")
