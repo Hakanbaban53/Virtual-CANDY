@@ -32,7 +32,7 @@ class VMwareInstaller:
         "net-tools",
     ]
     PACKAGE_NAME = "vmware-host-modules"
-    PACKAGE_VERSION = PKGVER
+    PACKAGE_VERSION = PKGVER # Do not make the PACKAGE_VERSION to PKGVER
 
     def __init__(self):
         self.COMPONENT_URLS = [f"{self.BASE_URL}/{filename}" for filename in self.COMPONENT_FILENAMES]
@@ -95,24 +95,20 @@ class VMwareInstaller:
         self.run_command(f"sudo cp -r /home/hakan/Belgeler/GitHub/Container-and-Virtualization-Installer/functions/Makefile /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/")
 
         logging.info("Creating DKMS configuration for vmware-host-modules...")
-        dkms_conf = f"""
-PACKAGE_NAME="{self.PACKAGE_NAME}"
-PACKAGE_VERSION="{self.PACKAGE_VERSION}"
-MAKE="make KVERSION=$kernelver SRCDIR=/usr/src/$PACKAGE_NAME-$PACKAGE_VERSION"
-CLEAN="make clean"
-AUTOINSTALL="YES"
+        with open(f"/home/hakan/Belgeler/GitHub/Container-and-Virtualization-Installer/functions/dkms.conf", "r") as template_file:
+            dkms_conf_template = template_file.read()
 
-BUILT_MODULE_NAME[0]="vmmon"
-BUILT_MODULE_LOCATION[0]='vmmon-only'
-DEST_MODULE_LOCATION[0]="/kernel/drivers/misc"
-
-BUILT_MODULE_NAME[1]="vmnet"
-BUILT_MODULE_LOCATION[1]='vmnet-only'
-DEST_MODULE_LOCATION[1]="/kernel/drivers/net"
-        """
-        with open(f"/tmp/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}-dkms.conf", "w") as f:
-            f.write(dkms_conf)
-        self.run_command(f"sudo mv /tmp/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}-dkms.conf /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/dkms.conf")
+        dkms_conf_vmware_host_modules = dkms_conf_template.format(
+            PACKAGE_NAME=self.PACKAGE_NAME,
+            PACKAGE_VERSION=self.PACKAGE_VERSION
+        )
+        
+        temp_conf_path = f"/tmp/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}-dkms.conf"
+        with open(temp_conf_path, "w") as conf_file:
+            conf_file.write(dkms_conf_vmware_host_modules)
+        
+        self.run_command(f"sudo mv {temp_conf_path} /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/dkms.conf")
+        logging.info(f"DKMS configuration file created at /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/dkms.conf")
 
         logging.info("Applying patches...")
         self.run_command(f"sudo patch -p2 -d /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/vmmon-only < /home/hakan/Belgeler/GitHub/Container-and-Virtualization-Installer/functions/vmmon.patch")
@@ -238,8 +234,7 @@ WantedBy=multi-user.target
         """Uninstall VMware Workstation from Fedora."""
         logging.info("Uninstalling VMware Workstation...")
 
-        # Step 1: Stop and disable VMware services
-        logging.info("Stopping and disabling VMware services...")
+        logging.info("Step 1: Stopping and disabling VMware services...")
         services = [
             "vmware-networks-configuration.service",
             "vmware-usbarbitrator.path",
@@ -249,25 +244,21 @@ WantedBy=multi-user.target
             self.run_command(f"sudo systemctl stop {service}")
             self.run_command(f"sudo systemctl disable {service}")
 
-        # Step 2: Remove systemd service files
-        logging.info("Removing systemd service files...")
+        logging.info("Step 2: Removing systemd service files...")
         for service in services:
             service_file = f"/etc/systemd/system/{service}"
             if os.path.exists(service_file):
                 self.run_command(f"sudo rm {service_file}")
 
-        # Step 3: Remove VMware modules
-        logging.info("Removing VMware modules...")
+        logging.info("Step 3: Removing VMware modules...")
         self.run_command("sudo rm -rf /usr/lib/vmware")
 
-        # Step 4: Uninstall VMware Workstation
-        logging.info("Running the uninstallation script...")
+        logging.info("Step 4: Running the uninstallation script...")
         uninstall_script = "/usr/bin/vmware-installer"
         if os.path.exists(uninstall_script):
             self.run_command(f'echo "yes" | sudo {uninstall_script} --uninstall-product vmware-workstation')
 
-        # Step 5: Remove extracted components directory
-        logging.info("Removing extracted components directory...")
+        logging.info("Step 5: Removing extracted components directory...")
         if os.path.exists(self.EXTRACTED_DIR):
             shutil.rmtree(self.EXTRACTED_DIR)
 
