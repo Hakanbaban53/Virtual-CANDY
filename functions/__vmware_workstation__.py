@@ -51,7 +51,6 @@ class VMwareInstaller:
         elif self.linux_distro in {"debian", "ubuntu"}:
             self.PACKAGE_MANAGER = "apt"
             self.DEPENDENCIES = [
-                "linux-headers-generic",
                 "build-essential",
                 "gcc",
                 "dkms",
@@ -59,6 +58,8 @@ class VMwareInstaller:
                 "patch",
                 "net-tools",
             ]
+            kernel_version = subprocess.run("uname -r", shell=True, text=True, capture_output=True).stdout.strip()
+            self.DEPENDENCIES.append(f"linux-headers-{kernel_version}")
 
         if self.action == "install":
             self.install_vmware()
@@ -223,12 +224,12 @@ WantedBy=multi-user.target
         self.run_command(f"sudo usermod -aG vmware {user}")
 
     def install_vmware(self):
-        # """Perform the full VMware installation."""
-        # logging.info("Step 1: Downloading the VMware Workstation installer and components...")
-        # os.makedirs(self.CACHE_DIR, exist_ok=True)
-        # self.download_file(self.BUNDLE_URL, self.BUNDLE_FILENAME)
-        # for url, filename in zip(self.COMPONENT_URLS, self.COMPONENT_FILENAMES):
-        #     self.download_file(url, filename)
+        """Perform the full VMware installation."""
+        logging.info("Step 1: Downloading the VMware Workstation installer and components...")
+        os.makedirs(self.CACHE_DIR, exist_ok=True)
+        self.download_file(self.BUNDLE_URL, self.BUNDLE_FILENAME)
+        for url, filename in zip(self.COMPONENT_URLS, self.COMPONENT_FILENAMES):
+            self.download_file(url, filename)
 
         logging.info("Step 2: Extracting the bundle file...")
         self.run_command(f"tar -xf {os.path.join(self.CACHE_DIR, self.BUNDLE_FILENAME)} -C {self.CACHE_DIR}")
@@ -297,3 +298,6 @@ WantedBy=multi-user.target
         logging.info("Step 5: Removing extracted components directory...")
         if os.path.exists(self.EXTRACTED_DIR):
             shutil.rmtree(self.EXTRACTED_DIR)
+
+if __name__ == "__main__":
+    VMwareInstaller(False, "install", "debian")
