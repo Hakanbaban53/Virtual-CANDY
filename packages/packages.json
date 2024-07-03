@@ -76,7 +76,7 @@
             ]
         },
         {
-            "name": "VMware_Workstation 17.5.2",
+            "name": "VMware_Workstation-17.5.2",
             "values":[
                 {
                     "name": "VMware Workstation",
@@ -279,7 +279,7 @@
             ]
         },
         {
-            "name": "VMware_Workstation 17.5.2",
+            "name": "VMware_Workstation-17.5.2",
             "values":[
                 {
                     "name": "VMware Workstation",
@@ -574,7 +574,7 @@
             ]
         },
         {
-            "name": "VMware_Workstation 17.5.2",
+            "name": "VMware_Workstation-17.5.2",
             "values":[
                 {
                     "name": "VMware Workstation",
@@ -797,7 +797,7 @@
             ]
         },
         {
-            "name": "VMware_Workstation_17.5.2",
+            "name": "VMware_Workstation-17.5.2",
             "values":[
                 {
                     "name": "VMware Workstation",

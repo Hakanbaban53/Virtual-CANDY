@@ -26,7 +26,7 @@ class VMwareInstaller:
     ]
     EXTRACTED_DIR = os.path.join(CACHE_DIR, "extracted_components")
     DEPENDENCIES = []
-    PACKAGE_MANAGER = "dnf"
+    PACKAGE_MANAGER = ""
     PACKAGE_NAME = "vmware-host-modules"
     PACKAGE_VERSION = PKGVER # Do not make the PACKAGE_VERSION to PKGVER
 
@@ -118,7 +118,7 @@ class VMwareInstaller:
         self.run_command(f"git clone -b tmp/workstation-17.5.2-k6.9.1 https://github.com/nan0desu/{self.PACKAGE_NAME}.git {self.CACHE_DIR}/vmware_host_modules")
 
         logging.info("Getting the DKMS modules")
-        self.sparse_checkout("https://github.com/Hakanbaban53/Container-and-Virtualization-Installer", "Adding_the_vmware_worksitation_support_fedora", "vmware_dkms_files", f"{self.CACHE_DIR}/vmware_dkms_files")
+        self.sparse_checkout("https://github.com/Hakanbaban53/Container-and-Virtualization-Installer", "main", "vmware_dkms_files", f"{self.CACHE_DIR}/vmware_dkms_files")
 
         os.chdir(f"{self.CACHE_DIR}/vmware_host_modules")
         logging.info("Making and copying vmmon.tar and vmnet.tar...")
@@ -217,12 +217,6 @@ WantedBy=multi-user.target
         logging.info("Installing dependencies...")
         self.run_command(f"sudo {self.PACKAGE_MANAGER} install -y {' '.join(self.DEPENDENCIES)}")
 
-    def add_user_to_vmware_group(self):
-        """Add the current user to the vmware group."""
-        user = os.getlogin()
-        logging.info(f"Adding {user} to the vmware group...")
-        self.run_command(f"sudo usermod -aG vmware {user}")
-
     def install_vmware(self):
         """Perform the full VMware installation."""
         logging.info("Step 1: Downloading the VMware Workstation installer and components...")
@@ -258,9 +252,6 @@ WantedBy=multi-user.target
 
         logging.info("Step 7: Creating systemd service files...")
         self.create_service_files()
-
-        logging.info("Step 8: Adding the user to the vmware group...")
-        self.add_user_to_vmware_group()
 
         logging.info(f"VMware installation and setup on {self.linux_distro} is complete.")
 
@@ -298,6 +289,3 @@ WantedBy=multi-user.target
         logging.info("Step 5: Removing extracted components directory...")
         if os.path.exists(self.EXTRACTED_DIR):
             shutil.rmtree(self.EXTRACTED_DIR)
-
-if __name__ == "__main__":
-    VMwareInstaller(False, "install", "debian")
