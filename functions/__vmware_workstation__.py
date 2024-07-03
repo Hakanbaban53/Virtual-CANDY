@@ -213,17 +213,6 @@ WantedBy=multi-user.target
         logging.info("Installing dependencies...")
         self.run_command(f"sudo dnf install -y {' '.join(self.DEPENDENCIES)}")
 
-    def enable_services(self):
-        """Enable and start VMware services."""
-        logging.info("Enabling and starting VMware services...")
-        services = [
-            "vmware-networks-configuration.service",
-            "vmware-usbarbitrator.path",
-            "vmware-usbarbitrator.service"
-        ]
-        for service in services:
-            self.run_command(f"sudo systemctl enable --now {service}")
-
     def add_user_to_vmware_group(self):
         """Add the current user to the vmware group."""
         user = os.getlogin()
@@ -266,10 +255,7 @@ WantedBy=multi-user.target
         logging.info("Step 7: Creating systemd service files...")
         self.create_service_files()
 
-        logging.info("Step 8: Enabling and starting VMware services...")
-        self.enable_services()
-
-        logging.info("Step 9: Adding the user to the vmware group...")
+        logging.info("Step 8: Adding the user to the vmware group...")
         self.add_user_to_vmware_group()
 
         logging.info(f"VMware installation and setup on {self.linux_distro} is complete.")
@@ -279,16 +265,19 @@ WantedBy=multi-user.target
         logging.info("Uninstalling VMware Workstation...")
 
         logging.info("Step 1: Stopping and disabling VMware services...")
+        vmware_service = [
+            "vmware.service"
+        ]
+        for service in vmware_service:
+            self.run_command(f"sudo systemctl stop {service}")
+            self.run_command(f"sudo systemctl disable {service}")
+
+        logging.info("Step 2: Removing systemd service files...")
         services = [
             "vmware-networks-configuration.service",
             "vmware-usbarbitrator.path",
             "vmware-usbarbitrator.service"
         ]
-        for service in services:
-            self.run_command(f"sudo systemctl stop {service}")
-            self.run_command(f"sudo systemctl disable {service}")
-
-        logging.info("Step 2: Removing systemd service files...")
         for service in services:
             service_file = f"/etc/systemd/system/{service}"
             if os.path.exists(service_file):
@@ -309,6 +298,3 @@ WantedBy=multi-user.target
         logging.info("Step 6: Removing extracted components directory...")
         if os.path.exists(self.EXTRACTED_DIR):
             shutil.rmtree(self.EXTRACTED_DIR)
-
-if __name__ == "__main__":
-    VMwareInstaller(hide=False, action="install", linux_distro="fedora")
