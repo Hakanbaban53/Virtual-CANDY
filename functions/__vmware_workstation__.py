@@ -26,6 +26,7 @@ class VMwareInstaller:
     ]
     EXTRACTED_DIR = os.path.join(CACHE_DIR, "extracted_components")
     DEPENDENCIES = []
+    PACKAGE_MANAGER = "dnf"
     PACKAGE_NAME = "vmware-host-modules"
     PACKAGE_VERSION = PKGVER # Do not make the PACKAGE_VERSION to PKGVER
 
@@ -37,6 +38,7 @@ class VMwareInstaller:
         self.linux_distro = linux_distro
 
         if self.linux_distro == "fedora":
+            self.PACKAGE_MANAGER = "dnf"
             self.DEPENDENCIES = [
                 "kernel-devel",
                 "kernel-headers",
@@ -47,6 +49,7 @@ class VMwareInstaller:
                 "net-tools",
             ]   
         elif self.linux_distro in {"debian", "ubuntu"}:
+            self.PACKAGE_MANAGER = "apt"
             self.DEPENDENCIES = [
                 "linux-headers-generic",
                 "build-essential",
@@ -211,7 +214,7 @@ WantedBy=multi-user.target
     def install_dependencies(self):
         """Install necessary dependencies for VMware."""
         logging.info("Installing dependencies...")
-        self.run_command(f"sudo dnf install -y {' '.join(self.DEPENDENCIES)}")
+        self.run_command(f"sudo {self.PACKAGE_MANAGER} install -y {' '.join(self.DEPENDENCIES)}")
 
     def add_user_to_vmware_group(self):
         """Add the current user to the vmware group."""
