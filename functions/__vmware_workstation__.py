@@ -286,15 +286,11 @@ WantedBy=multi-user.target
         logging.info("Step 3: Removing VMware modules from DKMS...")
         self.run_command(f"sudo dkms remove -m {self.PACKAGE_NAME} -v {self.PACKAGE_VERSION} --all")
 
-
-        logging.info("Step 4: Removing VMware modules...")
-        self.run_command("sudo rm -rf /usr/lib/vmware")
-
-        logging.info("Step 5: Running the uninstallation script...")
+        logging.info("Step 4: Running the uninstallation script...")
         uninstall_script = "/usr/bin/vmware-installer"
         if os.path.exists(uninstall_script):
             self.run_command(f'echo "yes" | sudo {uninstall_script} --uninstall-product vmware-workstation')
 
-        logging.info("Step 6: Removing extracted components directory...")
+        logging.info("Step 5: Removing extracted components directory...")
         if os.path.exists(self.EXTRACTED_DIR):
             shutil.rmtree(self.EXTRACTED_DIR)
