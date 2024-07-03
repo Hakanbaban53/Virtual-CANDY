@@ -219,33 +219,33 @@ WantedBy=multi-user.target
 
     def install_vmware(self):
         """Perform the full VMware installation."""
-        logging.info("Step 1: Downloading the VMware Workstation installer and components...")
+
+        logging.info("Step 1: Installing necessary dependencies...")
+        self.install_dependencies()
+
+        logging.info("Step 2: Downloading the VMware Workstation installer and components...")
         os.makedirs(self.CACHE_DIR, exist_ok=True)
         self.download_file(self.BUNDLE_URL, self.BUNDLE_FILENAME)
         for url, filename in zip(self.COMPONENT_URLS, self.COMPONENT_FILENAMES):
             self.download_file(url, filename)
 
-        logging.info("Step 2: Extracting the bundle file...")
+        logging.info("Step 3: Extracting the bundle file...")
         self.run_command(f"tar -xf {os.path.join(self.CACHE_DIR, self.BUNDLE_FILENAME)} -C {self.CACHE_DIR}")
 
         os.makedirs(self.EXTRACTED_DIR, exist_ok=True)
         for filename in self.COMPONENT_FILENAMES:
             self.extract_tar(filename)
 
-        logging.info("Step 3: Making the installer executable...")
+        logging.info("Step 4: Making the installer executable...")
         bundle_installer = f"VMware-Workstation-{self.PKGVER}-{self.BUILDVER}.{self.CARCH}.bundle"
         self.run_command(f"chmod +x {os.path.join(self.CACHE_DIR, bundle_installer)}")
 
-        logging.info("Step 4: Running the VMware Workstation installer with extracted components...")
+        logging.info("Step 5: Running the VMware Workstation installer with extracted components...")
         extracted_components = [os.path.join(self.EXTRACTED_DIR, filename) for filename in os.listdir(self.EXTRACTED_DIR)]
         install_command = f"sudo {os.path.join(self.CACHE_DIR, bundle_installer)} --console --required --eulas-agreed " + " ".join(
             [f'--install-component "{os.path.abspath(filename)}"' for filename in extracted_components]
         )
         self.run_command(install_command)
-
-
-        logging.info("Step 5: Installing necessary dependencies...")
-        self.install_dependencies()
 
         logging.info("Step 6: Compiling kernel modules...")
         self.install_vmware_modules()
