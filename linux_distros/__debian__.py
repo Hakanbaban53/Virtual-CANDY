@@ -1,6 +1,8 @@
 from subprocess import run, PIPE, CalledProcessError
 from os import path, devnull, getenv
 
+from functions.__special_install_selector__ import SelectSpecialInstaller
+
 
 
 def debian_package_manager(packages, hide_output, action):
@@ -45,6 +47,9 @@ def debian_package_manager(packages, hide_output, action):
                         print(f"{name} removing...")
                         package_remover(data, hide)
 
+            if package_type == "special-package":
+                SelectSpecialInstaller(hide, action, data, "debian")
+                
             if package_type == "remove-package":
                 packages_to_check = check_value.split()
                 result = run(

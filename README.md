@@ -1,13 +1,17 @@
-# Virtualization and container applications installer 🖥️
+# Virtualization and container applications installer "VCANDY" 🖥️
 
-<h4 align="center">An application that installs certain virtualization applications (Docker/Docker Desktop, VirtManager/QEMU, VirtualBox and Podman/Podman Desktop) on Linux via argument or command line user interface.</h4>
+<h4 align="center">An application that installs certain virtualization applications (Docker/Docker Desktop, VirtManager/QEMU, VMware Workstation (With DKMS host modules), VirtualBox and Podman/Podman Desktop) on Linux via argument or command line user interface.</h4>
 
 <div align="center">
   <img src="./assets/arguments.gif" style="width: 500px; height: auto;">
   <img src="./assets/Command_gui.gif" style="width: 500px; height: auto;">
 </div>
 
-## 💡 Installation
+## 📦 Pre Builded Packages
+This Packages building with github action. 
+Will be added in soon.
+
+## 🏗️ Build From Github Repository
 
 <details><summary>Arch</summary>
 
@@ -122,15 +126,18 @@ And one more thing. Arguments are case-sensitive. You need to give the package n
 
 <details><summary>Package Names</summary>
 
-- Package names in the packages.py.
+- Package names in the packages.json.
 
 ```css
 🗃 .
 ├── 📦 My_Apps
 │  ├── 🗋 Visual Studio Code
 │  └── 🗋 Github Desktop
+├── 📦 VMware_Workstation-17.5.2
+│  ├── 🗋 VMware Workstation-17.5.2
+│  └── 🗋 VMware Host Modules DKMS (Dynamic Kernel Modules)
 ├── 📦 VirtualBox-7.0
-│  ├── 🗋 VirtualBox 7.0
+│  ├── 🗋 VirtualBox-7.0
 │  └── 🗋 Virtual Box Extensions
 ├── 📦 Qemu_and_VM_Manager
 │  ├── 🗋 QEMU
@@ -159,7 +166,10 @@ And one more thing. Arguments are case-sensitive. You need to give the package n
 ├── 🖿 functions
 │  ├── 🗎 __check_repository_connection__.py
 │  ├── 🗎 __cli_dependencies_install__.py
-│  └── 🗎 __get_os_package_manager__.py
+│  ├── 🗎 __get_os_package_manager__.py
+│  ├── 🗎 __get_packages_data__.py
+│  ├── 🗎 __special_install_selector__.py
+│  └── 🗎 __vmware_workstation__.py
 ├── 🖿 linux_distros
 │  ├── 🗎 __arch__.py
 │  ├── 🗎 __debian__.py
