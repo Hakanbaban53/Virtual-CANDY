@@ -42,6 +42,8 @@ class VMwareInstaller:
             self.DEPENDENCIES = [
                 "kernel-devel",
                 "kernel-headers",
+                "git",
+                "wget",
                 "gcc",
                 "dkms",
                 "make",
@@ -52,6 +54,8 @@ class VMwareInstaller:
             self.PACKAGE_MANAGER = "apt"
             self.DEPENDENCIES = [
                 "build-essential",
+                "git",
+                "wget",
                 "gcc",
                 "dkms",
                 "make",
