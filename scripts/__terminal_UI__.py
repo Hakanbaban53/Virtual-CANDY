@@ -351,6 +351,8 @@ class PackageManagerApp:
                     self.stdscr.refresh()
                     curses.napms(1500)
                     exit(1)
+            elif actions == "remove":
+                return "remove"
 
         except curses.error:
             self.terminal_size_error()
