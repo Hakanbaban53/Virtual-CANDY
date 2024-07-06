@@ -36,6 +36,10 @@ class VMwareInstaller:
         "vmware-networks.path",
         "vmware-usbarbitrator.path",
     }
+    GITHUB_HOST_MODULES_REPO_URL = "https://github.com/nan0desu/vmware-host-modules.git"
+    GITHUB_HOST_MODULES_BRANCH = "tmp/workstation-17.5.2-k6.9.1"
+    GITHUB_REPO_URL = "https://github.com/Hakanbaban53/Container-and-Virtualization-Installer"
+    GITHUB_BRANCH = "vmware_installer_refactor"
 
     def __init__(self, hide, action, linux_distro):
         self.COMPONENT_URLS = [
@@ -170,12 +174,12 @@ class VMwareInstaller:
 
         print("Copying Makefile and dkms.conf to DKMS directory...")
         self.run_command(
-            f"sudo cp -r {self.CACHE_DIR}/vmware_dkms_files/vmware_dkms_files/Makefile /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/"
+            f"sudo cp -r {self.CACHE_DIR}/vmware_files/vmware_files/Makefile /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/"
         )
 
         print("Creating DKMS configuration for vmware-host-modules...")
         with open(
-            f"{self.CACHE_DIR}/vmware_dkms_files/vmware_dkms_files/dkms.conf", "r"
+            f"{self.CACHE_DIR}/vmware_files/vmware_files/dkms.conf", "r"
         ) as template_file:
             dkms_conf_template = template_file.read()
 
@@ -196,10 +200,10 @@ class VMwareInstaller:
 
         print("Applying patches...")
         self.run_command(
-            f"sudo patch -p2 -d /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/vmmon-only < {self.CACHE_DIR}/vmware_dkms_files/vmware_dkms_files/vmmon.patch"
+            f"sudo patch -p2 -d /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/vmmon-only < {self.CACHE_DIR}/vmware_files/vmware_files/vmmon.patch"
         )
         self.run_command(
-            f"sudo patch -p2 -d /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/vmnet-only < {self.CACHE_DIR}/vmware_dkms_files/vmware_dkms_files/vmnet.patch"
+            f"sudo patch -p2 -d /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/vmnet-only < {self.CACHE_DIR}/vmware_files/vmware_files/vmnet.patch"
         )
 
         print("Adding and building vmware-host-modules module with DKMS...")
@@ -221,7 +225,7 @@ class VMwareInstaller:
     def copy_service_files(self):
         """Copy systemd service files for VMware."""
         for filename in self.SERVICES:
-            self.run_command(f"sudo cp {self.CACHE_DIR}/vmware_dkms_files/vmware_dkms_files/{filename} /etc/systemd/system/{filename}")
+            self.run_command(f"sudo cp {self.CACHE_DIR}/vmware_files/vmware_files/{filename} /etc/systemd/system/{filename}")
             print(f"Copied {filename}.")
 
         # Reload systemd daemon to apply changes
@@ -244,17 +248,17 @@ class VMwareInstaller:
         print("\nStep 2: Clone the required repositories...")
         print(f"Cloning {self.PACKAGE_NAME} repository...")
         self.clone_repository(
-            f"https://github.com/nan0desu/{self.PACKAGE_NAME}.git",
-            "tmp/workstation-17.5.2-k6.9.1",
+            self.GITHUB_HOST_MODULES_REPO_URL,
+            self.GITHUB_HOST_MODULES_BRANCH,
             f"{self.CACHE_DIR}/vmware_host_modules"
         )
 
         print("Getting the DKMS modules")
         self.sparse_checkout(
-            "https://github.com/Hakanbaban53/Container-and-Virtualization-Installer",
-            "main",
-            "vmware_dkms_files",
-            f"{self.CACHE_DIR}/vmware_dkms_files",
+            self.GITHUB_REPO_URL,
+            self.GITHUB_BRANCH,
+            "vmware_files",
+            f"{self.CACHE_DIR}/vmware_files",
         )
 
         print(
