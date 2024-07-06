@@ -36,36 +36,42 @@ class PackageManagerApp:
         # Initialize color pairs based on mode
         curses.start_color()
 
+        CUSTOM_COLOR_WHITE = 255
+        CUSTOM_COLOR_BLACK = 0
+
+        curses.init_color(CUSTOM_COLOR_WHITE, 1000, 1000, 1000)
+        curses.init_color(CUSTOM_COLOR_BLACK, 0, 0, 0)
+
         # Dark mode color pairs
         curses.init_pair(
-            1, curses.COLOR_WHITE, curses.COLOR_BLACK
+            1, CUSTOM_COLOR_WHITE, CUSTOM_COLOR_BLACK
         )  # Default text color
-        curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)  # Error messages
-        curses.init_pair(3, curses.COLOR_CYAN, curses.COLOR_BLACK)  # Header
-        curses.init_pair(4, curses.COLOR_GREEN, curses.COLOR_BLACK)  # Selected row
-        curses.init_pair(5, curses.COLOR_YELLOW, curses.COLOR_BLACK)  # Table headers
-        curses.init_pair(6, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
+        curses.init_pair(2, curses.COLOR_RED, CUSTOM_COLOR_BLACK)  # Error messages
+        curses.init_pair(3, curses.COLOR_CYAN, CUSTOM_COLOR_BLACK)  # Header
+        curses.init_pair(4, curses.COLOR_GREEN, CUSTOM_COLOR_BLACK)  # Selected row
+        curses.init_pair(5, curses.COLOR_YELLOW, CUSTOM_COLOR_BLACK)  # Table headers
+        curses.init_pair(6, curses.COLOR_MAGENTA, CUSTOM_COLOR_BLACK)
         curses.init_pair(
-            7, curses.COLOR_BLUE, curses.COLOR_WHITE
+            7, curses.COLOR_BLUE, CUSTOM_COLOR_WHITE
         )  # Header specific color
         curses.init_pair(
-            8, curses.COLOR_WHITE, curses.COLOR_BLUE
+            8, CUSTOM_COLOR_WHITE, curses.COLOR_BLUE
         )  # Footer specific color
 
         # Light mode color pairs
         curses.init_pair(
-            11, curses.COLOR_BLACK, curses.COLOR_WHITE
+            11, CUSTOM_COLOR_BLACK, CUSTOM_COLOR_WHITE
         )  # Default text color
-        curses.init_pair(12, curses.COLOR_RED, curses.COLOR_WHITE)  # Error messages
-        curses.init_pair(13, curses.COLOR_CYAN, curses.COLOR_WHITE)  # Header
-        curses.init_pair(14, curses.COLOR_GREEN, curses.COLOR_WHITE)  # Selected row
-        curses.init_pair(15, curses.COLOR_YELLOW, curses.COLOR_WHITE)  # Table headers
-        curses.init_pair(16, curses.COLOR_MAGENTA, curses.COLOR_WHITE)
+        curses.init_pair(12, curses.COLOR_RED, CUSTOM_COLOR_WHITE)  # Error messages
+        curses.init_pair(13, curses.COLOR_CYAN, CUSTOM_COLOR_WHITE)  # Header
+        curses.init_pair(14, curses.COLOR_GREEN, CUSTOM_COLOR_WHITE)  # Selected row
+        curses.init_pair(15, curses.COLOR_YELLOW, CUSTOM_COLOR_WHITE)  # Table headers
+        curses.init_pair(16, curses.COLOR_MAGENTA, CUSTOM_COLOR_WHITE)
         curses.init_pair(
-            17, curses.COLOR_BLUE, curses.COLOR_BLACK
+            17, curses.COLOR_BLUE, CUSTOM_COLOR_BLACK
         )  # Header specific color
         curses.init_pair(
-            18, curses.COLOR_WHITE, curses.COLOR_BLUE
+            18, CUSTOM_COLOR_WHITE, curses.COLOR_BLUE
         )  # Footer specific color
 
     def display_header(self):
@@ -73,10 +79,8 @@ class PackageManagerApp:
         color_pair = (
             curses.color_pair(7) if self.use_dark_mode else curses.color_pair(17)
         )
-
         # Fill the header line with the color
         self.stdscr.addstr(0, 0, " " * self.width, color_pair)
-
         # Display the header text centered
         self.stdscr.addstr(
             0,
@@ -97,24 +101,12 @@ class PackageManagerApp:
             curses.color_pair(2) if self.use_dark_mode else curses.color_pair(12)
         )
 
-        # color_pair_footer = (
-        #     curses.color_pair(8) if self.use_dark_mode else curses.color_pair(18)
-        # )
-
-        # # Fill the footer line with the color
-        # self.stdscr.addstr(self.height - 2, 0, ' ' * self.width, color_pair_footer)
-
         self.stdscr.addstr(
             self.height - 1, 1, "[^C Exit]", color_pair_error | curses.A_BOLD
         )
 
         prompt = f"[Arrow keys Navigate] [TAB Select/Unselect]"
-        self.stdscr.addstr(
-            self.height - 1,
-            self.width // 2 - 28,
-            prompt,
-            color_pair,
-        )
+        self.stdscr.addstr(self.height - 1, self.width // 2 - 28, prompt, color_pair)
         self.stdscr.addstr(
             self.height - 1,
             self.width - 22,
@@ -127,6 +119,14 @@ class PackageManagerApp:
         self.stdscr.clrtoeol()
         self.stdscr.refresh()
 
+    def clear_middle_section(self):
+        # Clear middle section of the screen
+        start_y = 1
+        end_y = self.height - 1
+        for y in range(start_y, end_y):
+            self.stdscr.move(y, 0)
+            self.stdscr.clrtoeol()
+
     def package_manager_connection(self, linux_distro_id):
         color_pair = (
             curses.color_pair(4) if self.use_dark_mode else curses.color_pair(14)
@@ -135,31 +135,41 @@ class PackageManagerApp:
             curses.color_pair(2) if self.use_dark_mode else curses.color_pair(12)
         )
 
-        prompt_checking = "Checking Package Manager Connection"
-        x = self.width // 2 - len(prompt_checking) // 2
-        y = self.height // 2 - 3
-        self.stdscr.addstr(y, x, prompt_checking)
-        self.stdscr.refresh()
+        while True:
+            prompt_checking = "Checking Package Manager Connection"
+            x = self.width // 2 - len(prompt_checking) // 2 - 4
+            y = self.height // 2 - 2
+            self.stdscr.addstr(y, x, prompt_checking)
+            self.stdscr.refresh()
 
-        self.stdscr.addstr(y, x + len(prompt_checking), "XX", curses.A_BLINK)
+            connected = check_linux_package_manager_connection(linux_distro_id)
 
-        connected = check_linux_package_manager_connection(linux_distro_id)
+            if connected:
+                self.stdscr.addstr(
+                    y, x + len(prompt_checking), " [OK]", color_pair | curses.A_BOLD
+                )
+                self.stdscr.refresh()
+                curses.napms(1000)
+                return True
+            else:
+                self.stdscr.addstr(
+                    y,
+                    x + len(prompt_checking),
+                    " [ERROR]",
+                    color_pair_error | curses.A_BOLD,
+                )
+                self.stdscr.refresh()
 
-        if connected:
-            self.stdscr.addstr(
-                y, x + len(prompt_checking), " [OK]", color_pair | curses.A_BOLD
-            )
-        else:
-            self.stdscr.addstr(
-                y,
-                x + len(prompt_checking),
-                " [ERROR]",
-                color_pair_error | curses.A_BOLD,
-            )
-
-        self.stdscr.refresh()
-        curses.napms(1000)
-        return connected
+                prompt = "Retry connection?"
+                retry = self.selections(
+                    prompt, self.width // 2, self.height // 2, OPTIONS_YES_NO
+                )
+                if retry == "No":
+                    self.clean_line(0, self.height // 2)
+                    self.clean_line(0, self.height // 2 + 2)
+                    return False
+                else:
+                    self.clean_line(x, y)
 
     def print_menu(self, selected_row, relevant_packages, selected_status):
         self.clear_middle_section()
@@ -209,14 +219,6 @@ class PackageManagerApp:
 
         self.stdscr.refresh()
 
-    def clear_middle_section(self):
-        # Clear middle section of the screen
-        start_y = 1
-        end_y = self.height - 1
-        for y in range(start_y, end_y):
-            self.stdscr.move(y, 0)
-            self.stdscr.clrtoeol()
-
     def terminal_size_error(self):
         # Handle terminal size errors
         self.stdscr.clear()
@@ -229,19 +231,28 @@ class PackageManagerApp:
         self.stdscr.refresh()
         curses.napms(3000)
         exit(0)
-
+    
     def get_user_input_string(self, prompt, y, x):
+        color_pair = (
+            curses.color_pair(1) if self.use_dark_mode else curses.color_pair(11)
+        )
+        color_pair_error = (
+            curses.color_pair(2) if self.use_dark_mode else curses.color_pair(12)
+        )
         # Get user input string
         curses.echo()
-        self.stdscr.addstr(y, x, prompt)
+        self.stdscr.addstr(y, x, prompt, color_pair | curses.A_BOLD)
         self.stdscr.refresh()
         while True:
             try:
                 input_str = self.stdscr.getstr().decode("utf-8")
+                curses.noecho()
                 return input_str.strip()
             except curses.error:
-                self.stdscr.addstr(y + 1, x + 1, "Error: Invalid input.")
+                self.stdscr.addstr(y + 1, x + 1, "Error: Invalid input.", color_pair_error)
                 self.stdscr.refresh()
+                curses.noecho()
+
 
     def selections(self, prompt, x, y, options):
         # Handle user selections
@@ -314,7 +325,7 @@ class PackageManagerApp:
         try:
             prompt = "Please select the action:"
             x = self.width // 2 - len(prompt) // 2
-            y = self.height // 2 - 2
+            y = self.height // 2 - 6
             actions = self.selections(prompt, x, y, OPTIONS_INSTALL_REMOVE)
 
             if actions == "install":
@@ -453,6 +464,9 @@ class PackageManagerApp:
             if curses.LINES < 20 or curses.COLS < 80:
                 self.terminal_size_error()
 
+            color_pair = (
+                curses.color_pair(8) if self.use_dark_mode else curses.color_pair(16)
+            )
             self.display_header()
             self.display_footer()
 
@@ -502,13 +516,9 @@ class PackageManagerApp:
                         )
                         self.stdscr.addstr(
                             curses.LINES // 2 + 2,
-                            curses.COLS // 2 - 12,
+                            curses.COLS // 2 - 17,
                             "[Press any arrow key to continue]",
-                            curses.A_REVERSE,
                         )
-                        self.stdscr.refresh()
-                        self.stdscr.getch()
-                        self.clear_middle_section()
                         continue
 
                     prompt_selected = "Selected applications:"
@@ -533,14 +543,12 @@ class PackageManagerApp:
 
                     if selection == "Yes":
                         curses.reset_shell_mode()
-                        self.clear_middle_section()
 
                         for idx, entity in enumerate(selected_entities):
-                            action_message = f"{entity} {action}ing..."
+                            self.stdscr.clear()
+                            action_message = f"{entity} {action}ing...\n"
                             self.stdscr.addstr(
-                                curses.LINES // 2 + idx,
-                                curses.COLS // 2 - len(action_message) // 2,
-                                action_message,
+                                1, 0, action_message, color_pair | curses.A_BOLD | curses.A_UNDERLINE
                             )
                             self.stdscr.refresh()
                             get_linux_package_manager(
@@ -549,18 +557,28 @@ class PackageManagerApp:
                             curses.napms(1500)
 
                         curses.reset_prog_mode()
-                        self.clear_middle_section()
+                        self.stdscr.clear()
+                        self.display_header()
+                        self.display_footer()
+                        
                         success_message = "The selected options have been implemented!"
                         reboot_message = "Reboot for the installed apps to appear in the app menu and work properly!"
+                        press_any_key = "[Press any key to exit]"
                         self.stdscr.addstr(
-                            curses.LINES // 2,
+                            curses.LINES // 2 - 4,
                             curses.COLS // 2 - len(success_message) // 2,
                             success_message,
                         )
                         self.stdscr.addstr(
-                            curses.LINES // 2 + 2,
+                            curses.LINES // 2 - 2,
                             curses.COLS // 2 - len(reboot_message) // 2,
                             reboot_message,
+                        )
+                        self.stdscr.addstr(
+                            curses.LINES // 2,
+                            curses.COLS // 2 - len(press_any_key) // 2,
+                            press_any_key,
+                            color_pair | curses.A_BOLD,
                         )
                         self.stdscr.getch()
                         break
@@ -584,14 +602,14 @@ class PackageManagerApp:
                 )
 
         except KeyboardInterrupt:
-            self.clear_middle_section()
+            self.stdscr.clear()
             self.stdscr.addstr(
-                curses.LINES // 2,
+                curses.LINES // 2 - 2,
                 curses.COLS // 2 - 14,
                 "Ctrl + C pressed. Exiting...",
                 curses.color_pair(2) | curses.A_BOLD,
             )
-            self.stdscr.addstr(curses.LINES // 2 + 2, curses.COLS // 2 - 3, "Bye 👋")
+            self.stdscr.addstr(curses.LINES // 2, curses.COLS // 2 - 3, "Bye 👋")
             self.stdscr.refresh()
             curses.napms(1500)
             exit(1)
@@ -602,9 +620,7 @@ class PackageManagerApp:
         except Exception as e:
             self.stdscr.clear()
             self.stdscr.addstr(1, 1, str(e), curses.color_pair(2) | curses.A_BOLD)
-            self.stdscr.addstr(
-                2, 1, "[Press any key to exit program]", curses.A_REVERSE
-            )
+            self.stdscr.addstr(2, 1, "[Press any key to exit program]")
             self.stdscr.getch()
 
 

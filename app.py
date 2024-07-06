@@ -1,9 +1,9 @@
-from functions.__cli_dependencies_install__ import DependencyManager
 from scripts.__arguments__ import parse_arguments
 from functions.__check_repository_connection__ import check_linux_package_manager_connection
 from functions.__get_os_package_manager__ import get_linux_package_manager
 from functions.__get_os_package_manager__ import identify_distribution
 from scripts.__terminal_UI__ import start_terminal_ui
+from functions.__get_packages_data__ import PackagesJSONHandler
 
 
 def app():
@@ -31,6 +31,6 @@ def app():
         print(f"An error occurred: {e}")
 
 if __name__ == "__main__":
-    DependencyManager().handle_dependencies()
+    PackagesJSONHandler().load_json_data()
     app()
 

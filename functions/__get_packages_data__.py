@@ -1,13 +1,13 @@
 import datetime
 import json
 import os
-import requests
 from pathlib import Path
+import requests
 import time
 
 class PackagesJSONHandler:
-    def __init__(self):
-        self.json_file_url = "https://raw.githubusercontent.com/Hakanbaban53/Container-and-Virtualization-Installer/main/packages/packages.json"
+    def __init__(self, json_file_url=None):
+        self.json_file_url = json_file_url or "https://raw.githubusercontent.com/Hakanbaban53/Container-and-Virtualization-Installer/main/packages/packages.json"
         self.json_file_path = self.get_cache_file_path()
 
     def get_cache_file_path(self):
@@ -33,35 +33,23 @@ class PackagesJSONHandler:
         return False
 
     def load_json_data(self, json_file_path=None):
-        if json_file_path is None:
-            json_file_path = self.json_file_path
-
+        json_file_path = json_file_path or self.json_file_path
         try:
             if os.path.exists(json_file_path):
                 file_age = datetime.datetime.now() - datetime.datetime.fromtimestamp(os.path.getmtime(json_file_path))
                 if file_age > datetime.timedelta(days=1):
                     print(f"Updating JSON file from {self.json_file_url}...")
                     os.remove(json_file_path)
-                    success = self.download_json_file(self.json_file_url, json_file_path)
-                    if not success:
+                    if not self.download_json_file(self.json_file_url, json_file_path):
                         raise RuntimeError(f"Failed to update JSON file from {self.json_file_url}.")
             else:
-                success = self.download_json_file(self.json_file_url, json_file_path)
-                if not success:
+                print(f"Downloading JSON data file from {self.json_file_url}...")
+                if not self.download_json_file(self.json_file_url, json_file_path):
                     raise RuntimeError(f"Failed to download JSON file from {self.json_file_url}.")
 
             with open(json_file_path, "r") as file:
                 return json.load(file)
-
-        except json.JSONDecodeError as e:
-            raise RuntimeError(f"Error decoding JSON: {e}")
-
-        except FileNotFoundError:
-            raise RuntimeError(f"JSON file not found at {json_file_path}. Attempting to download from {self.json_file_url}.")
-
-        except requests.exceptions.RequestException as e:
-            raise RuntimeError(f"Failed to retrieve JSON file from {self.json_file_url}: {e}")
-
+        except (json.JSONDecodeError, requests.exceptions.RequestException) as e:
+            raise RuntimeError(f"Error retrieving or decoding JSON: {e}")
         except Exception as e:
             raise RuntimeError(f"An error occurred: {e}")
-
