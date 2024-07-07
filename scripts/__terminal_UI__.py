@@ -14,6 +14,7 @@ OPTIONS_YES_NO = ["Yes", "No"]
 OPTIONS_INSTALL_REMOVE = ["install", "remove"]
 MAX_DISPLAYED_PACKAGES = 15
 DEFAULT_HEADER = "VCANDY"
+VERSION = "2.0"
 MIN_LINES = 20
 MIN_COLS = 80
 
@@ -84,6 +85,12 @@ class PackageManagerApp:
         # Display the header text centered
         self.stdscr.addstr(
             0,
+            0,
+            VERSION,
+            color_pair | curses.A_BOLD,
+        )
+        self.stdscr.addstr(
+            0,
             self.width // 2 - len(DEFAULT_HEADER) // 2,
             DEFAULT_HEADER,
             color_pair | curses.A_BOLD | curses.A_UNDERLINE,
@@ -149,7 +156,7 @@ class PackageManagerApp:
                     y, x + len(prompt_checking), " [OK]", color_pair | curses.A_BOLD
                 )
                 self.stdscr.refresh()
-                curses.napms(1000)
+                curses.napms(750)
                 return True
             else:
                 self.stdscr.addstr(
@@ -231,7 +238,7 @@ class PackageManagerApp:
         self.stdscr.refresh()
         curses.napms(3000)
         exit(0)
-    
+
     def get_user_input_string(self, prompt, y, x):
         color_pair = (
             curses.color_pair(1) if self.use_dark_mode else curses.color_pair(11)
@@ -249,10 +256,11 @@ class PackageManagerApp:
                 curses.noecho()
                 return input_str.strip()
             except curses.error:
-                self.stdscr.addstr(y + 1, x + 1, "Error: Invalid input.", color_pair_error)
+                self.stdscr.addstr(
+                    y + 1, x + 1, "Error: Invalid input.", color_pair_error
+                )
                 self.stdscr.refresh()
                 curses.noecho()
-
 
     def selections(self, prompt, x, y, options):
         # Handle user selections
@@ -463,12 +471,13 @@ class PackageManagerApp:
         # Main application logic
         try:
             curses.curs_set(0)
-            if curses.LINES < 20 or curses.COLS < 80:
+            if curses.LINES < MIN_LINES or curses.COLS < MIN_COLS:
                 self.terminal_size_error()
 
             color_pair = (
                 curses.color_pair(8) if self.use_dark_mode else curses.color_pair(16)
             )
+
             self.display_header()
             self.display_footer()
 
@@ -550,7 +559,10 @@ class PackageManagerApp:
                             self.stdscr.clear()
                             action_message = f"{entity} {action}ing...\n"
                             self.stdscr.addstr(
-                                1, 0, action_message, color_pair | curses.A_BOLD | curses.A_UNDERLINE
+                                1,
+                                0,
+                                action_message,
+                                color_pair | curses.A_BOLD | curses.A_UNDERLINE,
                             )
                             self.stdscr.refresh()
                             get_linux_package_manager(
@@ -562,7 +574,7 @@ class PackageManagerApp:
                         self.stdscr.clear()
                         self.display_header()
                         self.display_footer()
-                        
+
                         success_message = "The selected options have been implemented!"
                         reboot_message = "Reboot for the installed apps to appear in the app menu and work properly!"
                         press_any_key = "[Press any key to exit]"

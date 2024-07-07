@@ -171,12 +171,12 @@ class VMwareInstaller:
 
         logging.info("Copying Makefile and dkms.conf to DKMS directory...")
         self.run_command(
-            f"sudo cp -r {self.CACHE_DIR}/vmware_files/vmware_files/Makefile /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/"
+            f"sudo cp -r {self.CACHE_DIR}/vmware_files/vmware_files/DKMS_files/Makefile /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/"
         )
 
         logging.info("Creating DKMS configuration for vmware-host-modules...")
         with open(
-            f"{self.CACHE_DIR}/vmware_files/vmware_files/dkms.conf", "r"
+            f"{self.CACHE_DIR}/vmware_files/vmware_files/DKMS_files/dkms.conf", "r"
         ) as template_file:
             dkms_conf_template = template_file.read()
 
@@ -197,10 +197,10 @@ class VMwareInstaller:
 
         logging.info("Applying patches...")
         self.run_command(
-            f"sudo patch -p2 -d /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/vmmon-only < {self.CACHE_DIR}/vmware_files/vmware_files/vmmon.patch"
+            f"sudo patch -p2 -d /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/vmmon-only < {self.CACHE_DIR}/vmware_files/vmware_files/DKMS_files/vmmon.patch"
         )
         self.run_command(
-            f"sudo patch -p2 -d /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/vmnet-only < {self.CACHE_DIR}/vmware_files/vmware_files/vmnet.patch"
+            f"sudo patch -p2 -d /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/vmnet-only < {self.CACHE_DIR}/vmware_files/vmware_files/DKMS_files/vmnet.patch"
         )
 
         logging.info("Adding and building vmware-host-modules module with DKMS...")
@@ -222,7 +222,7 @@ class VMwareInstaller:
     def copy_service_files(self):
         """Copy systemd service files for VMware."""
         for filename in self.SERVICES:
-            self.run_command(f"sudo cp {self.CACHE_DIR}/vmware_files/vmware_files/{filename} /etc/systemd/system/{filename}")
+            self.run_command(f"sudo cp {self.CACHE_DIR}/vmware_files/vmware_files/services/{filename} /etc/systemd/system/{filename}")
             logging.info(f"Copied {filename}.")
 
         # Reload systemd daemon to apply changes
@@ -318,12 +318,8 @@ class VMwareInstaller:
             self.run_command(f"sudo systemctl disable {service}")
 
         logging.info("\nStep 2: Removing systemd service files...")
-        services = [
-            "vmware-networks-configuration.service",
-            "vmware-usbarbitrator.path",
-            "vmware-usbarbitrator.service",
-        ]
-        for service in services:
+
+        for service in self.SERVICES:
             service_file = f"/etc/systemd/system/{service}"
             if os.path.exists(service_file):
                 self.run_command(f"sudo rm {service_file}")
