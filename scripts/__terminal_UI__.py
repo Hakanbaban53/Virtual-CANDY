@@ -11,7 +11,7 @@ from functions.__get_packages_data__ import PackagesJSONHandler
 
 OPTIONS_YES_NO = ["Yes", "No"]
 OPTIONS_INSTALL_REMOVE = ["install", "remove"]
-MAX_DISPLAYED_PACKAGES = 8
+MAX_DISPLAYED_PACKAGES = 15
 DEFAULT_HEADER = "VCANDY"
 VERSION = "v2.0"
 MIN_LINES = 20
@@ -99,7 +99,8 @@ class PackageManagerApp:
         self.height, self.width = self.stdscr.getmaxyx()
         if self.height < MIN_LINES or self.width < MIN_COLS:
             self.terminal_size_error()
-        self.stdscr.clear()
+        self.clean_line(0, 0)
+        self.clean_line(0, self.height - 1)
         self.display_header()
         self.display_footer()
 
@@ -210,6 +211,7 @@ class PackageManagerApp:
     def terminal_size_error(self):
         # Handle terminal size errors
         self.stdscr.clear()
+
         error_message = (
             "Terminal size is too small. Minimum required is 20 rows and 80 columns."
         )
@@ -296,6 +298,8 @@ class PackageManagerApp:
                 self.stdscr.refresh()
                 self.display_header()
                 self.display_footer()
+            elif key == curses.KEY_RESIZE:
+                self.resize_handler()
 
     def get_hide_output_choice(self):
         try:

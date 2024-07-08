@@ -4,7 +4,7 @@
 
 <div align="center">
   <img src="./assets/arguments.gif" style="width: 500px; height: auto;">
-  <img src="./assets/Command_gui.gif" style="width: 500px; height: auto;">
+  <img src="./assets/terminal_ui.gif" style="width: 500px; height: auto;">
 </div>
 
 ## 📦 Pre Builded Packages
@@ -114,9 +114,9 @@ And one more thing. Arguments are case-sensitive. You need to give the package n
 </details>
 
 ### 
-<details><summary><strong><em>With Command UI</em></strong></summary>
+<details><summary><strong><em>With Terminal UI</em></strong></summary>
 
-<p align="left">If you install the in your pc you can use in the terminal vcandy or you can use "python app.py". Command UI start with default. Basic terminal UI for installer. </p>
+<p align="left">If you install the in your pc you can use in the terminal vcandy or you can use "python app.py". Terminal UI start with default. Basic terminal UI for installer. </p>
 <p align="left">Use Left/Right arrow key select "yes" or "no". Press "Enter" key for confirm..</p>
 <p align="left">Use Up/Down arrow key move each other packager. Use "Tab" key Select/Unselect packages. Press Enter key the confirm packages.</p>
 
@@ -130,9 +130,6 @@ And one more thing. Arguments are case-sensitive. You need to give the package n
 
 ```css
 🗃 .
-├── 📦 My_Apps
-│  ├── 🗋 Visual Studio Code
-│  └── 🗋 Github Desktop
 ├── 📦 VMware_Workstation-17.5.2
 │  ├── 🗋 VMware Workstation-17.5.2
 │  └── 🗋 VMware Host Modules DKMS (Dynamic Kernel Modules)
@@ -145,9 +142,13 @@ And one more thing. Arguments are case-sensitive. You need to give the package n
 ├── 📦 Docker_CLI_and_Docker_Desktop
 │  ├── 🗋 Docker CLI
 │  └── 🗋 Docker Desktop
-└── 📦 Podman_and_Podman_Desktop
-   ├── 🗋 Podman CLI
-   └── 🗋 Podman Desktop
+├── 📦 Podman_and_Podman_Desktop
+│  ├── 🗋 Podman CLI
+│  └── 🗋 Podman Desktop
+└── 📦 Useful apps I used
+   ├── 🗋 Visual_Studio_Code
+   ├── 🗋 Github_Desktop
+   └── 🗐 And more...
 ```
 
 </details>
@@ -179,8 +180,23 @@ And one more thing. Arguments are case-sensitive. You need to give the package n
 │  └── 🗎 packages.json
 ├── 🖿 scripts
 │  ├── 🗎 __arguments__.py
-│  └── 🗎 __command_GUI__.py
+│  └── 🗎 __terminal_UI__.py
+├── 🖿 vmware_files
+│   ├── 🖿 DKMS_files
+│   │   ├── 🗎 dkms.conf
+│   │   ├── 🗎 Makefile
+│   │   ├── 🗎 vmmon.patch
+│   │   └── 🗎 vmnet.patch
+│   └── 🖿 services
+│       ├── 🗎 vmware-networks-configuration.service
+│       ├── 🗎 vmware-networks.path
+│       ├── 🗎 vmware-networks.service
+│       ├── 🗎 vmware-usbarbitrator.path
+│       └── 🗎 vmware-usbarbitrator.service
 ├── 🗎 README.md
+├── 🗎 build_deb_package.sh
+├── 🗎 build_rpm_package.sh
+├── 🗎 PKGBUILD
 └── 🗎 app.py
 
 ```

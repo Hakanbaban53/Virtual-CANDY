@@ -26,7 +26,8 @@ def app():
             start_terminal_ui()
             
     except KeyboardInterrupt:
-        print("Ctrl + C pressed.\nExiting...")
+        print("Ctrl + C pressed. Exiting...")
+        print("Goodbye!")
     except Exception as e:
         print(f"An error occurred: {e}")
 
