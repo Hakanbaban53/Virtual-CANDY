@@ -9,12 +9,11 @@ from functions.__get_os_package_manager__ import (
 )
 from functions.__get_packages_data__ import PackagesJSONHandler
 
-# Constants
 OPTIONS_YES_NO = ["Yes", "No"]
 OPTIONS_INSTALL_REMOVE = ["install", "remove"]
-MAX_DISPLAYED_PACKAGES = 15
+MAX_DISPLAYED_PACKAGES = 8
 DEFAULT_HEADER = "VCANDY"
-VERSION = "2.0"
+VERSION = "v2.0"
 MIN_LINES = 20
 MIN_COLS = 80
 
@@ -24,7 +23,7 @@ class PackageManagerApp:
         self.stdscr = stdscr
         self.height, self.width = self.stdscr.getmaxyx()
         self.selected_status_array = []
-        self.use_dark_mode = True  # Default to dark mode
+        self.use_dark_mode = True
         self.known_distros = {
             "arch": ["arch"],
             "debian": ["debian"],
@@ -34,61 +33,44 @@ class PackageManagerApp:
         self.init_colors()
 
     def init_colors(self):
-        # Initialize color pairs based on mode
         curses.start_color()
-
         CUSTOM_COLOR_WHITE = 255
         CUSTOM_COLOR_BLACK = 0
 
         curses.init_color(CUSTOM_COLOR_WHITE, 1000, 1000, 1000)
         curses.init_color(CUSTOM_COLOR_BLACK, 0, 0, 0)
 
-        # Dark mode color pairs
-        curses.init_pair(
-            1, CUSTOM_COLOR_WHITE, CUSTOM_COLOR_BLACK
-        )  # Default text color
-        curses.init_pair(2, curses.COLOR_RED, CUSTOM_COLOR_BLACK)  # Error messages
-        curses.init_pair(3, curses.COLOR_CYAN, CUSTOM_COLOR_BLACK)  # Header
-        curses.init_pair(4, curses.COLOR_GREEN, CUSTOM_COLOR_BLACK)  # Selected row
-        curses.init_pair(5, curses.COLOR_YELLOW, CUSTOM_COLOR_BLACK)  # Table headers
-        curses.init_pair(6, curses.COLOR_MAGENTA, CUSTOM_COLOR_BLACK)
-        curses.init_pair(
-            7, curses.COLOR_BLUE, CUSTOM_COLOR_WHITE
-        )  # Header specific color
-        curses.init_pair(
-            8, CUSTOM_COLOR_WHITE, curses.COLOR_BLUE
-        )  # Footer specific color
+        dark_mode_colors = [
+            (1, CUSTOM_COLOR_WHITE, CUSTOM_COLOR_BLACK),
+            (2, curses.COLOR_RED, CUSTOM_COLOR_BLACK),
+            (3, curses.COLOR_CYAN, CUSTOM_COLOR_BLACK),
+            (4, curses.COLOR_GREEN, CUSTOM_COLOR_BLACK),
+            (5, curses.COLOR_YELLOW, CUSTOM_COLOR_BLACK),
+            (6, curses.COLOR_MAGENTA, CUSTOM_COLOR_BLACK),
+            (7, curses.COLOR_BLUE, CUSTOM_COLOR_WHITE),
+            (8, CUSTOM_COLOR_WHITE, curses.COLOR_BLUE),
+        ]
 
-        # Light mode color pairs
-        curses.init_pair(
-            11, CUSTOM_COLOR_BLACK, CUSTOM_COLOR_WHITE
-        )  # Default text color
-        curses.init_pair(12, curses.COLOR_RED, CUSTOM_COLOR_WHITE)  # Error messages
-        curses.init_pair(13, curses.COLOR_CYAN, CUSTOM_COLOR_WHITE)  # Header
-        curses.init_pair(14, curses.COLOR_GREEN, CUSTOM_COLOR_WHITE)  # Selected row
-        curses.init_pair(15, curses.COLOR_YELLOW, CUSTOM_COLOR_WHITE)  # Table headers
-        curses.init_pair(16, curses.COLOR_MAGENTA, CUSTOM_COLOR_WHITE)
-        curses.init_pair(
-            17, curses.COLOR_BLUE, CUSTOM_COLOR_BLACK
-        )  # Header specific color
-        curses.init_pair(
-            18, CUSTOM_COLOR_WHITE, curses.COLOR_BLUE
-        )  # Footer specific color
+        light_mode_colors = [
+            (11, CUSTOM_COLOR_BLACK, CUSTOM_COLOR_WHITE),
+            (12, curses.COLOR_RED, CUSTOM_COLOR_WHITE),
+            (13, curses.COLOR_CYAN, CUSTOM_COLOR_WHITE),
+            (14, curses.COLOR_GREEN, CUSTOM_COLOR_WHITE),
+            (15, curses.COLOR_YELLOW, CUSTOM_COLOR_WHITE),
+            (16, curses.COLOR_MAGENTA, CUSTOM_COLOR_WHITE),
+            (17, curses.COLOR_BLUE, CUSTOM_COLOR_BLACK),
+            (18, CUSTOM_COLOR_WHITE, curses.COLOR_BLUE),
+        ]
+
+        for color in dark_mode_colors:
+            curses.init_pair(*color)
+        for color in light_mode_colors:
+            curses.init_pair(*color)
 
     def display_header(self):
-        # Choose the color pair based on the mode
-        color_pair = (
-            curses.color_pair(7) if self.use_dark_mode else curses.color_pair(17)
-        )
-        # Fill the header line with the color
+        color_pair = curses.color_pair(7 if self.use_dark_mode else 17)
         self.stdscr.addstr(0, 0, " " * self.width, color_pair)
-        # Display the header text centered
-        self.stdscr.addstr(
-            0,
-            0,
-            VERSION,
-            color_pair | curses.A_BOLD,
-        )
+        self.stdscr.addstr(0, 1, VERSION, color_pair | curses.A_BOLD)
         self.stdscr.addstr(
             0,
             self.width // 2 - len(DEFAULT_HEADER) // 2,
@@ -97,22 +79,14 @@ class PackageManagerApp:
         )
 
     def display_footer(self):
-        # Display footer with information messages
-        color_pair = (
-            curses.color_pair(1) if self.use_dark_mode else curses.color_pair(11)
-        )
-        color_pair_toggle = (
-            curses.color_pair(6) if self.use_dark_mode else curses.color_pair(16)
-        )
-        color_pair_error = (
-            curses.color_pair(2) if self.use_dark_mode else curses.color_pair(12)
-        )
-
+        color_pair = curses.color_pair(11 if self.use_dark_mode else 1)
+        color_pair_toggle = curses.color_pair(16 if self.use_dark_mode else 6)
+        color_pair_error = curses.color_pair(12 if self.use_dark_mode else 2)
+        self.stdscr.addstr(self.height - 1, 1, " " * (self.width - 2), color_pair)
         self.stdscr.addstr(
             self.height - 1, 1, "[^C Exit]", color_pair_error | curses.A_BOLD
         )
-
-        prompt = f"[Arrow keys Navigate] [TAB Select/Unselect]"
+        prompt = "[Arrow keys Navigate] [TAB Select/Unselect]"
         self.stdscr.addstr(self.height - 1, self.width // 2 - 28, prompt, color_pair)
         self.stdscr.addstr(
             self.height - 1,
@@ -121,26 +95,27 @@ class PackageManagerApp:
             color_pair_toggle | curses.A_BOLD,
         )
 
+    def resize_handler(self):
+        self.height, self.width = self.stdscr.getmaxyx()
+        if self.height < MIN_LINES or self.width < MIN_COLS:
+            self.terminal_size_error()
+        self.stdscr.clear()
+        self.display_header()
+        self.display_footer()
+
     def clean_line(self, x, y):
         self.stdscr.move(y, x)
         self.stdscr.clrtoeol()
         self.stdscr.refresh()
 
     def clear_middle_section(self):
-        # Clear middle section of the screen
-        start_y = 1
-        end_y = self.height - 1
-        for y in range(start_y, end_y):
+        for y in range(1, self.height - 1):
             self.stdscr.move(y, 0)
             self.stdscr.clrtoeol()
 
     def package_manager_connection(self, linux_distro_id):
-        color_pair = (
-            curses.color_pair(4) if self.use_dark_mode else curses.color_pair(14)
-        )
-        color_pair_error = (
-            curses.color_pair(2) if self.use_dark_mode else curses.color_pair(12)
-        )
+        color_pair = curses.color_pair(4 if self.use_dark_mode else 14)
+        color_pair_error = curses.color_pair(2 if self.use_dark_mode else 12)
 
         while True:
             prompt_checking = "Checking Package Manager Connection"
@@ -166,7 +141,6 @@ class PackageManagerApp:
                     color_pair_error | curses.A_BOLD,
                 )
                 self.stdscr.refresh()
-
                 prompt = "Retry connection?"
                 retry = self.selections(
                     prompt, self.width // 2, self.height // 2, OPTIONS_YES_NO
@@ -181,16 +155,10 @@ class PackageManagerApp:
     def print_menu(self, selected_row, relevant_packages, selected_status):
         self.clear_middle_section()
 
-        header_color = (
-            curses.color_pair(5) if self.use_dark_mode else curses.color_pair(15)
-        )
-        row_color = (
-            curses.color_pair(1) if self.use_dark_mode else curses.color_pair(11)
-        )
+        header_color = curses.color_pair(5 if self.use_dark_mode else 15)
+        row_color = curses.color_pair(1 if self.use_dark_mode else 11)
         selected_row_color = (
-            curses.color_pair(4) | curses.A_REVERSE
-            if self.use_dark_mode
-            else curses.color_pair(14) | curses.A_REVERSE
+            curses.color_pair(4 if self.use_dark_mode else 14) | curses.A_REVERSE
         )
 
         # Draw headers
@@ -202,17 +170,14 @@ class PackageManagerApp:
         col_width = (table_width - 4) // len(headers)
         for i, header in enumerate(headers):
             x = table_start_x + 2 + i * (col_width + 1)
-            self.stdscr.addstr(
-                table_start_y, x, header.center(col_width - 20), header_color
-            )
+            self.stdscr.addstr(table_start_y, x, header.center(col_width), header_color)
 
         # Draw horizontal line under headers
         self.stdscr.hline(
             table_start_y + 1, table_start_x + 1, curses.ACS_HLINE, table_width - 2
         )
 
-        # Display packages
-        start_idx = max(0, selected_row - MAX_DISPLAYED_PACKAGES + 1)
+        start_idx = max(0, selected_row - MAX_DISPLAYED_PACKAGES // 2)
         end_idx = min(len(relevant_packages), start_idx + MAX_DISPLAYED_PACKAGES)
 
         for idx in range(start_idx, end_idx):
@@ -221,8 +186,24 @@ class PackageManagerApp:
             package_name = relevant_packages[idx].replace("_", " ")
 
             color = selected_row_color if idx == selected_row else row_color
-            self.stdscr.addstr(y, table_start_x + 2, status.ljust(20), color)
-            self.stdscr.addstr(y, table_start_x + 24, package_name.ljust(50), color)
+            self.stdscr.addstr(y, table_start_x + 2, status.ljust(19), color)
+            self.stdscr.addstr(y, table_start_x + 25, package_name.ljust(49), color)
+
+        # Draw arrows
+        if start_idx > 0:
+            self.stdscr.addstr(
+                table_start_y + 2,
+                table_start_x + 22,
+                "/\\",
+                curses.A_BOLD | header_color,
+            )
+        if end_idx < len(relevant_packages):
+            self.stdscr.addstr(
+                table_start_y + len(relevant_packages) - 2,
+                table_start_x + 22,
+                "\\/",
+                curses.A_BOLD | header_color,
+            )
 
         self.stdscr.refresh()
 
@@ -317,7 +298,6 @@ class PackageManagerApp:
                 self.display_footer()
 
     def get_hide_output_choice(self):
-        # Prompt user for hide output choice
         try:
             prompt = "Do you want to hide complex outputs?"
             x = curses.COLS // 2 - len(prompt) // 2
@@ -329,7 +309,6 @@ class PackageManagerApp:
             self.terminal_size_error()
 
     def install_or_remove(self):
-        # Prompt user for installation or removal action
         try:
             prompt = "Please select the action:"
             x = self.width // 2 - len(prompt) // 2
@@ -400,7 +379,7 @@ class PackageManagerApp:
 
             warning_line = (
                 self.height // 2 - 2
-            )  # Line where the warning message is displayed
+            )
 
             if selected_option == "Yes":
                 return linux_distro_id
@@ -468,7 +447,6 @@ class PackageManagerApp:
             return []
 
     def main(self):
-        # Main application logic
         try:
             curses.curs_set(0)
             if curses.LINES < MIN_LINES or curses.COLS < MIN_COLS:
@@ -610,6 +588,8 @@ class PackageManagerApp:
                     self.print_menu(
                         current_row, relevant_packages, self.selected_status_array
                     )
+                elif key == curses.KEY_RESIZE:
+                    self.resize_handler()
 
                 self.print_menu(
                     current_row, relevant_packages, self.selected_status_array

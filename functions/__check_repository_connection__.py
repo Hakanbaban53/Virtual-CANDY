@@ -1,5 +1,5 @@
 from time import sleep
-from requests import get, ConnectionError
+from requests import get, ConnectionError, Timeout
 
 def check_linux_package_manager_connection(distribution):
     package_manager_urls = {
@@ -10,17 +10,18 @@ def check_linux_package_manager_connection(distribution):
     }
 
     if distribution in package_manager_urls:
-        # print("Package manager checking internet connection...")
         url = package_manager_urls[distribution]
         try:
-            get(url, timeout=5)
-            # print(f"{distribution.capitalize()} package manager is connected.")
-            return True
+            response = get(url, timeout=5)
+            if response.status_code == 200:
+                return True
+            else:
+                return False
+        except Timeout:
+            return False
         except ConnectionError:
-            # print(f"{distribution.capitalize()} package manager is not connected.")
             return False
     else:
         print(f"Unsupported distribution: {distribution}")
         sleep(5)
         exit(1)
-
