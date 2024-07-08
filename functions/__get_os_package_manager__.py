@@ -34,19 +34,16 @@ def identify_distribution():
         return 'Not running on Linux'
 
 
-
-
 def get_linux_package_manager(linux_distribution, package_name, hide_output, action):
     handler = PackagesJSONHandler()
     packages_data = handler.load_json_data()
 
     package_manager_func = globals().get(f"{linux_distribution.lower()}_package_manager")
-
     if package_manager_func:
         package_data_ref = packages_data.get(linux_distribution, [])
         for data in package_data_ref:
             name = data.get("name", "")
-            if package_name in name:
+            if package_name in name or package_name in name.lower():
                 values = data.get("values", [])
                 package_manager_func(values, hide_output, action)
                 return
