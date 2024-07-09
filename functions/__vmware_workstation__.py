@@ -305,6 +305,9 @@ class VMwareInstaller:
         logging.info("\nStep 8: Creating systemd service files...")
         self.copy_service_files()
 
+        logging.info("\nStep 9: Set up the network adapters...")
+        self.run_command("sudo chmod a+rw /dev/vmnet*")
+
         logging.info(f"VMware installation and setup on {self.linux_distro} is complete.")
 
     def uninstall_vmware(self):
