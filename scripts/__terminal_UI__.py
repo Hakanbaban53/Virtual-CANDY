@@ -170,8 +170,8 @@ class PackageManagerApp:
         headers = ["Status", "Package Name"]
         col_width = (table_width - 4) // len(headers)
         for i, header in enumerate(headers):
-            x = table_start_x + 2 + i * (col_width + 1)
-            self.stdscr.addstr(table_start_y, x, header.center(col_width), header_color)
+            x = table_start_x + 7 + i * (col_width - 1)
+            self.stdscr.addstr(table_start_y, x, header, header_color)
 
         # Draw horizontal line under headers
         self.stdscr.hline(
