@@ -105,7 +105,7 @@ jobs:
 
         - name: Create DEB spec file
           run: |
-            cat <<EOF > ~/vcandy/DEBIAN/control"
+            cat <<EOF > ~/vcandy/DEBIAN/control
             Package: vcandy
             Version: 2.0
             Architecture: all
