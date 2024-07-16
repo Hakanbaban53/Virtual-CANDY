@@ -176,7 +176,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.VCGITHUB_TOKEN }}
         with:
             upload_url: ${{ steps.create_release.outputs.upload_url }}
-            asset_path: /home/runner/work/Virtual-CANDY/Virtual-CANDY/x86_64/
+            asset_path: /home/runner/work/Virtual-CANDY/Virtual-CANDY/x86_64/vcandy-2.0-1.x86_64.rpm
             asset_name: vcandy-${{ steps.tags.outputs.VERSION }}.rpm
             asset_content_type: application/x-rpm
 
@@ -186,6 +186,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.VCGITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: /home/runner/work/Virtual-CANDY/Virtual-CANDY/
+          asset_path: /home/runner/work/Virtual-CANDY/Virtual-CANDY/vcandy.deb
           asset_name: vcandy-${{ steps.tags.outputs.VERSION }}.deb
           asset_content_type: application/x-debian-package
