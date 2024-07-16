@@ -136,37 +136,41 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-
+  
       - name: Read info
         id: tags
         shell: bash
         run: |
-          echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\/v/}
-          echo ::set-output name=TAG::${GITHUB_REF/refs\/tags\//}
-
+          # Extract the version and tag from GITHUB_REF
+          VERSION=$(echo "${GITHUB_REF}" | sed 's|refs/tags/v||')
+          TAG=$(echo "${GITHUB_REF}" | sed 's|refs/tags/||')
+          echo "::set-output name=VERSION::${VERSION}"
+          echo "::set-output name=TAG::${TAG}"
+  
       - name: Download RPM Artifact
         uses: actions/download-artifact@v3
         with:
           name: vcandy-rpm
           path: ./
-
+  
       - name: Download DEB Artifact
         uses: actions/download-artifact@v3
         with:
           name: vcandy-deb
           path: ./
-
+  
       - name: Create Release
         id: create_release
-        uses: actions/create-release@master
+        uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.tags.outputs.tag }}
-          release_name: ${{ steps.tags.outputs.tag }}
+          # Use the extracted tag for the release
+          tag_name: ${{ steps.tags.outputs.TAG }}
+          release_name: ${{ steps.tags.outputs.TAG }}
           draft: false
           prerelease: false
-
+  
       - name: Upload RPM to Release
         uses: actions/upload-release-asset@v1
         env:
@@ -176,7 +180,7 @@ jobs:
           asset_path: ./*.rpm
           asset_name: vcandy-${{ steps.tags.outputs.VERSION }}.rpm
           asset_content_type: application/x-rpm
-
+  
       - name: Upload DEB to Release
         uses: actions/upload-release-asset@v1
         env:
@@ -186,3 +190,4 @@ jobs:
           asset_path: ./*.deb
           asset_name: vcandy-${{ steps.tags.outputs.VERSION }}.deb
           asset_content_type: application/x-debian-package
+
