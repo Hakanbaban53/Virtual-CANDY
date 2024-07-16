@@ -2,15 +2,14 @@ name: Build and Deploy RPM
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+    tags:
+      - v*
+
+  workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: fedora-latest
+  build-rpm:
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
@@ -18,28 +17,14 @@ jobs:
 
       - name: Set up dependencies
         run: |
-          sudo dnf install -y python3-pip rpmdevtools rpmlint
+          sudo apt install -y python3-pip rpm
 
-      - name: Set up RPM development tree
-        run: rpmdev-setuptree
 
       - name: Install Python dependencies
         run: pip3 install --no-cache-dir requests pyinstaller setuptools
 
       - name: Build the Python project with PyInstaller
-        run: pyinstaller --onefile app.py --name=vcandy
-
-      - name: Create binary folder
-        run: mkdir vcandy-2.0
-
-      - name: Move binary to binary folder
-        run: mv dist/vcandy vcandy-2.0
-
-      - name: Create .tar.gz file
-        run: tar --create --file vcandy-2.0.tar.gz vcandy-2.0
-
-      - name: Move .tar.gz to SOURCES directory
-        run: mv vcandy-2.0.tar.gz ~/rpmbuild/SOURCES
+        run: pyinstaller --onefile /home/runner/work/Virtual-CANDY/Virtual-CANDY/app.py --name=vcandy
 
       - name: Create spec file
         run: |
@@ -73,6 +58,19 @@ jobs:
           * Thu Mar 19 2024 Hakan İSMAİL <hakanismail53@gmail.com> - 2.0
           - Initial release
           EOF
+          
+      - name: Create binary folder
+        run: mkdir vcandy-2.0
+
+      - name: Move binary to binary folder
+        run: mv /home/runner/work/Virtual-CANDY/Virtual-CANDY/dist/vcandy vcandy-2.0
+
+      - name: Create .tar.gz file
+        run: tar --create --file vcandy-2.0.tar.gz vcandy-2.0
+
+      - name: Move .tar.gz to SOURCES directory
+        run: mv vcandy-2.0.tar.gz ~/rpmbuild/SOURCES
+
 
       - name: Build RPM package
         run: rpmbuild -bb ~/rpmbuild/SPECS/vcandy.spec
