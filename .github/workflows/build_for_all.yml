@@ -141,23 +141,18 @@ jobs:
         id: tags
         shell: bash
         run: |
-          # Extract the version and tag from GITHUB_REF
-          VERSION=$(echo "${GITHUB_REF}" | sed 's|refs/tags/v||')
-          TAG=$(echo "${GITHUB_REF}" | sed 's|refs/tags/||')
-          echo "::set-output name=VERSION::${VERSION}"
-          echo "::set-output name=TAG::${TAG}"
+          echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\/v/}
+          echo ::set-output name=TAG::${GITHUB_REF/refs\/tags\//}
 
       - name: Download RPM Artifact
         uses: actions/download-artifact@v3
         with:
           name: vcandy-rpm
-          path: ./
 
       - name: Download DEB Artifact
         uses: actions/download-artifact@v3
         with:
           name: vcandy-deb
-          path: ./
 
       - name: Create Release
         id: create_release
