@@ -617,7 +617,7 @@
         {
           "name": "Docker Desktop",
           "type": "local-package",
-          "install_value": "https://desktop.docker.com/linux/main/amd64/145265/docker-desktop-4.29.0-x86_64.rpm",
+          "install_value": "https://desktop.docker.com/linux/main/amd64/157355/docker-desktop-x86_64.rpm",
           "check_value": "docker-desktop",
           "remove_value": "docker-desktop"
         },
