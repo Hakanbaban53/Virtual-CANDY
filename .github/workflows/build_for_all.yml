@@ -23,6 +23,7 @@ jobs:
         run: |
           mkdir -p ~/rpmbuild/SPECS
           mkdir -p ~/rpmbuild/SOURCES
+          mkdir ~/vcandy-2.0
           
       - name: Install Python dependencies
         run: pip3 install --no-cache-dir requests pyinstaller setuptools
@@ -63,16 +64,13 @@ jobs:
           - Initial release
           EOF
           
-      - name: Create binary folder
-        run: mkdir vcandy-2.0
-
       - name: Move binary to binary folder
-        run: mv /home/runner/work/Virtual-CANDY/Virtual-CANDY/dist/vcandy vcandy-2.0
+        run: mv /home/runner/work/Virtual-CANDY/Virtual-CANDY/dist/vcandy ~/vcandy-2.0
 
       - name: Create .tar.gz file and move the SOURCES folder
         run: |
-          tar --create --file vcandy-2.0.tar.gz vcandy-2.0
-          mv vcandy-2.0.tar.gz ~/rpmbuild/SOURCES
+          tar --create --file ~/vcandy-2.0.tar.gz ~/vcandy-2.0
+          mv ~/vcandy-2.0.tar.gz ~/rpmbuild/SOURCES
         
 
       - name: Build RPM package
@@ -83,3 +81,6 @@ jobs:
         with:
           name: vcandy
           path: ~/rpmbuild/RPMS/**/*.rpm
+
+
+
