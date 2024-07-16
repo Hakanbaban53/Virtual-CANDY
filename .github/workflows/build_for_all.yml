@@ -1,10 +1,9 @@
-name: Build and Deploy RPM
+name: Build and Deploy RPM, DEB
 
 on:
   push:
     tags:
       - v*
-
   workflow_dispatch:
 
 jobs:
@@ -19,19 +18,18 @@ jobs:
         run: |
           sudo apt install -y python3-pip rpm
 
-      - name: Set up folders
+      - name: Set up RPM directories
         run: |
           mkdir -p ~/rpmbuild/SPECS
           mkdir -p ~/rpmbuild/SOURCES
-          mkdir ~/vcandy-2.0
-          
+
       - name: Install Python dependencies
         run: pip3 install --no-cache-dir requests pyinstaller setuptools
 
       - name: Build the Python project with PyInstaller
         run: pyinstaller --onefile /home/runner/work/Virtual-CANDY/Virtual-CANDY/app.py --name=vcandy
 
-      - name: Create spec file
+      - name: Create RPM spec file
         run: |
           cat <<EOF > ~/rpmbuild/SPECS/vcandy.spec
           Summary: A python CLI application that installs automatic container and virtualization tools for many Linux systems
@@ -63,15 +61,17 @@ jobs:
           * Thu Mar 19 2024 Hakan İSMAİL <hakanismail53@gmail.com> - 2.0
           - Initial release
           EOF
-          
-      - name: Move binary to binary folder
-        run: mv /home/runner/work/Virtual-CANDY/Virtual-CANDY/dist/vcandy ~/vcandy-2.0
 
-      - name: Create .tar.gz file and move the SOURCES folder
+      - name: Create binary folder
+        run: mkdir vcandy-2.0
+
+      - name: Move binary to binary folder
+        run: mv /home/runner/work/Virtual-CANDY/Virtual-CANDY/dist/vcandy vcandy-2.0
+
+      - name: Create .tar.gz file and move to SOURCES folder
         run: |
-          tar --create --file ~/vcandy-2.0.tar.gz ~/vcandy-2.0
-          mv ~/vcandy-2.0.tar.gz ~/rpmbuild/SOURCES
-        
+          tar --create --file vcandy-2.0.tar.gz vcandy-2.0
+          mv vcandy-2.0.tar.gz ~/rpmbuild/SOURCES
 
       - name: Build RPM package
         run: rpmbuild -bb ~/rpmbuild/SPECS/vcandy.spec
@@ -79,8 +79,69 @@ jobs:
       - name: Upload RPM package as artifact
         uses: actions/upload-artifact@v3
         with:
-          name: vcandy
+          name: vcandy-rpm
           path: ~/rpmbuild/RPMS/**/*.rpm
 
+  build-deb:
+    runs-on: ubuntu-latest
+    steps:
+        - name: Checkout repository
+          uses: actions/checkout@v3
+  
+        - name: Set up dependencies
+          run: |
+            sudo apt install python3-pip debhelper python3-venv
 
+        - name: Set up DEB directories
+          run: |
+            mkdir -p ~/vcandy/bin
+            mkdir -p ~/vcandy/DEBIAN
 
+        - name: Install Python dependencies
+          run: pip3 install --no-cache-dir requests pyinstaller setuptools
+  
+        - name: Build the Python project with PyInstaller
+          run: pyinstaller --onefile /home/runner/work/Virtual-CANDY/Virtual-CANDY/app.py --name=vcandy
+
+        - name: Create DEB spec file
+          run: |
+            cat <<EOF > ~/vcandy/DEBIAN/vcandy.spec
+            Summary: A python CLI application that installs automatic container and virtualization tools for many Linux systems
+            Name: vcandy
+            Version: 2.0
+            Release: 1%{?dist}
+            License: MIT
+            URL: https://github.com/Hakanbaban53/Virtual-CANDY
+            Source0: %{name}-%{version}.tar.gz
+            
+            %description
+            vcandy is a command-line tool that simplifies the installation process of container and virtualization tools on Linux systems.
+            
+            %prep
+            %setup -q
+            
+            %install
+            rm -rf %{buildroot}
+            mkdir -p %{buildroot}/%{_bindir}
+            cp %{name} %{buildroot}/%{_bindir}
+            
+            %clean
+            rm -rf %{buildroot}
+            
+            %files
+            %{_bindir}/%{name}
+            
+            %changelog
+            * Thu Mar 19 2024 Hakan İSMAİL <hakanismail53@gmail.com> - 2.0
+            - Initial release
+            EOF
+
+        - name: Build DEB package
+          run: dpkg-deb --root-owner-group --build ~/vcandy
+
+        - name: Upload deb package as artifact
+          uses: actions/upload-artifact@v3
+          with:
+            name: vcandy-deb
+            path: ~/*.deb
+            
