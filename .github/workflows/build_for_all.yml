@@ -85,46 +85,97 @@ jobs:
   build-deb:
     runs-on: ubuntu-latest
     steps:
-        - name: Checkout repository
-          uses: actions/checkout@v3
-  
-        - name: Set up dependencies
-          run: |
-            sudo apt install python3-pip debhelper python3-venv
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-        - name: Set up DEB directories
-          run: |
-            mkdir -p ~/vcandy/bin
-            mkdir -p ~/vcandy/DEBIAN
+      - name: Set up dependencies
+        run: |
+          sudo apt install -y python3-pip debhelper python3-venv
 
-        - name: Install Python dependencies
-          run: pip3 install --no-cache-dir requests pyinstaller setuptools
-  
-        - name: Build the Python project with PyInstaller
-          run: pyinstaller --onefile /home/runner/work/Virtual-CANDY/Virtual-CANDY/app.py --name=vcandy
+      - name: Set up DEB directories
+        run: |
+          mkdir -p ~/vcandy/bin
+          mkdir -p ~/vcandy/DEBIAN
 
-        - name: Create DEB spec file
-          run: |
-            cat <<EOF > ~/vcandy/DEBIAN/control
-            Package: vcandy
-            Version: 2.0
-            Architecture: all
-            Section: python
-            Priority: optional
-            Maintainer: Hakan İSMAİL <hakanismail53@gmail.com>
-            Homepage: https://github.com/Hakanbaban53/Virtual-CANDY
-            Description: A Python CLI application that installs automatic container and virtualization tools for many Linux systems.
-            EOF
+      - name: Install Python dependencies
+        run: pip3 install --no-cache-dir requests pyinstaller setuptools
 
-        - name: Move the binary file to the build directory
-          run: mv /home/runner/work/Virtual-CANDY/Virtual-CANDY/dist/vcandy ~/vcandy/bin
-          
-        - name: Build DEB package
-          run: dpkg-deb --root-owner-group --build ~/vcandy
+      - name: Build the Python project with PyInstaller
+        run: pyinstaller --onefile /home/runner/work/Virtual-CANDY/Virtual-CANDY/app.py --name=vcandy
 
-        - name: Upload deb package as artifact
-          uses: actions/upload-artifact@v3
-          with:
-            name: vcandy-deb
-            path: ~/*.deb
-            
+      - name: Create DEB control file
+        run: |
+          cat <<EOF > ~/vcandy/DEBIAN/control
+          Package: vcandy
+          Version: 2.0
+          Architecture: all
+          Section: python
+          Priority: optional
+          Maintainer: Hakan İSMAİL <hakanismail53@gmail.com>
+          Homepage: https://github.com/Hakanbaban53/Virtual-CANDY
+          Description: A Python CLI application that installs automatic container and virtualization tools for many Linux systems.
+          EOF
+
+      - name: Move the binary file to the build directory
+        run: mv /home/runner/work/Virtual-CANDY/Virtual-CANDY/dist/vcandy ~/vcandy/bin
+
+      - name: Build DEB package
+        run: dpkg-deb --root-owner-group --build ~/vcandy
+
+      - name: Upload DEB package as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: vcandy-deb
+          path: ~/vcandy.deb
+
+  create-release:
+    runs-on: ubuntu-latest
+    needs: [build-rpm, build-deb]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Download RPM Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: vcandy-rpm
+          path: ./
+
+      - name: Download DEB Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: vcandy-deb
+          path: ./
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: Release ${{ github.ref_name }}
+          body: |
+            Release for tag ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+
+      - name: Upload RPM to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./vcandy-rpm.tar.gz
+          asset_name: vcandy-rpm.tar.gz
+          asset_content_type: application/gzip
+
+      - name: Upload DEB to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./vcandy.deb
+          asset_name: vcandy.deb
+          asset_content_type: application/x-debian-package
