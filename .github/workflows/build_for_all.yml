@@ -1,99 +1,84 @@
-name: Build, Package, and Release
+name: Build and Deploy RPM
 
 on:
   push:
-    tags:
-      - 'v*'
-  workflow_dispatch:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  build-rpm:
-    runs-on: ubuntu-latest
+  build:
+    runs-on: fedora-latest
+
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up RPM environment
-        run: sudo apt-get install -y rpm
+      - name: Set up dependencies
+        run: |
+          sudo dnf install -y python3-pip rpmdevtools rpmlint
 
-      - name: Run RPM build script
-        run: bash /home/runner/work/Virtual-CANDY/Virtual-CANDY/build_rpm_package.sh
+      - name: Set up RPM development tree
+        run: rpmdev-setuptree
 
-      - name: Archive RPM
-        run: tar -czvf ${{ github.ref_name }}-rpm.tar.gz ~/rpmbuild/RPMS/*/*.rpm
+      - name: Install Python dependencies
+        run: pip3 install --no-cache-dir requests pyinstaller setuptools
 
-      - name: Upload RPM Artifact
+      - name: Build the Python project with PyInstaller
+        run: pyinstaller --onefile app.py --name=vcandy
+
+      - name: Create binary folder
+        run: mkdir vcandy-2.0
+
+      - name: Move binary to binary folder
+        run: mv dist/vcandy vcandy-2.0
+
+      - name: Create .tar.gz file
+        run: tar --create --file vcandy-2.0.tar.gz vcandy-2.0
+
+      - name: Move .tar.gz to SOURCES directory
+        run: mv vcandy-2.0.tar.gz ~/rpmbuild/SOURCES
+
+      - name: Create spec file
+        run: |
+          cat <<EOF > ~/rpmbuild/SPECS/vcandy.spec
+          Summary: A python CLI application that installs automatic container and virtualization tools for many Linux systems
+          Name: vcandy
+          Version: 2.0
+          Release: 1%{?dist}
+          License: MIT
+          URL: https://github.com/Hakanbaban53/Container-and-Virtualization-Installer
+          Source0: %{name}-%{version}.tar.gz
+
+          %description
+          vcandy is a command-line tool that simplifies the installation process of container and virtualization tools on Linux systems.
+
+          %prep
+          %setup -q
+
+          %install
+          rm -rf \$RPM_BUILD_ROOT
+          mkdir -p \$RPM_BUILD_ROOT/%{_bindir}
+          cp %{name} \$RPM_BUILD_ROOT/%{_bindir}
+
+          %clean
+          rm -rf \$RPM_BUILD_ROOT
+
+          %files
+          %{_bindir}/%{name}
+
+          %changelog
+          * Thu Mar 19 2024 Hakan İSMAİL <hakanismail53@gmail.com> - 2.0
+          - Initial release
+          EOF
+
+      - name: Build RPM package
+        run: rpmbuild -bb ~/rpmbuild/SPECS/vcandy.spec
+
+      - name: Upload RPM package as artifact
         uses: actions/upload-artifact@v3
         with:
-          name: rpm-package
-          path: ${{ github.ref_name }}-rpm.tar.gz
-
-  build-deb:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Run DEB build script
-        run: bash /home/runner/work/Virtual-CANDY/Virtual-CANDY/build_deb_package.sh
-
-      - name: Archive DEB
-        run: tar -czvf ${{ github.ref_name }}-deb.tar.gz ./*.deb
-
-      - name: Upload DEB Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: deb-package
-          path: ${{ github.ref_name }}-deb.tar.gz
-
-  create-release:
-    runs-on: ubuntu-latest
-    needs: [build-rpm, build-deb]
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Download RPM Artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: rpm-package
-          path: ./
-
-      - name: Download DEB Artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: deb-package
-          path: ./
-
-      - name: Create GitHub Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        with:
-          tag_name: ${{ github.ref_name }}
-          release_name: Release ${{ github.ref_name }}
-          body: |
-            Release for tag ${{ github.ref_name }}
-          draft: false
-          prerelease: false
-
-      - name: Upload RPM to Release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ github.ref_name }}-rpm.tar.gz
-          asset_name: ${{ github.ref_name }}-rpm.tar.gz
-          asset_content_type: application/gzip
-
-      - name: Upload DEB to Release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ github.ref_name }}-deb.tar.gz
-          asset_name: ${{ github.ref_name }}-deb.tar.gz
-          asset_content_type: application/gzip
+          name: vcandy
+          path: ~/rpmbuild/RPMS/**/*.rpm
