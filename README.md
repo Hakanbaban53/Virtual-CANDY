@@ -1,4 +1,4 @@
-<h1 align="center"> Virtualization and container applications installer "VCANDY" 🖥️<h1>
+<h1 align="center"> Virtual CANDY "VCANDY" 🖥️<h1>
 
 <h4 align="center">An application that installs certain virtualization applications (Docker/Docker Desktop, VirtManager/QEMU, VMware Workstation (With DKMS host modules), VirtualBox and Podman/Podman Desktop) on Linux via argument or command line user interface.</h4>
 
