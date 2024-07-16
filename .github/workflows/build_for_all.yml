@@ -116,6 +116,9 @@ jobs:
             Description: A Python CLI application that installs automatic container and virtualization tools for many Linux systems.
             EOF
 
+        - name: Move the binary file to the build directory
+          run: mv /home/runner/work/Virtual-CANDY/Virtual-CANDY/dist/vcandy ~/vcandy/bin
+          
         - name: Build DEB package
           run: dpkg-deb --root-owner-group --build ~/vcandy
 
