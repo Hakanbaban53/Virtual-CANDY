@@ -19,7 +19,11 @@ jobs:
         run: |
           sudo apt install -y python3-pip rpm
 
-
+      - name: Set up folders
+        run: |
+          mkdir -p ~/rpmbuild/SPECS
+          mkdir -p ~/rpmbuild/SOURCES
+          
       - name: Install Python dependencies
         run: pip3 install --no-cache-dir requests pyinstaller setuptools
 
@@ -28,7 +32,7 @@ jobs:
 
       - name: Create spec file
         run: |
-          cat <<EOF > ~/vcandy.spec
+          cat <<EOF > ~/rpmbuild/SPECS/vcandy.spec
           Summary: A python CLI application that installs automatic container and virtualization tools for many Linux systems
           Name: vcandy
           Version: 2.0
@@ -65,11 +69,14 @@ jobs:
       - name: Move binary to binary folder
         run: mv /home/runner/work/Virtual-CANDY/Virtual-CANDY/dist/vcandy vcandy-2.0
 
-      - name: Create .tar.gz file
-        run: tar --create --file vcandy-2.0.tar.gz vcandy-2.0
+      - name: Create .tar.gz file and move the SOURCES folder
+        run: |
+          tar --create --file vcandy-2.0.tar.gz vcandy-2.0
+          mv vcandy-2.0.tar.gz ~/rpmbuild/SOURCES
+        
 
       - name: Build RPM package
-        run: rpmbuild -bb vcandy.spec
+        run: rpmbuild -bb ~/rpmbuild/SPECS/vcandy.spec
 
       - name: Upload RPM package as artifact
         uses: actions/upload-artifact@v3
