@@ -150,7 +150,6 @@ def package_installer(data, hide):
             run(
                 [
                     "wget",
-                    "--show-progress",
                     "--progress=bar:force",
                     "-O",
                     f"{target_directory}local.package.deb",

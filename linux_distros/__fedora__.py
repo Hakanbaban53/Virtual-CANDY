@@ -148,7 +148,6 @@ def package_installer(data, hide):
             run(
                 [
                     "wget",
-                    "--show-progress",
                     "--progress=bar:force",
                     "-O",
                     "local.package.rpm",

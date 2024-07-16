@@ -9,32 +9,31 @@ on:
 jobs:
   build-rpm:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
       - name: Set up dependencies
         run: |
+          sudo apt update
           sudo apt install -y python3-pip rpm
 
       - name: Set up RPM directories
         run: |
-          mkdir -p ~/rpmbuild/SPECS
-          mkdir -p ~/rpmbuild/SOURCES
+          mkdir -p ~/rpmbuild/SPECS ~/rpmbuild/SOURCES
 
       - name: Install Python dependencies
         run: pip3 install --no-cache-dir requests pyinstaller setuptools
 
       - name: Build the Python project with PyInstaller
-        run: pyinstaller --onefile /home/runner/work/Virtual-CANDY/Virtual-CANDY/app.py --name=vcandy
+        run: pyinstaller --onefile ~/work/Virtual-CANDY/Virtual-CANDY/app.py --name=vcandy
 
       - name: Create RPM spec file
         run: |
           cat <<EOF > ~/rpmbuild/SPECS/vcandy.spec
           Summary: A python CLI application that installs automatic container and virtualization tools for many Linux systems
           Name: vcandy
-          Version: 2.0
+          Version: ${GITHUB_REF/refs\/tags\/v/}
           Release: 1%{?dist}
           License: MIT
           URL: https://github.com/Hakanbaban53/Virtual-CANDY
@@ -58,20 +57,20 @@ jobs:
           %{_bindir}/%{name}
 
           %changelog
-          * Thu Mar 19 2024 Hakan İSMAİL <hakanismail53@gmail.com> - 2.0
+          * Thu Mar 19 2024 Hakan İSMAİL <hakanismail53@gmail.com> - ${GITHUB_REF/refs\/tags\/v/}
           - Initial release
           EOF
 
       - name: Create binary folder
-        run: mkdir vcandy-2.0
+        run: mkdir vcandy-${GITHUB_REF/refs\/tags\/v/}
 
       - name: Move binary to binary folder
-        run: mv /home/runner/work/Virtual-CANDY/Virtual-CANDY/dist/vcandy vcandy-2.0
+        run: mv ./dist/vcandy vcandy-${GITHUB_REF/refs\/tags\/v/}
 
       - name: Create .tar.gz file and move to SOURCES folder
         run: |
-          tar --create --file vcandy-2.0.tar.gz vcandy-2.0
-          mv vcandy-2.0.tar.gz ~/rpmbuild/SOURCES
+          tar --create --file vcandy-${GITHUB_REF/refs\/tags\/v/}.tar.gz vcandy-${GITHUB_REF/refs\/tags\/v/}
+          mv vcandy-${GITHUB_REF/refs\/tags\/v/}.tar.gz ~/rpmbuild/SOURCES
 
       - name: Build RPM package
         run: rpmbuild -bb ~/rpmbuild/SPECS/vcandy.spec
@@ -79,7 +78,7 @@ jobs:
       - name: Upload RPM package as artifact
         uses: actions/upload-artifact@v3
         with:
-          name: vcandy-rpm
+          name: vcandy.rpm
           path: ~/rpmbuild/RPMS/**/*.rpm
 
   build-deb:
@@ -90,24 +89,24 @@ jobs:
 
       - name: Set up dependencies
         run: |
+          sudo apt update
           sudo apt install -y python3-pip debhelper python3-venv
 
       - name: Set up DEB directories
         run: |
-          mkdir -p ~/vcandy/bin
-          mkdir -p ~/vcandy/DEBIAN
+          mkdir -p ~/vcandy/bin ~/vcandy/DEBIAN
 
       - name: Install Python dependencies
         run: pip3 install --no-cache-dir requests pyinstaller setuptools
 
       - name: Build the Python project with PyInstaller
-        run: pyinstaller --onefile /home/runner/work/Virtual-CANDY/Virtual-CANDY/app.py --name=vcandy
+        run: pyinstaller --onefile ~/work/Virtual-CANDY/Virtual-CANDY/app.py --name=vcandy
 
       - name: Create DEB control file
         run: |
           cat <<EOF > ~/vcandy/DEBIAN/control
           Package: vcandy
-          Version: 2.0
+          Version: ${GITHUB_REF/refs\/tags\/v/}
           Architecture: all
           Section: python
           Priority: optional
@@ -117,7 +116,7 @@ jobs:
           EOF
 
       - name: Move the binary file to the build directory
-        run: mv /home/runner/work/Virtual-CANDY/Virtual-CANDY/dist/vcandy ~/vcandy/bin
+        run: mv ./dist/vcandy ~/vcandy/bin
 
       - name: Build DEB package
         run: dpkg-deb --root-owner-group --build ~/vcandy
@@ -125,7 +124,7 @@ jobs:
       - name: Upload DEB package as artifact
         uses: actions/upload-artifact@v3
         with:
-          name: vcandy-deb
+          name: vcandy.deb
           path: ~/vcandy.deb
 
   create-release:
@@ -147,12 +146,14 @@ jobs:
       - name: Download RPM Artifact
         uses: actions/download-artifact@v3
         with:
-          name: vcandy-rpm
+          name: vcandy.rpm
+          path: ./
 
       - name: Download DEB Artifact
         uses: actions/download-artifact@v3
         with:
-          name: vcandy-deb
+          name: vcandy.deb
+          path: ./
 
       - name: Create Release
         id: create_release
@@ -174,7 +175,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.VCGITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: /home/runner/work/Virtual-CANDY/Virtual-CANDY/*.rpm
+          asset_path: /home/runner/work/Virtual-CANDY/Virtual-CANDY/x86_64/vcandy-${{ steps.tags.outputs.VERSION }}-1.x86_64.rpm
+
           asset_name: vcandy-${{ steps.tags.outputs.VERSION }}.rpm
           asset_content_type: application/x-rpm
 
@@ -184,6 +186,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.VCGITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: /home/runner/work/Virtual-CANDY/Virtual-CANDY/*.deb
+          asset_path: /home/runner/work/Virtual-CANDY/Virtual-CANDY/vcandy.deb
           asset_name: vcandy-${{ steps.tags.outputs.VERSION }}.deb
           asset_content_type: application/x-debian-package
