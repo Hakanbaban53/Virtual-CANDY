@@ -156,14 +156,14 @@ jobs:
           name: vcandy-deb
           path: ./
 
-      - name: Create GitHub Release
+      - name: Create Release
         id: create_release
-        uses: actions/create-release@v1
+        uses: actions/create-release@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.tags.outputs.TAG }}
-          release_name: Release ${{ steps.tags.outputs.TAG }}
+          tag_name: ${{ steps.tags.outputs.tag }}
+          release_name: ${{ steps.tags.outputs.tag }}
           draft: false
           prerelease: false
 
