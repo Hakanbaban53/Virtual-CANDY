@@ -17,7 +17,7 @@ jobs:
         run: sudo apt-get install -y rpm
 
       - name: Run RPM build script
-        run: bash ./build_rpm.sh
+        run: bash /home/runner/work/Virtual-CANDY/Virtual-CANDY/build_rpm.sh
 
       - name: Archive RPM
         run: tar -czvf ${{ github.ref_name }}-rpm.tar.gz ~/rpmbuild/RPMS/*/*.rpm
@@ -35,7 +35,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Run DEB build script
-        run: bash ./build_deb.sh
+        run: bash /home/runner/work/Virtual-CANDY/Virtual-CANDY/build_deb.sh
 
       - name: Archive DEB
         run: tar -czvf ${{ github.ref_name }}-deb.tar.gz ./*.deb
@@ -92,12 +92,6 @@ jobs:
           name: deb-package
           path: ./
 
-      - name: Download Arch Artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: arch-package
-          path: ./
-
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
@@ -129,14 +123,4 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ${{ github.ref_name }}-deb.tar.gz
           asset_name: ${{ github.ref_name }}-deb.tar.gz
-          asset_content_type: application/gzip
-
-      - name: Upload Arch package to Release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ github.ref_name }}-arch.tar.gz
-          asset_name: ${{ github.ref_name }}-arch.tar.gz
           asset_content_type: application/gzip
