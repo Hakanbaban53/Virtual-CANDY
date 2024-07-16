@@ -105,35 +105,15 @@ jobs:
 
         - name: Create DEB spec file
           run: |
-            cat <<EOF > ~/vcandy/DEBIAN/vcandy.spec
-            Summary: A python CLI application that installs automatic container and virtualization tools for many Linux systems
-            Name: vcandy
+            cat <<EOF > ~/vcandy/DEBIAN/control"
+            Package: vcandy
             Version: 2.0
-            Release: 1%{?dist}
-            License: MIT
-            URL: https://github.com/Hakanbaban53/Virtual-CANDY
-            Source0: %{name}-%{version}.tar.gz
-            
-            %description
-            vcandy is a command-line tool that simplifies the installation process of container and virtualization tools on Linux systems.
-            
-            %prep
-            %setup -q
-            
-            %install
-            rm -rf %{buildroot}
-            mkdir -p %{buildroot}/%{_bindir}
-            cp %{name} %{buildroot}/%{_bindir}
-            
-            %clean
-            rm -rf %{buildroot}
-            
-            %files
-            %{_bindir}/%{name}
-            
-            %changelog
-            * Thu Mar 19 2024 Hakan İSMAİL <hakanismail53@gmail.com> - 2.0
-            - Initial release
+            Architecture: all
+            Section: python
+            Priority: optional
+            Maintainer: Hakan İSMAİL <hakanismail53@gmail.com>
+            Homepage: https://github.com/Hakanbaban53/Virtual-CANDY
+            Description: A Python CLI application that installs automatic container and virtualization tools for many Linux systems.
             EOF
 
         - name: Build DEB package
