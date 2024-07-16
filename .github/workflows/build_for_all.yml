@@ -24,7 +24,7 @@ jobs:
         run: pip3 install --no-cache-dir requests pyinstaller setuptools
 
       - name: Build the Python project with PyInstaller
-        run: pyinstaller --onefile /home/runner/work/Virtual-CANDY/Virtual-CANDY/app.py --name=vcandy
+        run: pyinstaller --onefile /home/runner/work/Virtual-CANDY/Virtual-CANDY/app.py --name=~/vcandy
 
       - name: Create spec file
         run: |
@@ -34,7 +34,7 @@ jobs:
           Version: 2.0
           Release: 1%{?dist}
           License: MIT
-          URL: https://github.com/Hakanbaban53/Container-and-Virtualization-Installer
+          URL: https://github.com/Hakanbaban53/Virtual-CANDY
           Source0: %{name}-%{version}.tar.gz
 
           %description
@@ -63,7 +63,7 @@ jobs:
         run: mkdir vcandy-2.0
 
       - name: Move binary to binary folder
-        run: mv /home/runner/work/Virtual-CANDY/Virtual-CANDY/dist/vcandy vcandy-2.0
+        run: mv vcandy vcandy-2.0
 
       - name: Create .tar.gz file
         run: tar --create --file vcandy-2.0.tar.gz vcandy-2.0
