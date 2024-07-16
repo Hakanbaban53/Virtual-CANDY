@@ -69,7 +69,7 @@ jobs:
         run: tar --create --file vcandy-2.0.tar.gz vcandy-2.0
 
       - name: Build RPM package
-        run: rpmbuild -ba --build-in-place --define "_topdir $(pwd)/rpm" vcandy.spec
+        run: rpmbuild -bb vcandy.spec
 
       - name: Upload RPM package as artifact
         uses: actions/upload-artifact@v3
