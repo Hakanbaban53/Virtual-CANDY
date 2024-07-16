@@ -36,24 +36,24 @@ jobs:
           License: MIT
           URL: https://github.com/Hakanbaban53/Virtual-CANDY
           Source0: %{name}-%{version}.tar.gz
-
+          
           %description
           vcandy is a command-line tool that simplifies the installation process of container and virtualization tools on Linux systems.
-
+          
           %prep
           %setup -q
-
+          
           %install
-          rm -rf \$RPM_BUILD_ROOT
-          mkdir -p \$RPM_BUILD_ROOT/%{_bindir}
-          cp %{name} \$RPM_BUILD_ROOT/%{_bindir}
-
+          rm -rf %{buildroot}
+          mkdir -p %{buildroot}/%{_bindir}
+          cp %{name} %{buildroot}/%{_bindir}
+          
           %clean
-          rm -rf \$RPM_BUILD_ROOT
-
+          rm -rf %{buildroot}
+          
           %files
           %{_bindir}/%{name}
-
+          
           %changelog
           * Thu Mar 19 2024 Hakan İSMAİL <hakanismail53@gmail.com> - 2.0
           - Initial release
