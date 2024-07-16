@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - v*
+  workflow_dispatch:
 
 jobs:
   build-rpm:
@@ -175,6 +176,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: /home/runner/work/Virtual-CANDY/Virtual-CANDY/x86_64/vcandy-${{ steps.tags.outputs.VERSION }}-1.x86_64.rpm
+
           asset_name: vcandy-${{ steps.tags.outputs.VERSION }}.rpm
           asset_content_type: application/x-rpm
 

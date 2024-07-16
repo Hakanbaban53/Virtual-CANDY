@@ -9,7 +9,7 @@
 
 ## 📦 Pre Builded Packages
 This Packages building with github action. 
-Will be added in soon.
+You can download it from [here](https://github.com/Hakanbaban53/Virtual-CANDY/releases) (Not yet available for Arch Linux. Please build from Github repository)
 
 ## 🏗️ Build From Github Repository
 
