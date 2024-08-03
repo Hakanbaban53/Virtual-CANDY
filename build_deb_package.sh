@@ -4,7 +4,7 @@ set -e  # Exit immediately if a command fails
 
 # Global variables
 SCRIPT_DIR="$(dirname "$0")"
-VERSION="2.0"
+VERSION="2.2"
 PACKAGE_NAME="vcandy"
 BIN_DIR="$SCRIPT_DIR/$PACKAGE_NAME/bin"
 DEBIAN_DIR="$SCRIPT_DIR/$PACKAGE_NAME/DEBIAN"

@@ -92,23 +92,56 @@ dnf install git && git clone https://github.com/Hakanbaban53/Container-and-Virtu
 
 #### Arguments
 
-| Option         | Description                                                                                                                                 |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| -a             | You select the action. 'install' or 'remove'. Default is 'install'.                                                                         |
-| -o             | Hide or show terminal output. 'silent' hides the package manager and other outputs. 'noisy' shows the terminal output. Default is 'silent'. |
-| --distribution | Specify the Linux distribution. Default detects your Linux distro. Use this if you want to specify another distro.                          |
+| Option         | Description                                                                                                               |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `-a`, `--action` | Specifies the action to perform. Choices are `'install'` or `'remove'`. Default is `'install'`.                         |
+| `-r`, `--refresh` | Refreshes the JSON data regardless of its file age. Useful to get the latest package information.                        |
+| `-v`, `--verbose` | Enables verbose output for detailed information during execution. Helps with debugging or understanding process details. |
+| `-d`, `--dry-run` | Performs a dry run of the command without making any changes. Useful for testing what would be done.                   |
+| `-l`, `--list` | Lists available packages for the specified distribution. Useful for checking what packages are available.               |
+| `--distribution` | Specifies the Linux distribution to use. Defaults to auto-detecting the distribution.                                   |
+| `--all`        | Installs or removes all available packages for the specified distribution.                                              |
+| `packages`     | List of packages to install or remove.            |
 
-```css
-// If you install the app on your system;
-vcandy -a remove -o noisy <package_name> # This is a remove example.
+- **Install specific packages**:
+  ```bash
+  vcand -a install package1 package2
+  ```
 
-vcandy -a remove -o noisy VirtualBox-7.0 Qemu_and_VM_Manager # You can use more than one package. Like this.
+- **Remove specific packages**:
+  ```bash
+  vcand -a remove package1 package2
+  ```
 
-// If you not install the app on your system;
-python3 app.py -a remove -o noisy <package_name> # This is a remove example.
+- **Refresh JSON data**:
+  ```bash
+  vcand -r
+  ```
 
-python3 app.py -a remove -o noisy VirtualBox-7.0 Qemu_and_VM_Manager # You can use more than one package. Like this.
-```
+- **Enable verbose output**:
+  ```bash
+  vcand -v -a install package1
+  ```
+
+- **Perform a dry run**:
+  ```bash
+  vcand -d -a install package1
+  ```
+
+- **List available packages**:
+  ```bash
+  vcand -l --distribution ubuntu
+  ```
+
+- **Install or remove all available packages**:
+  ```bash
+  vcand --all -a install
+  ```
+
+- **Specify distribution**:
+  ```bash
+  vcand --distribution ubuntu -a install package1
+  ```
 
 And one more thing. Arguments are case-sensitive. You need to give the package names as specified below:
 </details>

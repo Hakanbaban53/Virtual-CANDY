@@ -34,7 +34,7 @@ def identify_distribution():
         return 'Not running on Linux'
 
 
-def get_linux_package_manager(linux_distribution, package_name, hide_output, action):
+def get_linux_package_manager(linux_distribution, package_name, output, action, dry_run=False):
     handler = PackagesJSONHandler()
     packages_data = handler.load_json_data()
 
@@ -45,7 +45,7 @@ def get_linux_package_manager(linux_distribution, package_name, hide_output, act
             name = data.get("name", "")
             if package_name in name or package_name in name.lower():
                 values = data.get("values", [])
-                package_manager_func(values, hide_output, action)
+                package_manager_func(values, output, action)
                 return
     else:
         print(f"No installation instructions found for {linux_distribution}.")

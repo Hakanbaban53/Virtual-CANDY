@@ -1,4 +1,5 @@
 import curses
+import sys
 from functions.__check_repository_connection__ import (
     check_linux_package_manager_connection,
 )
@@ -13,10 +14,9 @@ OPTIONS_YES_NO = ["Yes", "No"]
 OPTIONS_INSTALL_REMOVE = ["install", "remove"]
 MAX_DISPLAYED_PACKAGES = 15
 DEFAULT_HEADER = "VCANDY"
-VERSION = "v2.0"
+VERSION = "v2.2"
 MIN_LINES = 20
 MIN_COLS = 80
-
 
 class PackageManagerApp:
     def __init__(self, stdscr):
@@ -220,7 +220,7 @@ class PackageManagerApp:
         self.stdscr.addstr(y, x, error_message, curses.color_pair(2))
         self.stdscr.refresh()
         curses.napms(3000)
-        exit(0)
+        sys.exit(0)
 
     def get_user_input_string(self, prompt, y, x):
         color_pair = (
@@ -301,13 +301,17 @@ class PackageManagerApp:
             elif key == curses.KEY_RESIZE:
                 self.resize_handler()
 
-    def get_hide_output_choice(self):
+    def get_output_choice(self):
         try:
             prompt = "Do you want to hide complex outputs?"
             x = curses.COLS // 2 - len(prompt) // 2
             y = curses.LINES // 2 + 3
             selection = self.selections(prompt, x, y, OPTIONS_YES_NO)
-            return selection
+
+            if selection == "Yes":
+                return False
+            else:
+                return True
 
         except curses.error:
             self.terminal_size_error()
@@ -341,7 +345,7 @@ class PackageManagerApp:
                     )
                     self.stdscr.refresh()
                     curses.napms(1500)
-                    exit(1)
+                    sys.exit(0)
             elif actions == "remove":
                 return "remove"
 
@@ -464,7 +468,7 @@ class PackageManagerApp:
             self.display_footer()
 
             linux_distribution = self.get_linux_distro()
-            hide_output = self.get_hide_output_choice()
+            output = self.get_output_choice()
 
             self.clear_middle_section()
             action = self.install_or_remove()
@@ -548,7 +552,7 @@ class PackageManagerApp:
                             )
                             self.stdscr.refresh()
                             get_linux_package_manager(
-                                linux_distribution, entity, hide_output, action
+                                linux_distribution, entity, output, action
                             )
                             curses.napms(1500)
 
@@ -599,19 +603,6 @@ class PackageManagerApp:
                     current_row, relevant_packages, self.selected_status_array
                 )
 
-        except KeyboardInterrupt:
-            self.stdscr.clear()
-            self.stdscr.addstr(
-                curses.LINES // 2 - 2,
-                curses.COLS // 2 - 14,
-                "Ctrl + C pressed. Exiting...",
-                curses.color_pair(2) | curses.A_BOLD,
-            )
-            self.stdscr.addstr(curses.LINES // 2, curses.COLS // 2 - 3, "Bye 👋")
-            self.stdscr.refresh()
-            curses.napms(1500)
-            exit(1)
-
         except curses.error:
             self.terminal_size_error()
 
@@ -623,4 +614,21 @@ class PackageManagerApp:
 
 
 def start_terminal_ui():
-    curses.wrapper(lambda stdscr: PackageManagerApp(stdscr).main())
+    try:
+        curses.wrapper(lambda stdscr: PackageManagerApp(stdscr).main())
+    except KeyboardInterrupt:
+        stdscr = curses.initscr()
+        curses.start_color()
+        curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
+        stdscr.clear()
+        stdscr.addstr(
+            curses.LINES // 2 - 2,
+            curses.COLS // 2 - 14,
+            "Ctrl + C pressed. Exiting...",
+            curses.color_pair(2) | curses.A_BOLD,
+        )
+        stdscr.addstr(curses.LINES // 2, curses.COLS // 2 - 3, "Bye 👋")
+        stdscr.refresh()
+        curses.napms(1500)
+        curses.endwin()
+        sys.exit(0)

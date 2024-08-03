@@ -5,8 +5,8 @@ from functions.__special_install_selector__ import SelectSpecialInstaller
 
 
 
-def debian_package_manager(packages, hide_output, action):
-    hide = open(devnull, "w") if hide_output else None
+def debian_package_manager(packages, output, action):
+    hide = open(devnull, "w") if not output else None
 
     run(
         ["sudo", "apt", "update"],
