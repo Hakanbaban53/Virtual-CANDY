@@ -120,8 +120,13 @@ class VMwareInstaller:
     def clone_repository(self, repo_url, branch, destination):
         """Clone a Git repository."""
         logging.info(f"Cloning repository from {repo_url} to {destination}...")
-        clone_command = f"git clone -b {branch} {repo_url} {destination}"
-        self.run_command(clone_command)
+        if not os.path.exists(destination):
+            os.makedirs(destination)
+        clone_commands = [
+            f"git clone -b {branch} {repo_url} {destination}"
+        ]
+        for command in clone_commands:
+            self.run_command(command)
 
     def sparse_checkout(self, repo_url, branch, folder_to_clone, clone_location):
         """Perform a sparse checkout from a Git repository."""
