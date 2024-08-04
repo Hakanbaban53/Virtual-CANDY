@@ -2,8 +2,9 @@ from subprocess import run, PIPE, CalledProcessError, check_output
 from os import path, getenv
 from functions.__special_install_selector__ import SelectSpecialInstaller
 
+
 def fedora_package_manager(packages, output, action, dry_run):
-    with open('/dev/null', 'w') as devnull:
+    with open("/dev/null", "w") as devnull:
         hide = None if output else devnull
 
         for package in packages:
@@ -16,9 +17,11 @@ def fedora_package_manager(packages, output, action, dry_run):
                 if package_type in {"package", "url-package", "local-package"}:
                     handle_standard_package(package, check_value, action, dry_run, hide)
                 elif package_type == "special-package":
-                    SelectSpecialInstaller(hide, action, package, "fedora")
+                    handle_special_package(package, action, dry_run, hide)
                 elif package_type == "remove-package":
-                    handle_removable_package(package, check_value, action, dry_run, hide)
+                    handle_removable_package(
+                        package, check_value, action, dry_run, hide
+                    )
                 elif package_type == "get-keys":
                     handle_repo_keys(package, check_script, action, dry_run, hide)
                 elif package_type in {"service", "group"}:
@@ -31,8 +34,12 @@ def fedora_package_manager(packages, output, action, dry_run):
 
 
 def handle_standard_package(package, check_value, action, dry_run, hide):
-    result = run(["dnf", "list", "installed"] + check_value.split(),
-                 stdout=PIPE, stderr=PIPE, check=True)
+    result = run(
+        ["dnf", "list", "installed"] + check_value.split(),
+        stdout=PIPE,
+        stderr=PIPE,
+        check=True,
+    )
 
     if check_value not in result.stderr.decode("utf-8").lower():
         if action == "install":
@@ -44,8 +51,12 @@ def handle_standard_package(package, check_value, action, dry_run, hide):
 
 
 def handle_removable_package(package, check_value, action, dry_run, hide):
-    result = run(["dnf", "list", "installed"] + check_value.split(),
-                 stdout=PIPE, stderr=PIPE, check=True)
+    result = run(
+        ["dnf", "list", "installed"] + check_value.split(),
+        stdout=PIPE,
+        stderr=PIPE,
+        check=True,
+    )
 
     if "error" not in result.stderr.decode("utf-8").lower():
         if action == "install":
@@ -127,33 +138,76 @@ def package_installer(package, hide):
 
     try:
         if package_type == "package":
-            run(["sudo", "dnf", "install", "-y"] + install_value.split(),
-                check=True, stderr=hide, stdout=hide)
+            run(
+                ["sudo", "dnf", "install", "-y"] + install_value.split(),
+                check=True,
+                stderr=hide,
+                stdout=hide,
+            )
         elif package_type == "get-keys":
             for command in package.get("install_script", []):
                 run(command, shell=True, check=True, stderr=hide, stdout=hide)
         elif package_type == "url-package":
             install_value = replace_fedora_version(install_value)
-            run(["sudo", "dnf", "install", "-y", install_value],
-                check=True, stderr=hide, stdout=hide)
+            run(
+                ["sudo", "dnf", "install", "-y", install_value],
+                check=True,
+                stderr=hide,
+                stdout=hide,
+            )
         elif package_type == "local-package":
             handle_local_package(install_value, target_directory, hide)
         elif package_type == "service":
-            run(["sudo", "systemctl", "restart", install_value],
-                check=True, stderr=hide, stdout=hide)
-            run(["sudo", "systemctl", "enable", install_value],
-                check=True, stderr=hide, stdout=hide)
+            run(
+                ["sudo", "systemctl", "restart", install_value],
+                check=True,
+                stderr=hide,
+                stdout=hide,
+            )
+            run(
+                ["sudo", "systemctl", "enable", install_value],
+                check=True,
+                stderr=hide,
+                stdout=hide,
+            )
         elif package_type == "group":
-            run(["sudo", "usermod", "-aG", install_value, current_user],
-                check=True, stderr=hide, stdout=hide)
+            run(
+                ["sudo", "usermod", "-aG", install_value, current_user],
+                check=True,
+                stderr=hide,
+                stdout=hide,
+            )
         elif package_type == "repo-flathub":
-            run(["sudo", "flatpak", "remote-add", "--if-not-exists", "flathub", install_value],
-                check=True, stderr=hide, stdout=hide)
+            run(
+                [
+                    "sudo",
+                    "flatpak",
+                    "remote-add",
+                    "--if-not-exists",
+                    "flathub",
+                    install_value,
+                ],
+                check=True,
+                stderr=hide,
+                stdout=hide,
+            )
         elif package_type == "package-flatpak":
-            run(["sudo", "flatpak", "install", "-y", install_value],
-                check=True, stderr=hide, stdout=hide)
+            run(
+                ["sudo", "flatpak", "install", "-y", install_value],
+                check=True,
+                stderr=hide,
+                stdout=hide,
+            )
     except CalledProcessError as err:
         print(f"An error occurred: {err}")
+
+
+def handle_special_package(package, action, dry_run, hide):
+    name = package.get("name", "")
+    if dry_run:
+        print(f"{name} special package operation: {action}.")
+    else:
+        SelectSpecialInstaller(hide, action, package, "fedora")
 
 
 def package_remover(package, hide):
@@ -161,12 +215,25 @@ def package_remover(package, hide):
     remove_value = package.get("remove_value", "")
 
     try:
-        if package_type in {"package", "url-package", "local-package", "remove-package"}:
-            run(["sudo", "dnf", "remove", "-y"] + remove_value.split(),
-                check=True, stderr=hide, stdout=hide)
+        if package_type in {
+            "package",
+            "url-package",
+            "local-package",
+            "remove-package",
+        }:
+            run(
+                ["sudo", "dnf", "remove", "-y"] + remove_value.split(),
+                check=True,
+                stderr=hide,
+                stdout=hide,
+            )
         elif package_type == "package-flatpak":
-            run(["sudo", "flatpak", "remove", "-y", remove_value],
-                check=True, stderr=hide, stdout=hide)
+            run(
+                ["sudo", "flatpak", "remove", "-y", remove_value],
+                check=True,
+                stderr=hide,
+                stdout=hide,
+            )
         elif package_type == "get-keys":
             for command in package.get("remove_script", []):
                 run(command, shell=True, check=True, stderr=hide, stdout=hide)
@@ -181,9 +248,16 @@ def replace_fedora_version(value):
 
 def handle_local_package(install_value, target_directory, hide):
     local_file = path.join(target_directory, "local.package.rpm")
-    run(["wget", "--progress=bar:force", "-O", local_file, install_value],
-        check=True, stderr=hide, stdout=hide)
-    run(["sudo", "dnf", "install", "-y", local_file],
-        check=True, stderr=hide, stdout=hide)
-    run(["sudo", "rm", "-f", local_file],
-        check=True, stderr=hide, stdout=hide)
+    run(
+        ["wget", "--progress=bar:force", "-O", local_file, install_value],
+        check=True,
+        stderr=hide,
+        stdout=hide,
+    )
+    run(
+        ["sudo", "dnf", "install", "-y", local_file],
+        check=True,
+        stderr=hide,
+        stdout=hide,
+    )
+    run(["sudo", "rm", "-f", local_file], check=True, stderr=hide, stdout=hide)

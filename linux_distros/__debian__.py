@@ -31,7 +31,7 @@ def debian_package_manager(packages, output, action, dry_run):
             elif package_type == "package-flatpak":
                 handle_flatpak_package(package, check_value, action, dry_run, hide)
         except CalledProcessError as e:
-            print(f"An error occurred with {name}: {e}")
+            handle_error(e, check_value, action, name, dry_run, package, hide)
 
 
 def handle_standard_package(package, action, dry_run, hide):
@@ -66,14 +66,6 @@ def handle_standard_package(package, action, dry_run, hide):
             print(f"{name} {'Would remove...' if dry_run else 'Removing...'}")
             if not dry_run:
                 package_remover(package, hide)
-
-
-def handle_special_package(package, action, dry_run, hide):
-    name = package.get("name", "")
-    if dry_run:
-        print(f"{name} special package operation: {action}.")
-    else:
-        SelectSpecialInstaller(hide, action, package, "ubuntu")
 
 
 def handle_removable_package(package, action, dry_run, hide):
@@ -138,15 +130,35 @@ def handle_service_or_group(package, action, dry_run, hide):
 
 
 def handle_flatpak_package(package, check_value, action, dry_run, hide):
-    name = package.get("name", "")
     result = run(["flatpak", "list"], stdout=PIPE, stderr=PIPE, check=True)
 
     if check_value not in result.stdout.decode("utf-8"):
-        print(f"{name} {'Would install...' if dry_run else 'Installing...'}")
-        if not dry_run:
-            package_installer(package, hide)
+        if action == "install":
+            print(f"{package['name']} not installed. Installing...")
+            if not dry_run:
+                package_installer(package, hide)
+        elif action == "remove":
+            print(f"{package['name']} not installed. Skipping...")
     else:
-        print(f"{name} already installed. Skipping...")
+        if action == "install":
+            print(f"{package['name']} was installed. Skipping...")
+        elif action == "remove":
+            print(f"{package['name']} removing...")
+            if not dry_run:
+                package_remover(package, hide)
+
+
+def handle_error(e, check_value, action, name, dry_run, package, hide):
+    error_message = e.stderr.decode("utf-8").lower()
+    if check_value not in error_message:
+        if action == "install":
+            print(f"{name} not installed. Installing...")
+            if not dry_run:
+                package_installer(package, hide)
+        elif action == "remove":
+            print(f"{name} not installed. Skipping...")
+    else:
+        print(f"An error occurred: {e}")
 
 
 def package_installer(package, hide):
@@ -174,23 +186,7 @@ def package_installer(package, hide):
                     print(f"An error occurred: {err}")
 
         elif package_type == "local-package":
-            local_path = path.join(target_directory, "local.package.deb")
-            run(
-                ["wget", "--progress=bar:force", "-O", local_path, install_value],
-                check=True,
-            )
-            run(
-                ["sudo", "apt-get", "--fix-broken", "install", "-y", local_path],
-                check=True,
-                stderr=hide,
-                stdout=hide,
-            )
-            run(
-                ["sudo", "rm", "-f", local_path],
-                check=True,
-                stderr=hide,
-                stdout=hide,
-            )
+            handle_local_package(install_value, target_directory, hide)
 
         elif package_type == "service":
             run(
@@ -241,6 +237,14 @@ def package_installer(package, hide):
         print(f"An error occurred while installing {package.get('name', '')}: {err}")
 
 
+def handle_special_package(package, action, dry_run, hide):
+    name = package.get("name", "")
+    if dry_run:
+        print(f"{name} special package operation: {action}.")
+    else:
+        SelectSpecialInstaller(hide, action, package, "ubuntu")
+
+
 def package_remover(package, hide):
     package_type = package.get("type", "")
     remove_value = package.get("remove_value", "")
@@ -280,3 +284,23 @@ def package_remover(package, hide):
 
     except CalledProcessError as err:
         print(f"An error occurred while removing {package.get('name', '')}: {err}")
+
+
+def handle_local_package(install_value, target_directory, hide):
+    local_path = path.join(target_directory, "local.package.deb")
+    run(
+        ["wget", "--progress=bar:force", "-O", local_path, install_value],
+        check=True,
+    )
+    run(
+        ["sudo", "apt-get", "--fix-broken", "install", "-y", local_path],
+        check=True,
+        stderr=hide,
+        stdout=hide,
+    )
+    run(
+        ["sudo", "rm", "-f", local_path],
+        check=True,
+        stderr=hide,
+        stdout=hide,
+    )
