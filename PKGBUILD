@@ -1,14 +1,14 @@
 # Maintainer: Hakan İSMAİL <hakanismail53@gmail.com>
 
 pkgname=vcandy
-pkgver=2.0
+pkgver=2.2
 pkgrel=1
 pkgdesc="A python CLI application that installs automatic container and virtualization tools for many Linux systems"
 url="https://github.com/Hakanbaban53/Container-and-Virtualization-Installer"
 arch=('x86_64')
 license=('MIT')
 depends=('python' 'python-pip')
-makedepends=('git' 'python-pyinstaller')
+makedepends=('git')
 source=("git+$url.git")
 b2sums=('SKIP')
 

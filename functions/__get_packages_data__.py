@@ -32,12 +32,12 @@ class PackagesJSONHandler:
                     time.sleep(retry_delay)
         return False
 
-    def load_json_data(self, json_file_path=None):
+    def load_json_data(self, json_file_path=None, refresh=False):
         json_file_path = json_file_path or self.json_file_path
         try:
             if os.path.exists(json_file_path):
                 file_age = datetime.datetime.now() - datetime.datetime.fromtimestamp(os.path.getmtime(json_file_path))
-                if file_age > datetime.timedelta(days=1):
+                if (file_age > datetime.timedelta(days=1) or refresh):
                     print(f"Updating JSON file from {self.json_file_url}...")
                     os.remove(json_file_path)
                     if not self.download_json_file(self.json_file_url, json_file_path):
