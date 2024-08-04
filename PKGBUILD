@@ -8,7 +8,7 @@ url="https://github.com/Hakanbaban53/Container-and-Virtualization-Installer"
 arch=('x86_64')
 license=('MIT')
 depends=('python' 'python-pip')
-makedepends=('git' 'python-pyinstaller')
+makedepends=('git')
 source=("git+$url.git")
 b2sums=('SKIP')
 

@@ -34,7 +34,7 @@ def identify_distribution():
         return 'Not running on Linux'
 
 
-def get_linux_package_manager(linux_distribution, package_name, output, action, dry_run):
+def get_linux_package_manager(linux_distribution, package_name, output, action, dry_run=False):
     handler = PackagesJSONHandler()
     packages_data = handler.load_json_data()
 

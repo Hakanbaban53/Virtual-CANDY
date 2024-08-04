@@ -4,6 +4,13 @@
       "name": "VMware_Workstation-17.5.2",
       "values": [
         {
+          "name": "VMware Workstation Keymaps",
+          "type": "AUR-package",
+          "install_value": "vmware-keymaps",
+          "check_value": "vmware-keymaps",
+          "remove_value": "vmware-keymaps"
+        },
+        {
           "name": "VMware Workstation",
           "type": "AUR-package",
           "install_value": "vmware-workstation",
@@ -142,7 +149,7 @@
         }
       ]
     },
-  {
+    {
       "name": "Visual_Studio_Code",
       "values": [
         {
