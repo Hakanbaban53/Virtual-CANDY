@@ -37,8 +37,8 @@ class VMwareInstaller:
         "vmware-networks.path",
         "vmware-usbarbitrator.path",
     }
-    GITHUB_HOST_MODULES_REPO_URL = "https://github.com/mkubecek/vmware-host-modules"
-    GITHUB_HOST_MODULES_BRANCH = "tmp/workstation-17.5.0-k6.8"
+    GITHUB_HOST_MODULES_REPO_URL = "https://github.com/nan0desu/vmware-host-modules"
+    GITHUB_HOST_MODULES_BRANCH = "workstation-17.5.2-k6.9%2B"
     GITHUB_REPO_URL = "https://github.com/Hakanbaban53/Virtual-CANDY"
     GITHUB_BRANCH = "main"
 
@@ -181,7 +181,7 @@ class VMwareInstaller:
     def install_vmware_modules(self):
         """Install VMware modules."""
 
-        source_dir = f"{self.CACHE_DIR}/vmware-host-modules-tmp-workstation-17.5.0-k6.8"
+        source_dir = f"{self.CACHE_DIR}/vmware-host-modules-workstation-17.5.2-k6.9-"
         dest_dir = "/usr/lib/vmware/modules/source/"
         folders_to_copy = ["vmmon-only", "vmnet-only"]
 
@@ -393,4 +393,4 @@ class VMwareInstaller:
 
 
 if __name__ == "__main__":
-    VMwareInstaller(hide=None, action="install", linux_distro="debian")
+    VMwareInstaller(hide=None, action="install", linux_distro="fedora")
