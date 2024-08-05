@@ -1,8 +1,12 @@
+from io import BytesIO
 import os
 from pathlib import Path
 import subprocess
 import shutil
 import logging
+import zipfile
+
+import requests
 
 
 class VMwareInstaller:
@@ -36,7 +40,7 @@ class VMwareInstaller:
         "vmware-networks.path",
         "vmware-usbarbitrator.path",
     }
-    GITHUB_HOST_MODULES_REPO_URL = "https://github.com/mkubecek/vmware-host-modules.git"
+    GITHUB_HOST_MODULES_REPO_URL = "https://github.com/mkubecek/vmware-host-modules"
     GITHUB_HOST_MODULES_BRANCH = "tmp/workstation-17.5.0-k6.8"
     GITHUB_REPO_URL = "https://github.com/Hakanbaban53/Container-and-Virtualization-Installer"
     GITHUB_BRANCH = "main"
@@ -49,7 +53,6 @@ class VMwareInstaller:
         self.hide = hide
         self.action = action
         self.linux_distro = linux_distro
-
         if self.linux_distro == "fedora":
             self.PACKAGE_MANAGER = "dnf"
             self.DEPENDENCIES = [
@@ -75,10 +78,17 @@ class VMwareInstaller:
                 "patch",
                 "net-tools",
             ]
-            kernel_version = subprocess.run(
-                "uname -r", shell=True, text=True
-            ).stdout.strip()
-            self.DEPENDENCIES.append(f"linux-headers-{kernel_version}")
+            try:
+                kernel_version_process = subprocess.run(
+                    "uname -r", shell=True, text=True, capture_output=True
+                )
+                if kernel_version_process.returncode == 0:
+                    kernel_version = kernel_version_process.stdout.strip()
+                    self.DEPENDENCIES.append(f"linux-headers-{kernel_version}")
+                else:
+                    print(f"Error retrieving kernel version: {kernel_version_process.stderr}")
+            except Exception as e:
+                print(f"Exception occurred while retrieving kernel version: {e}")
 
         if self.action == "install":
             self.install_vmware()
@@ -117,35 +127,38 @@ class VMwareInstaller:
         )
         self.run_command(f"find {self.EXTRACTED_DIR} -name '*.xml' -type f -delete")
 
-    def clone_repository(self, repo_url, branch, destination):
-        """Clone a Git repository."""
-        logging.info(f"Cloning repository from {repo_url} to {destination}...")
-        if not os.path.exists(destination):
-            os.makedirs(destination)
-        clone_commands = [
-            f"git clone -b {branch} {repo_url} {destination}"
-        ]
-        for command in clone_commands:
-            self.run_command(command)
+    def download_and_extract_zip(self, repo_url, branch, folder_path, extract_to):
+            """Download a specific folder from a GitHub repository."""
+            logging.info(f"Downloading repository from {repo_url}...")
 
-    def sparse_checkout(self, repo_url, branch, folder_to_clone, clone_location):
-        """Perform a sparse checkout from a Git repository."""
-        self.clone_repository(repo_url, branch, clone_location)
-        os.chdir(clone_location)
+            # Construct the download URL for the entire repository
+            zip_url = f"{repo_url}/archive/refs/heads/{branch}.zip"
+            response = requests.get(zip_url)
+            if response.status_code != 200:
+                logging.error(f"Failed to download the repository. Status code: {response.status_code}")
+                return
 
-        commands = [
-            "git sparse-checkout init --cone",
-            f"git sparse-checkout set {folder_to_clone}",
-            f"git checkout {branch}",  # Specify the branch explicitly here
-        ]
+            logging.info(f"Extracting the folder '{folder_path}'...")
 
-        for command in commands:
-            self.run_command(command)
+            # Create a ZIP file object from the downloaded content
+            with zipfile.ZipFile(BytesIO(response.content)) as zip_file:
+                # Extract only the desired folder
+                for member in zip_file.namelist():
+                    if member.startswith(f"{repo_url.split('/')[-1]}-{branch}/{folder_path}"):
+                        # Construct the relative path for extraction
+                        relative_path = os.path.relpath(member, f"{repo_url.split('/')[-1]}-{branch}")
+                        # Construct the full extraction path
+                        target_path = os.path.join(extract_to, relative_path)
+                        # Check if it is a directory or file and extract accordingly
+                        if not member.endswith('/'):
+                            os.makedirs(os.path.dirname(target_path), exist_ok=True)
+                            with open(target_path, "wb") as f:
+                                f.write(zip_file.read(member))
+                        else:
+                            os.makedirs(target_path, exist_ok=True)
 
-        logging.info(
-            f"Folder {folder_to_clone} has been cloned to {clone_location}/{folder_to_clone}"
-        )
-
+            logging.info(f"Extracted folder '{folder_path}' to {extract_to}.")
+            
     def install_vmware_modules(self):
         """Install VMware modules."""
 
@@ -249,18 +262,19 @@ class VMwareInstaller:
 
         logging.info("\nStep 2: Clone the required repositories...")
         logging.info(f"Cloning {self.PACKAGE_NAME} repository...")
-        self.clone_repository(
+        self.download_and_extract_zip(
             self.GITHUB_HOST_MODULES_REPO_URL,
             self.GITHUB_HOST_MODULES_BRANCH,
-            f"{self.CACHE_DIR}/vmware_host_modules"
+            "",
+            f"{self.CACHE_DIR}/vmware_host_modules",
         )
 
         logging.info("Getting the DKMS modules")
-        self.sparse_checkout(
+        self.download_and_extract_zip(
             self.GITHUB_REPO_URL,
             self.GITHUB_BRANCH,
             "vmware_files",
-            f"{self.CACHE_DIR}/vmware_files",
+            f"{self.CACHE_DIR}",
         )
 
         logging.info(
