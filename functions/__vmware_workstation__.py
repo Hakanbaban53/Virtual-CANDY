@@ -101,17 +101,17 @@ class VMwareInstaller:
                             format='%(levelname)s: %(message)s',
                             handlers=[logging.FileHandler(f"{self.CACHE_DIR}/vmware_installer.log"),
                                       logging.StreamHandler()])
+        
 
     def run_command(self, command):
-        """Run a shell command, log its output, and handle errors."""
+        """Run a shell command and logging. Error its output."""
         result = subprocess.run(
-            command, shell=True, text=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE
+            command, shell=True, text=True, stderr=self.hide, stdout=self.hide
         )
         if result.returncode != 0:
             logging.error(f"Command failed: {command}")
-            logging.error(f"Error output: {result.stderr}")
-            return False, result.stderr
-        return True, result.stdout
+            return False
+        return True
 
     def download_file(self, url, filename):
         """Download a file from a URL using wget."""
@@ -170,10 +170,10 @@ class VMwareInstaller:
             dest_folder = os.path.join(dest_dir, folder)
             
             if not os.path.exists(dest_folder):
-                os.makedirs(dest_folder)
+                self.run_command(f"sudo mkdir -p {dest_folder}")
             
             logging.info(f"Copying {src_folder} to {dest_folder}...")
-            shutil.copytree(src_folder, dest_folder, dirs_exist_ok=True)
+            self.run_command(f"sudo cp -r {src_folder} {dest_folder}")
 
         logging.info("Folders copied successfully.")
 
@@ -192,12 +192,12 @@ class VMwareInstaller:
 
         logging.info("Copying Makefile and dkms.conf to DKMS directory...")
         self.run_command(
-            f"sudo cp -r {self.CACHE_DIR}/vmware_files/vmware_files/DKMS_files/Makefile /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/"
+            f"sudo cp -r {self.CACHE_DIR}/vmware_files/DKMS_files/Makefile /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/"
         )
 
         logging.info("Creating DKMS configuration for vmware-host-modules...")
         with open(
-            f"{self.CACHE_DIR}/vmware_files/vmware_files/DKMS_files/dkms.conf", "r"
+            f"{self.CACHE_DIR}/vmware_files/DKMS_files/dkms.conf", "r"
         ) as template_file:
             dkms_conf_template = template_file.read()
 
@@ -216,33 +216,14 @@ class VMwareInstaller:
             f"DKMS configuration file created at /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/dkms.conf"
         )
 
-        src_vmmon = f"/usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/vmmon-only"
-        src_vmnet = f"/usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/vmnet-only"
-        patch_vmmon = f"{self.CACHE_DIR}/vmware_files/vmware_files/DKMS_files/vmmon.patch"
-        patch_vmnet = f"{self.CACHE_DIR}/vmware_files/vmware_files/DKMS_files/vmnet.patch"
-
         logging.info("Applying patches...")
+        self.run_command(
+            f"sudo patch -p2 -d /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/vmmon-only < {self.CACHE_DIR}/vmware_files/DKMS_files/vmmon.patch"
+        )
+        self.run_command(
+            f"sudo patch -p2 -d /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/vmnet-only < {self.CACHE_DIR}/vmware_files/vmware_files/DKMS_files/vmnet.patch"
+        )
 
-        # Apply vmmon patch
-        command_vmmon = f"sudo patch -p2 -d {src_vmmon} < {patch_vmmon}"
-        success_vmmon, output_vmmon = self.run_command(command_vmmon)
-        if not success_vmmon:
-            if "previously applied" in output_vmmon:
-                logging.info(f"Patch for vmmon already applied or skipped: {output_vmmon}")
-            else:
-                logging.error(f"Failed to apply patch for vmmon: {output_vmmon}")
-
-        # Apply vmnet patch
-        command_vmnet = f"sudo patch -p2 -d {src_vmnet} < {patch_vmnet}"
-        success_vmnet, output_vmnet = self.run_command(command_vmnet)
-        if not success_vmnet:
-            if "previously applied" in output_vmnet:
-                logging.info(f"Patch for vmnet already applied or skipped: {output_vmnet}")
-            else:
-                logging.error(f"Failed to apply patch for vmnet: {output_vmnet}")
-
-        logging.info("Patch application completed.")
-        
         logging.info("Adding and building vmware-host-modules module with DKMS...")
         self.run_command(
             f"sudo dkms add -m {self.PACKAGE_NAME} -v {self.PACKAGE_VERSION}"
@@ -279,8 +260,8 @@ class VMwareInstaller:
     def install_vmware(self):
         """Perform the full VMware installation."""
 
-        logging.info("\nStep 1: Installing necessary dependencies...")
-        self.install_dependencies()
+        # logging.info("\nStep 1: Installing necessary dependencies...")
+        # self.install_dependencies()
 
         logging.info("\nStep 2: Clone the required repositories...")
         logging.info(f"Cloning {self.PACKAGE_NAME} repository...")
@@ -298,46 +279,46 @@ class VMwareInstaller:
             extract_to=self.CACHE_DIR,
         )
 
-        logging.info(
-            "\nStep 3: Downloading the VMware Workstation installer and components..."
-        )
-        os.makedirs(self.CACHE_DIR, exist_ok=True)
-        self.download_file(self.BUNDLE_URL, self.BUNDLE_FILENAME)
-        for url, filename in zip(self.COMPONENT_URLS, self.COMPONENT_FILENAMES):
-            self.download_file(url, filename)
+        # logging.info(
+        #     "\nStep 3: Downloading the VMware Workstation installer and components..."
+        # )
+        # os.makedirs(self.CACHE_DIR, exist_ok=True)
+        # self.download_file(self.BUNDLE_URL, self.BUNDLE_FILENAME)
+        # for url, filename in zip(self.COMPONENT_URLS, self.COMPONENT_FILENAMES):
+        #     self.download_file(url, filename)
 
-        logging.info("\nStep 4: Extracting the bundle file...")
-        self.run_command(
-            f"tar -xf {os.path.join(self.CACHE_DIR, self.BUNDLE_FILENAME)} -C {self.CACHE_DIR}"
-        )
+        # logging.info("\nStep 4: Extracting the bundle file...")
+        # self.run_command(
+        #     f"tar -xf {os.path.join(self.CACHE_DIR, self.BUNDLE_FILENAME)} -C {self.CACHE_DIR}"
+        # )
 
-        os.makedirs(self.EXTRACTED_DIR, exist_ok=True)
-        for filename in self.COMPONENT_FILENAMES:
-            self.extract_tar(filename)
+        # os.makedirs(self.EXTRACTED_DIR, exist_ok=True)
+        # for filename in self.COMPONENT_FILENAMES:
+        #     self.extract_tar(filename)
 
-        logging.info("\nStep 5: Making the installer executable...")
-        bundle_installer = (
-            f"VMware-Workstation-{self.PKGVER}-{self.BUILDVER}.{self.CARCH}.bundle"
-        )
-        self.run_command(f"chmod +x {os.path.join(self.CACHE_DIR, bundle_installer)}")
+        # logging.info("\nStep 5: Making the installer executable...")
+        # bundle_installer = (
+        #     f"VMware-Workstation-{self.PKGVER}-{self.BUILDVER}.{self.CARCH}.bundle"
+        # )
+        # self.run_command(f"chmod +x {os.path.join(self.CACHE_DIR, bundle_installer)}")
 
-        logging.info(
-            "\nStep 6: Running the VMware Workstation installer with extracted components..."
-        )
-        extracted_components = [
-            os.path.join(self.EXTRACTED_DIR, filename)
-            for filename in os.listdir(self.EXTRACTED_DIR)
-        ]
-        install_command = (
-            f"sudo {os.path.join(self.CACHE_DIR, bundle_installer)} --console --required --eulas-agreed "
-            + " ".join(
-                [
-                    f'--install-component "{os.path.abspath(filename)}"'
-                    for filename in extracted_components
-                ]
-            )
-        )
-        self.run_command(install_command)
+        # logging.info(
+        #     "\nStep 6: Running the VMware Workstation installer with extracted components..."
+        # )
+        # extracted_components = [
+        #     os.path.join(self.EXTRACTED_DIR, filename)
+        #     for filename in os.listdir(self.EXTRACTED_DIR)
+        # ]
+        # install_command = (
+        #     f"sudo {os.path.join(self.CACHE_DIR, bundle_installer)} --console --required --eulas-agreed "
+        #     + " ".join(
+        #         [
+        #             f'--install-component "{os.path.abspath(filename)}"'
+        #             for filename in extracted_components
+        #         ]
+        #     )
+        # )
+        # self.run_command(install_command)
 
         logging.info("\nStep 7: Compiling kernel modules...")
         self.install_vmware_modules()
