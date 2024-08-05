@@ -160,7 +160,7 @@ class VMwareInstaller:
 
         source_dir = f"{self.CACHE_DIR}/vmware-host-modules-tmp-workstation-17.5.0-k6.8"
         dest_dir = "/usr/lib/vmware/modules/source/"
-        folders_to_copy = ["vmmon", "vmnet"]
+        folders_to_copy = ["vmmon-only", "vmnet-only"]
 
         os.chdir(source_dir)
         logging.info("Copying vmmon and vmnet folders...")
@@ -221,7 +221,7 @@ class VMwareInstaller:
             f"sudo patch -p2 -d /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/vmmon-only < {self.CACHE_DIR}/vmware_files/DKMS_files/vmmon.patch"
         )
         self.run_command(
-            f"sudo patch -p2 -d /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/vmnet-only < {self.CACHE_DIR}/vmware_files/vmware_files/DKMS_files/vmnet.patch"
+            f"sudo patch -p2 -d /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/vmnet-only < {self.CACHE_DIR}/vmware_files/DKMS_files/vmnet.patch"
         )
 
         logging.info("Adding and building vmware-host-modules module with DKMS...")
@@ -243,7 +243,7 @@ class VMwareInstaller:
     def copy_service_files(self):
         """Copy systemd service files for VMware."""
         for filename in self.SERVICES:
-            self.run_command(f"sudo cp {self.CACHE_DIR}/vmware_files/vmware_files/services/{filename} /etc/systemd/system/{filename}")
+            self.run_command(f"sudo cp {self.CACHE_DIR}/vmware_files/services/{filename} /etc/systemd/system/{filename}")
             logging.info(f"Copied {filename}.")
 
         # Reload systemd daemon to apply changes
@@ -260,8 +260,8 @@ class VMwareInstaller:
     def install_vmware(self):
         """Perform the full VMware installation."""
 
-        # logging.info("\nStep 1: Installing necessary dependencies...")
-        # self.install_dependencies()
+        logging.info("\nStep 1: Installing necessary dependencies...")
+        self.install_dependencies()
 
         logging.info("\nStep 2: Clone the required repositories...")
         logging.info(f"Cloning {self.PACKAGE_NAME} repository...")
@@ -279,46 +279,46 @@ class VMwareInstaller:
             extract_to=self.CACHE_DIR,
         )
 
-        # logging.info(
-        #     "\nStep 3: Downloading the VMware Workstation installer and components..."
-        # )
-        # os.makedirs(self.CACHE_DIR, exist_ok=True)
-        # self.download_file(self.BUNDLE_URL, self.BUNDLE_FILENAME)
-        # for url, filename in zip(self.COMPONENT_URLS, self.COMPONENT_FILENAMES):
-        #     self.download_file(url, filename)
+        logging.info(
+            "\nStep 3: Downloading the VMware Workstation installer and components..."
+        )
+        os.makedirs(self.CACHE_DIR, exist_ok=True)
+        self.download_file(self.BUNDLE_URL, self.BUNDLE_FILENAME)
+        for url, filename in zip(self.COMPONENT_URLS, self.COMPONENT_FILENAMES):
+            self.download_file(url, filename)
 
-        # logging.info("\nStep 4: Extracting the bundle file...")
-        # self.run_command(
-        #     f"tar -xf {os.path.join(self.CACHE_DIR, self.BUNDLE_FILENAME)} -C {self.CACHE_DIR}"
-        # )
+        logging.info("\nStep 4: Extracting the bundle file...")
+        self.run_command(
+            f"tar -xf {os.path.join(self.CACHE_DIR, self.BUNDLE_FILENAME)} -C {self.CACHE_DIR}"
+        )
 
-        # os.makedirs(self.EXTRACTED_DIR, exist_ok=True)
-        # for filename in self.COMPONENT_FILENAMES:
-        #     self.extract_tar(filename)
+        os.makedirs(self.EXTRACTED_DIR, exist_ok=True)
+        for filename in self.COMPONENT_FILENAMES:
+            self.extract_tar(filename)
 
-        # logging.info("\nStep 5: Making the installer executable...")
-        # bundle_installer = (
-        #     f"VMware-Workstation-{self.PKGVER}-{self.BUILDVER}.{self.CARCH}.bundle"
-        # )
-        # self.run_command(f"chmod +x {os.path.join(self.CACHE_DIR, bundle_installer)}")
+        logging.info("\nStep 5: Making the installer executable...")
+        bundle_installer = (
+            f"VMware-Workstation-{self.PKGVER}-{self.BUILDVER}.{self.CARCH}.bundle"
+        )
+        self.run_command(f"chmod +x {os.path.join(self.CACHE_DIR, bundle_installer)}")
 
-        # logging.info(
-        #     "\nStep 6: Running the VMware Workstation installer with extracted components..."
-        # )
-        # extracted_components = [
-        #     os.path.join(self.EXTRACTED_DIR, filename)
-        #     for filename in os.listdir(self.EXTRACTED_DIR)
-        # ]
-        # install_command = (
-        #     f"sudo {os.path.join(self.CACHE_DIR, bundle_installer)} --console --required --eulas-agreed "
-        #     + " ".join(
-        #         [
-        #             f'--install-component "{os.path.abspath(filename)}"'
-        #             for filename in extracted_components
-        #         ]
-        #     )
-        # )
-        # self.run_command(install_command)
+        logging.info(
+            "\nStep 6: Running the VMware Workstation installer with extracted components..."
+        )
+        extracted_components = [
+            os.path.join(self.EXTRACTED_DIR, filename)
+            for filename in os.listdir(self.EXTRACTED_DIR)
+        ]
+        install_command = (
+            f"sudo {os.path.join(self.CACHE_DIR, bundle_installer)} --console --required --eulas-agreed "
+            + " ".join(
+                [
+                    f'--install-component "{os.path.abspath(filename)}"'
+                    for filename in extracted_components
+                ]
+            )
+        )
+        self.run_command(install_command)
 
         logging.info("\nStep 7: Compiling kernel modules...")
         self.install_vmware_modules()
@@ -363,7 +363,3 @@ class VMwareInstaller:
         logging.info("\nStep 5: Removing extracted components directory...")
         if os.path.exists(self.EXTRACTED_DIR):
             shutil.rmtree(self.EXTRACTED_DIR)
-
-
-if __name__ == "__main__":
-    VMwareInstaller(hide=None, action="install", linux_distro="fedora")
