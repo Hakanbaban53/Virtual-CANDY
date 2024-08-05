@@ -86,7 +86,9 @@ class VMwareInstaller:
                     kernel_version = kernel_version_process.stdout.strip()
                     self.DEPENDENCIES.append(f"linux-headers-{kernel_version}")
                 else:
-                    print(f"Error retrieving kernel version: {kernel_version_process.stderr}")
+                    print(
+                        f"Error retrieving kernel version: {kernel_version_process.stderr}"
+                    )
             except Exception as e:
                 print(f"Exception occurred while retrieving kernel version: {e}")
 
@@ -97,11 +99,14 @@ class VMwareInstaller:
 
     def setup_logging(self):
         """Setup logging configuration."""
-        logging.basicConfig(level=logging.INFO,
-                            format='%(levelname)s: %(message)s',
-                            handlers=[logging.FileHandler(f"{self.CACHE_DIR}/vmware_installer.log"),
-                                      logging.StreamHandler()])
-        
+        logging.basicConfig(
+            level=logging.INFO,
+            format="%(levelname)s: %(message)s",
+            handlers=[
+                logging.FileHandler(f"{self.CACHE_DIR}/vmware_installer.log"),
+                logging.StreamHandler(),
+            ],
+        )
 
     def run_command(self, command):
         """Run a shell command and logging. Error its output."""
@@ -127,23 +132,31 @@ class VMwareInstaller:
         )
         self.run_command(f"find {self.EXTRACTED_DIR} -name '*.xml' -type f -delete")
 
-    def download_and_extract_zip(self, repo_url, branch, folder_path=None, extract_to=None):
+    def download_and_extract_zip(
+        self, repo_url, branch, folder_path=None, extract_to=None
+    ):
         """Download and extract a GitHub repository or a specific folder."""
         logging.info(f"Downloading repository from {repo_url}...")
         zip_url = f"{repo_url}/archive/refs/heads/{branch}.zip"
         response = requests.get(zip_url)
         if response.status_code != 200:
-            logging.error(f"Failed to download the repository. Status code: {response.status_code}")
+            logging.error(
+                f"Failed to download the repository. Status code: {response.status_code}"
+            )
             return
 
         with zipfile.ZipFile(BytesIO(response.content)) as zip_file:
             if folder_path:
                 logging.info(f"Extracting the folder '{folder_path}'...")
                 for member in zip_file.namelist():
-                    if member.startswith(f"{repo_url.split('/')[-1]}-{branch}/{folder_path}"):
-                        relative_path = os.path.relpath(member, f"{repo_url.split('/')[-1]}-{branch}")
+                    if member.startswith(
+                        f"{repo_url.split('/')[-1]}-{branch}/{folder_path}"
+                    ):
+                        relative_path = os.path.relpath(
+                            member, f"{repo_url.split('/')[-1]}-{branch}"
+                        )
                         target_path = os.path.join(extract_to, relative_path)
-                        if not member.endswith('/'):
+                        if not member.endswith("/"):
                             os.makedirs(os.path.dirname(target_path), exist_ok=True)
                             with open(target_path, "wb") as f:
                                 f.write(zip_file.read(member))
@@ -154,7 +167,7 @@ class VMwareInstaller:
                 logging.info(f"Extracting the entire repository to {extract_to}...")
                 zip_file.extractall(extract_to)
                 logging.info(f"Extracted repository to {extract_to}.")
-            
+
     def install_vmware_modules(self):
         """Install VMware modules."""
 
@@ -168,10 +181,10 @@ class VMwareInstaller:
         for folder in folders_to_copy:
             src_folder = os.path.join(source_dir, folder)
             dest_folder = os.path.join(dest_dir, folder)
-            
+
             if not os.path.exists(dest_folder):
                 self.run_command(f"sudo mkdir -p {dest_folder}")
-            
+
             logging.info(f"Copying {src_folder} to {dest_folder}...")
             self.run_command(f"sudo cp -r {src_folder} {dest_folder}")
 
@@ -243,12 +256,13 @@ class VMwareInstaller:
     def copy_service_files(self):
         """Copy systemd service files for VMware."""
         for filename in self.SERVICES:
-            self.run_command(f"sudo cp {self.CACHE_DIR}/vmware_files/services/{filename} /etc/systemd/system/{filename}")
+            self.run_command(
+                f"sudo cp {self.CACHE_DIR}/vmware_files/services/{filename} /etc/systemd/system/{filename}"
+            )
             logging.info(f"Copied {filename}.")
 
         # Reload systemd daemon to apply changes
         self.run_command("sudo systemctl daemon-reload")
-        
 
     def install_dependencies(self):
         """Install necessary dependencies for VMware."""
@@ -268,7 +282,7 @@ class VMwareInstaller:
         self.download_and_extract_zip(
             repo_url=self.GITHUB_HOST_MODULES_REPO_URL,
             branch=self.GITHUB_HOST_MODULES_BRANCH,
-            extract_to=self.CACHE_DIR
+            extract_to=self.CACHE_DIR,
         )
 
         logging.info("Getting the DKMS modules")
@@ -329,7 +343,9 @@ class VMwareInstaller:
         logging.info("\nStep 9: Set up the network adapters...")
         self.run_command("sudo chmod a+rw /dev/vmnet*")
 
-        logging.info(f"VMware installation and setup on {self.linux_distro} is complete.")
+        logging.info(
+            f"VMware installation and setup on {self.linux_distro} is complete."
+        )
 
     def uninstall_vmware(self):
         """Uninstall VMware Workstation."""
