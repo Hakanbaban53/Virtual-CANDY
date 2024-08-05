@@ -127,22 +127,20 @@ class VMwareInstaller:
         )
         self.run_command(f"find {self.EXTRACTED_DIR} -name '*.xml' -type f -delete")
 
-    def download_and_extract_zip(self, repo_url, branch, folder_path, extract_to):
-            """Download a specific folder from a GitHub repository."""
-            logging.info(f"Downloading repository from {repo_url}...")
+    def download_and_extract_zip(self, repo_url, branch, folder_path=None, extract_to=None):
+        """Download and extract a GitHub repository or a specific folder."""
+        logging.info(f"Downloading repository from {repo_url}...")
 
-            # Construct the download URL for the entire repository
-            zip_url = f"{repo_url}/archive/refs/heads/{branch}.zip"
-            response = requests.get(zip_url)
-            if response.status_code != 200:
-                logging.error(f"Failed to download the repository. Status code: {response.status_code}")
-                return
+        zip_url = f"{repo_url}/archive/refs/heads/{branch}.zip"
+        response = requests.get(zip_url)
+        if response.status_code != 200:
+            logging.error(f"Failed to download the repository. Status code: {response.status_code}")
+            return
 
-            logging.info(f"Extracting the folder '{folder_path}'...")
-
-            # Create a ZIP file object from the downloaded content
-            with zipfile.ZipFile(BytesIO(response.content)) as zip_file:
+        with zipfile.ZipFile(BytesIO(response.content)) as zip_file:
+            if folder_path:
                 # Extract only the desired folder
+                logging.info(f"Extracting the folder '{folder_path}'...")
                 for member in zip_file.namelist():
                     if member.startswith(f"{repo_url.split('/')[-1]}-{branch}/{folder_path}"):
                         # Construct the relative path for extraction
@@ -156,8 +154,12 @@ class VMwareInstaller:
                                 f.write(zip_file.read(member))
                         else:
                             os.makedirs(target_path, exist_ok=True)
-
-            logging.info(f"Extracted folder '{folder_path}' to {extract_to}.")
+                logging.info(f"Extracted folder '{folder_path}' to {extract_to}.")
+            else:
+                # Extract all contents if no specific folder is specified
+                logging.info(f"Extracting the entire repository to {extract_to}...")
+                zip_file.extractall(extract_to)
+                logging.info(f"Extracted repository to {extract_to}.")
             
     def install_vmware_modules(self):
         """Install VMware modules."""
@@ -263,18 +265,17 @@ class VMwareInstaller:
         logging.info("\nStep 2: Clone the required repositories...")
         logging.info(f"Cloning {self.PACKAGE_NAME} repository...")
         self.download_and_extract_zip(
-            self.GITHUB_HOST_MODULES_REPO_URL,
-            self.GITHUB_HOST_MODULES_BRANCH,
-            "",
-            f"{self.CACHE_DIR}/vmware_host_modules",
+            repo_url=self.GITHUB_HOST_MODULES_REPO_URL,
+            branch=self.GITHUB_HOST_MODULES_BRANCH,
+            extract_to=self.CACHE_DIR
         )
 
         logging.info("Getting the DKMS modules")
         self.download_and_extract_zip(
-            self.GITHUB_REPO_URL,
-            self.GITHUB_BRANCH,
-            "vmware_files",
-            f"{self.CACHE_DIR}",
+            repo_url=self.GITHUB_REPO_URL,
+            branch=self.GITHUB_BRANCH,
+            folder_path="vmware_files",
+            extract_to=self.CACHE_DIR,
         )
 
         logging.info(
