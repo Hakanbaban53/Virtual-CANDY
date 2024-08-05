@@ -42,7 +42,7 @@ class VMwareInstaller:
     }
     GITHUB_HOST_MODULES_REPO_URL = "https://github.com/mkubecek/vmware-host-modules"
     GITHUB_HOST_MODULES_BRANCH = "tmp/workstation-17.5.0-k6.8"
-    GITHUB_REPO_URL = "https://github.com/Hakanbaban53/Container-and-Virtualization-Installer"
+    GITHUB_REPO_URL = "https://github.com/Hakanbaban53/Virtual-CANDY"
     GITHUB_BRANCH = "main"
 
     def __init__(self, hide, action, linux_distro):
@@ -130,7 +130,6 @@ class VMwareInstaller:
     def download_and_extract_zip(self, repo_url, branch, folder_path=None, extract_to=None):
         """Download and extract a GitHub repository or a specific folder."""
         logging.info(f"Downloading repository from {repo_url}...")
-
         zip_url = f"{repo_url}/archive/refs/heads/{branch}.zip"
         response = requests.get(zip_url)
         if response.status_code != 200:
@@ -139,15 +138,11 @@ class VMwareInstaller:
 
         with zipfile.ZipFile(BytesIO(response.content)) as zip_file:
             if folder_path:
-                # Extract only the desired folder
                 logging.info(f"Extracting the folder '{folder_path}'...")
                 for member in zip_file.namelist():
                     if member.startswith(f"{repo_url.split('/')[-1]}-{branch}/{folder_path}"):
-                        # Construct the relative path for extraction
                         relative_path = os.path.relpath(member, f"{repo_url.split('/')[-1]}-{branch}")
-                        # Construct the full extraction path
                         target_path = os.path.join(extract_to, relative_path)
-                        # Check if it is a directory or file and extract accordingly
                         if not member.endswith('/'):
                             os.makedirs(os.path.dirname(target_path), exist_ok=True)
                             with open(target_path, "wb") as f:
@@ -156,7 +151,6 @@ class VMwareInstaller:
                             os.makedirs(target_path, exist_ok=True)
                 logging.info(f"Extracted folder '{folder_path}' to {extract_to}.")
             else:
-                # Extract all contents if no specific folder is specified
                 logging.info(f"Extracting the entire repository to {extract_to}...")
                 zip_file.extractall(extract_to)
                 logging.info(f"Extracted repository to {extract_to}.")
@@ -362,3 +356,7 @@ class VMwareInstaller:
         logging.info("\nStep 5: Removing extracted components directory...")
         if os.path.exists(self.EXTRACTED_DIR):
             shutil.rmtree(self.EXTRACTED_DIR)
+
+
+if __name__ == "__main__":
+    VMwareInstaller(hide=None, action="install", linux_distro="fedora")
