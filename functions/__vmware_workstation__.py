@@ -158,17 +158,24 @@ class VMwareInstaller:
     def install_vmware_modules(self):
         """Install VMware modules."""
 
-        os.chdir(f"{self.CACHE_DIR}/vmware_host_modules")
-        logging.info("Making and copying vmmon.tar and vmnet.tar...")
-        self.run_command("make tarballs")
-        self.run_command(
-            f"sudo cp -v vmmon.tar vmnet.tar /usr/lib/vmware/modules/source/"
-        )
+        source_dir = f"{self.CACHE_DIR}/vmware-host-modules-tmp-workstation-17.5.0-k6.8"
+        dest_dir = "/usr/lib/vmware/modules/source/"
+        folders_to_copy = ["vmmon", "vmnet"]
 
-        logging.info("Extracting vmmon.tar and vmnet.tar...")
-        os.chdir("/usr/lib/vmware/modules/source/")
-        self.run_command("sudo tar -xvf vmmon.tar")
-        self.run_command("sudo tar -xvf vmnet.tar")
+        os.chdir(source_dir)
+        logging.info("Copying vmmon and vmnet folders...")
+
+        for folder in folders_to_copy:
+            src_folder = os.path.join(source_dir, folder)
+            dest_folder = os.path.join(dest_dir, folder)
+            
+            if not os.path.exists(dest_folder):
+                os.makedirs(dest_folder)
+            
+            logging.info(f"Copying {src_folder} to {dest_folder}...")
+            shutil.copytree(src_folder, dest_folder, dirs_exist_ok=True)
+
+        logging.info("Folders copied successfully.")
 
         logging.info("Creating directories for DKMS...")
         self.run_command(
