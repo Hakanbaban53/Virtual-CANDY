@@ -50,9 +50,19 @@ class VMwareInstaller:
         self.hide = hide
         self.action = action
         self.linux_distro = linux_distro
+        self.PACKAGE_MANAGER, self.DEPENDENCIES = self._configure_distro()
+
+        if self.action == "install":
+            self.install_vmware()
+        elif self.action == "remove":
+            self.uninstall_vmware()
+        else:
+            logging.error("Invalid action specified. Use 'install' or 'remove'.")
+
+    def _configure_distro(self):
+        """Configure package manager and dependencies based on the Linux distribution."""
         if self.linux_distro == "fedora":
-            self.PACKAGE_MANAGER = "dnf"
-            self.DEPENDENCIES = [
+            return "dnf", [
                 "kernel-devel",
                 "kernel-headers",
                 "git",
@@ -64,8 +74,7 @@ class VMwareInstaller:
                 "net-tools",
             ]
         elif self.linux_distro in {"debian", "ubuntu"}:
-            self.PACKAGE_MANAGER = "apt"
-            self.DEPENDENCIES = [
+            dependencies = [
                 "build-essential",
                 "git",
                 "wget",
@@ -75,24 +84,26 @@ class VMwareInstaller:
                 "patch",
                 "net-tools",
             ]
-            try:
-                kernel_version_process = run(
-                    "uname -r", shell=True, text=True, capture_output=True
-                )
-                if kernel_version_process.returncode == 0:
-                    kernel_version = kernel_version_process.stdout.strip()
-                    self.DEPENDENCIES.append(f"linux-headers-{kernel_version}")
-                else:
-                    print(
-                        f"Error retrieving kernel version: {kernel_version_process.stderr}"
-                    )
-            except Exception as e:
-                print(f"Exception occurred while retrieving kernel version: {e}")
+            kernel_version = self._get_kernel_version()
+            if kernel_version:
+                dependencies.append(f"linux-headers-{kernel_version}")
+            return "apt", dependencies
+        else:
+            logging.error(f"Unsupported Linux distribution: {self.linux_distro}")
+            raise ValueError(f"Unsupported Linux distribution: {self.linux_distro}")
 
-        if self.action == "install":
-            self.install_vmware()
-        elif self.action == "remove":
-            self.uninstall_vmware()
+    def _get_kernel_version(self):
+        """Retrieve the current kernel version."""
+        try:
+            result = run("uname -r", shell=True, text=True, capture_output=True)
+            if result.returncode == 0:
+                return result.stdout.strip()
+            else:
+                logging.error(f"Error retrieving kernel version: {result.stderr}")
+                return None
+        except Exception as e:
+            logging.exception("Exception occurred while retrieving kernel version.")
+            return None
 
     def setup_logging(self):
         """Setup logging configuration."""
