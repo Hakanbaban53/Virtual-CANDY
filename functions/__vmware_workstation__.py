@@ -101,17 +101,17 @@ class VMwareInstaller:
                             format='%(levelname)s: %(message)s',
                             handlers=[logging.FileHandler(f"{self.CACHE_DIR}/vmware_installer.log"),
                                       logging.StreamHandler()])
-        
 
     def run_command(self, command):
-        """Run a shell command and logging. Error its output."""
+        """Run a shell command, log its output, and handle errors."""
         result = subprocess.run(
-            command, shell=True, text=True, stderr=self.hide, stdout=self.hide
+            command, shell=True, text=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE
         )
         if result.returncode != 0:
             logging.error(f"Command failed: {command}")
-            return False
-        return True
+            logging.error(f"Error output: {result.stderr}")
+            return False, result.stderr
+        return True, result.stdout
 
     def download_file(self, url, filename):
         """Download a file from a URL using wget."""
@@ -216,14 +216,33 @@ class VMwareInstaller:
             f"DKMS configuration file created at /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/dkms.conf"
         )
 
-        logging.info("Applying patches...")
-        self.run_command(
-            f"sudo patch -p2 -d /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/vmmon-only < {self.CACHE_DIR}/vmware_files/vmware_files/DKMS_files/vmmon.patch"
-        )
-        self.run_command(
-            f"sudo patch -p2 -d /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/vmnet-only < {self.CACHE_DIR}/vmware_files/vmware_files/DKMS_files/vmnet.patch"
-        )
+        src_vmmon = f"/usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/vmmon-only"
+        src_vmnet = f"/usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/vmnet-only"
+        patch_vmmon = f"{self.CACHE_DIR}/vmware_files/vmware_files/DKMS_files/vmmon.patch"
+        patch_vmnet = f"{self.CACHE_DIR}/vmware_files/vmware_files/DKMS_files/vmnet.patch"
 
+        logging.info("Applying patches...")
+
+        # Apply vmmon patch
+        command_vmmon = f"sudo patch -p2 -d {src_vmmon} < {patch_vmmon}"
+        success_vmmon, output_vmmon = self.run_command(command_vmmon)
+        if not success_vmmon:
+            if "previously applied" in output_vmmon:
+                logging.info(f"Patch for vmmon already applied or skipped: {output_vmmon}")
+            else:
+                logging.error(f"Failed to apply patch for vmmon: {output_vmmon}")
+
+        # Apply vmnet patch
+        command_vmnet = f"sudo patch -p2 -d {src_vmnet} < {patch_vmnet}"
+        success_vmnet, output_vmnet = self.run_command(command_vmnet)
+        if not success_vmnet:
+            if "previously applied" in output_vmnet:
+                logging.info(f"Patch for vmnet already applied or skipped: {output_vmnet}")
+            else:
+                logging.error(f"Failed to apply patch for vmnet: {output_vmnet}")
+
+        logging.info("Patch application completed.")
+        
         logging.info("Adding and building vmware-host-modules module with DKMS...")
         self.run_command(
             f"sudo dkms add -m {self.PACKAGE_NAME} -v {self.PACKAGE_VERSION}"
