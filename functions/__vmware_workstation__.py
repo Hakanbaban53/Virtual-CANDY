@@ -250,13 +250,13 @@ class VMwareInstaller:
 
         logging.info("Adding and building vmware-host-modules module with DKMS...")
         self.run_command(
-            f"sudo dkms add -m {self.PACKAGE_NAME} -v {self.PACKAGE_VERSION}"
+            f"sudo dkms add --force -m {self.PACKAGE_NAME} -v {self.PACKAGE_VERSION}"
         )
         self.run_command(
-            f"sudo dkms build -m {self.PACKAGE_NAME} -v {self.PACKAGE_VERSION}"
+            f"sudo dkms build --force -m {self.PACKAGE_NAME} -v {self.PACKAGE_VERSION}"
         )
         self.run_command(
-            f"sudo dkms install -m {self.PACKAGE_NAME} -v {self.PACKAGE_VERSION}"
+            f"sudo dkms install --force -m {self.PACKAGE_NAME} -v {self.PACKAGE_VERSION}"
         )
 
         logging.info("Running vmware-modconfig to install all modules...")
@@ -393,4 +393,4 @@ class VMwareInstaller:
 
 
 if __name__ == "__main__":
-    VMwareInstaller(hide=None, action="install", linux_distro="fedora")
+    VMwareInstaller(hide=None, action="install", linux_distro="debian")
