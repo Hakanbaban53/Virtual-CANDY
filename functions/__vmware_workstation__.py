@@ -39,6 +39,7 @@ class VMwareInstaller:
     }
     GITHUB_HOST_MODULES_REPO_URL = "https://github.com/nan0desu/vmware-host-modules"
     GITHUB_HOST_MODULES_BRANCH = "workstation-17.5.2-k6.9%2B"
+    SOURCE_DIR = f"{CACHE_DIR}/vmware-host-modules-workstation-17.5.2-k6.9-"
     GITHUB_REPO_URL = "https://github.com/Hakanbaban53/Virtual-CANDY"
     GITHUB_BRANCH = "main"
 
@@ -180,16 +181,14 @@ class VMwareInstaller:
 
     def install_vmware_modules(self):
         """Install VMware modules."""
-
-        source_dir = f"{self.CACHE_DIR}/vmware-host-modules-workstation-17.5.2-k6.9-"
         dest_dir = "/usr/lib/vmware/modules/source/"
         folders_to_copy = ["vmmon-only", "vmnet-only"]
 
-        chdir(source_dir)
+        chdir(self.SOURCE_DIR)
         logging.info("Copying vmmon and vmnet folders...")
 
         for folder in folders_to_copy:
-            src_folder = path.join(source_dir, folder)
+            src_folder = path.join(self.SOURCE_DIR, folder)
             dest_folder = path.join(dest_dir, folder)
 
             if not path.exists(dest_folder):
@@ -390,7 +389,3 @@ class VMwareInstaller:
         logging.info("\nStep 5: Removing extracted components directory...")
         if path.exists(self.EXTRACTED_DIR):
             self.run_command(f"sudo rm -rf {self.EXTRACTED_DIR}")
-
-
-if __name__ == "__main__":
-    VMwareInstaller(hide=None, action="install", linux_distro="fedora")
