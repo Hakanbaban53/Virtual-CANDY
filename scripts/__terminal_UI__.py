@@ -607,10 +607,14 @@ class PackageManagerApp:
             self.terminal_size_error()
 
         except Exception as e:
+            curses.reset_prog_mode()
             self.stdscr.clear()
             self.stdscr.addstr(1, 1, str(e), curses.color_pair(2) | curses.A_BOLD)
             self.stdscr.addstr(2, 1, "[Press any key to exit program]")
             self.stdscr.getch()
+            curses.reset_shell_mode()
+            sys.exit(0)
+
 
 
 def start_terminal_ui():
