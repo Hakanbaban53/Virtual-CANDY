@@ -42,6 +42,13 @@ def handle_standard_package(package, check_value, action, dry_run, hide):
 
     if check_value not in result.stderr.decode("utf-8").lower():
         if action == "install":
+            print(f"{package['name']} not installed. Installing...")
+            if not dry_run:
+                package_installer(package, hide)
+        elif action == "remove":
+            print(f"{package['name']} not installed. Skipping...")
+    else:
+        if action == "install":
             print(f"{package['name']} was installed. Skipping...")
         elif action == "remove":
             print(f"{package['name']} removing...")
