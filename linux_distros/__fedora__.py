@@ -40,7 +40,6 @@ def handle_standard_package(package, check_value, action, dry_run, hide):
         stderr=PIPE,
         check=True,
     )
-    print(result.stderr.decode("utf-8").lower())
 
     if check_value not in result.stderr.decode("utf-8").lower():
         if action == "install":
