@@ -678,9 +678,7 @@
       ],
       "check_script": ["/etc/yum.repos.d/vscode.repo"],
       "remove_script": ["sudo rm -rf /etc/yum.repos.d/vscode.repo"]
-    }
-  ]
-},
+    },
         {
           "name": "Visual Studio Code",
           "type": "package",
