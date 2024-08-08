@@ -286,14 +286,4 @@ def handle_local_package(install_value, target_directory, hide):
         stderr=hide,
         stdout=hide,
     )
-    run(
-        ["sudo", "apt", "--fix-broken", "install", "-y"],
-        stderr=hide,
-        stdout=hide,
-    )
-    run(
-        ["sudo", "rm", "-f", local_path],
-        stderr=hide,
-        stdout=hide,
-    )
 
