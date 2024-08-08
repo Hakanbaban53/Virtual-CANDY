@@ -667,18 +667,20 @@
       ]
     },
     {
-      "name": "Visual_Studio_Code",
-      "values": [
-        {
-          "name": "Visual Studio Code Repository",
-          "type": "get-keys",
-          "install_script": [
-            "sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc",
-            "sudo sh -c 'echo -e \"[code]_\nname_Visual Studio Code\\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\\nenabled=1\\ngpgcheck=1\\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc\" > /etc/yum.repos.d/vscode.repo'"
-          ],
-          "check_script": ["/etc/yum.repos.d/vscode.repo"],
-          "_emove_script": ["sudo rm -rf /etc/yum.repos.d/vscode.repo"]
-        },
+  "name": "Visual_Studio_Code",
+  "values": [
+    {
+      "name": "Visual Studio Code Repository",
+      "type": "get-keys",
+      "install_script": [
+        "sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc",
+        "echo -e \"[code]\\nname=Visual Studio Code\\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\\nenabled=1\\ngpgcheck=1\\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc\" | sudo tee /etc/yum.repos.d/vscode.repo > /dev/null"
+      ],
+      "check_script": ["/etc/yum.repos.d/vscode.repo"],
+      "remove_script": ["sudo rm -rf /etc/yum.repos.d/vscode.repo"]
+    }
+  ]
+},
         {
           "name": "Visual Studio Code",
           "type": "package",
