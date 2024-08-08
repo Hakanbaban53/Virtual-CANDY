@@ -38,7 +38,6 @@ def handle_standard_package(package, check_value, action, dry_run, hide):
         ["dnf", "list", "installed"] + check_value.split(),
         stdout=PIPE,
         stderr=PIPE,
-        check=True,
     )
 
     if check_value not in result.stderr.decode("utf-8").lower():
@@ -55,7 +54,6 @@ def handle_removable_package(package, check_value, action, dry_run, hide):
         ["dnf", "list", "installed"] + check_value.split(),
         stdout=PIPE,
         stderr=PIPE,
-        check=True,
     )
 
     if "error" not in result.stderr.decode("utf-8").lower():
@@ -99,7 +97,7 @@ def handle_service_or_group(package, action, dry_run, hide):
 
 
 def handle_flatpak_package(package, check_value, action, dry_run, hide):
-    result = run(["flatpak", "list"], stdout=PIPE, stderr=PIPE, check=True)
+    result = run(["flatpak", "list"], stdout=PIPE, stderr=PIPE)
 
     if check_value not in result.stdout.decode("utf-8"):
         if action == "install":
@@ -140,18 +138,16 @@ def package_installer(package, hide):
         if package_type == "package":
             run(
                 ["sudo", "dnf", "install", "-y"] + install_value.split(),
-                check=True,
                 stderr=hide,
                 stdout=hide,
             )
         elif package_type == "get-keys":
             for command in package.get("install_script", []):
-                run(command, shell=True, check=True, stderr=hide, stdout=hide)
+                run(command, shell=True, stderr=hide, stdout=hide)
         elif package_type == "url-package":
             install_value = replace_fedora_version(install_value)
             run(
                 ["sudo", "dnf", "install", "-y", install_value],
-                check=True,
                 stderr=hide,
                 stdout=hide,
             )
@@ -160,20 +156,17 @@ def package_installer(package, hide):
         elif package_type == "service":
             run(
                 ["sudo", "systemctl", "restart", install_value],
-                check=True,
                 stderr=hide,
                 stdout=hide,
             )
             run(
                 ["sudo", "systemctl", "enable", install_value],
-                check=True,
                 stderr=hide,
                 stdout=hide,
             )
         elif package_type == "group":
             run(
                 ["sudo", "usermod", "-aG", install_value, current_user],
-                check=True,
                 stderr=hide,
                 stdout=hide,
             )
@@ -187,14 +180,12 @@ def package_installer(package, hide):
                     "flathub",
                     install_value,
                 ],
-                check=True,
                 stderr=hide,
                 stdout=hide,
             )
         elif package_type == "package-flatpak":
             run(
                 ["sudo", "flatpak", "install", "-y", install_value],
-                check=True,
                 stderr=hide,
                 stdout=hide,
             )
@@ -223,20 +214,18 @@ def package_remover(package, hide):
         }:
             run(
                 ["sudo", "dnf", "remove", "-y"] + remove_value.split(),
-                check=True,
                 stderr=hide,
                 stdout=hide,
             )
         elif package_type == "package-flatpak":
             run(
                 ["sudo", "flatpak", "remove", "-y", remove_value],
-                check=True,
                 stderr=hide,
                 stdout=hide,
             )
         elif package_type == "get-keys":
             for command in package.get("remove_script", []):
-                run(command, shell=True, check=True, stderr=hide, stdout=hide)
+                run(command, shell=True, stderr=hide, stdout=hide)
     except CalledProcessError as err:
         print(f"An error occurred: {err}")
 
@@ -250,14 +239,12 @@ def handle_local_package(install_value, target_directory, hide):
     local_file = path.join(target_directory, "local.package.rpm")
     run(
         ["wget", "--progress=bar:force", "-O", local_file, install_value],
-        check=True,
         stderr=hide,
         stdout=hide,
     )
     run(
         ["sudo", "dnf", "install", "-y", local_file],
-        check=True,
         stderr=hide,
         stdout=hide,
     )
-    run(["sudo", "rm", "-f", local_file], check=True, stderr=hide, stdout=hide)
+    run(["sudo", "rm", "-f", local_file], stderr=hide, stdout=hide)

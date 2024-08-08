@@ -14,7 +14,9 @@ def arch_package_manager(packages, output, action, dry_run):
 
         try:
             if package_type in {"package", "AUR-package", "local-package"}:
-                handle_standard_package(check_value, name, action, dry_run, package, hide)
+                handle_standard_package(
+                    check_value, name, action, dry_run, package, hide
+                )
 
             elif package_type in {"service", "group"}:
                 handle_service_or_group(name, action, dry_run, package, hide)
@@ -33,9 +35,7 @@ def arch_package_manager(packages, output, action, dry_run):
 
 def handle_standard_package(check_value, name, action, dry_run, package, hide):
     packages_to_check = check_value.split()
-    result = run(
-        ["pacman", "-Q"] + packages_to_check, stdout=PIPE, stderr=PIPE, check=True
-    )
+    result = run(["pacman", "-Q"] + packages_to_check, stdout=PIPE, stderr=PIPE)
 
     if "error" not in result.stderr.decode("utf-8").lower():
         if action == "install":
@@ -88,7 +88,7 @@ def handle_repo_keys(check_script, name, action, dry_run, package, hide):
 
 
 def handle_flatpak_package(check_value, name, action, dry_run, package, hide):
-    result = run(["flatpak", "list"], stdout=PIPE, stderr=PIPE, check=True)
+    result = run(["flatpak", "list"], stdout=PIPE, stderr=PIPE)
 
     if check_value not in result.stdout.decode("utf-8"):
         if action == "install":
@@ -130,7 +130,6 @@ def package_installer(package, hide):
         if package_type == "package":
             run(
                 ["sudo", "pacman", "-S", install_value, "--noconfirm"],
-                check=True,
                 stderr=hide,
                 stdout=hide,
             )
@@ -141,13 +140,11 @@ def package_installer(package, hide):
         elif package_type == "service":
             run(
                 ["sudo", "systemctl", "restart", install_value],
-                check=True,
                 stderr=hide,
                 stdout=hide,
             )
             run(
                 ["sudo", "systemctl", "enable", install_value],
-                check=True,
                 stderr=hide,
                 stdout=hide,
             )
@@ -155,7 +152,6 @@ def package_installer(package, hide):
         elif package_type == "group":
             run(
                 ["sudo", "usermod", "-aG", install_value, current_user],
-                check=True,
                 stderr=hide,
                 stdout=hide,
             )
@@ -170,7 +166,6 @@ def package_installer(package, hide):
                     "flathub",
                     install_value,
                 ],
-                check=True,
                 stderr=hide,
                 stdout=hide,
             )
@@ -178,7 +173,6 @@ def package_installer(package, hide):
         elif package_type == "package-flatpak":
             run(
                 ["sudo", "flatpak", "install", "-y", install_value],
-                check=True,
                 stderr=hide,
                 stdout=hide,
             )
@@ -191,7 +185,6 @@ def package_installer(package, hide):
         sleep(10)
 
 
-
 def local_package_installer(install_value, target_directory, hide):
     run(
         [
@@ -202,21 +195,18 @@ def local_package_installer(install_value, target_directory, hide):
             install_value,
         ],
         cwd=target_directory,
-        check=True,
         stderr=hide,
         stdout=hide,
     )
     run(
         ["sudo", "pacman", "-U", "local.package.pkg.tar.zst", "--noconfirm"],
         cwd=target_directory,
-        check=True,
         stderr=hide,
         stdout=hide,
     )
     run(
         ["sudo", "rm", "-f", "local.package.pkg.tar.zst"],
         cwd=target_directory,
-        check=True,
         stderr=hide,
         stdout=hide,
     )
@@ -232,7 +222,6 @@ def handle_aur_package(install_value, target_directory, hide):
     run(
         ["makepkg", "-si", "--noconfirm"],
         cwd=repository_directory,
-        check=True,
         stderr=hide,
         stdout=hide,
     )
@@ -240,11 +229,9 @@ def handle_aur_package(install_value, target_directory, hide):
     run(
         ["sudo", "rm", "-rf", install_value],
         cwd=target_directory,
-        check=True,
         stderr=hide,
         stdout=hide,
     )
-
 
 
 def package_remover(package, hide):
@@ -255,7 +242,6 @@ def package_remover(package, hide):
         if package_type in {"package", "AUR-package", "local-package"}:
             run(
                 ["sudo", "pacman", "-R", remove_value, "--noconfirm"],
-                check=True,
                 stderr=hide,
                 stdout=hide,
             )
@@ -263,7 +249,6 @@ def package_remover(package, hide):
         elif package_type == "package-flatpak":
             run(
                 ["sudo", "flatpak", "remove", "-y", remove_value],
-                check=True,
                 stderr=hide,
                 stdout=hide,
             )
