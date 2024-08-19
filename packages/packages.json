@@ -896,14 +896,19 @@
                "remove_value":"virt-manager"
             },
             {
-               "name":"Start and Enable libvirtd.service",
+               "name":"Start and Enable libvirtd",
                "type":"service",
-               "install_value":"libvirtd.service"
+               "install_value":"libvirtd"
             },
             {
                "name":"Add User to libvirt Group.",
                "type":"group",
                "install_value":"libvirt"
+            },
+            {
+               "name":"Add User to kvm Group.",
+               "type":"group",
+               "install_value":"kvm"
             }
          ]
       },
