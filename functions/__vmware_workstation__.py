@@ -7,8 +7,8 @@ from zipfile import ZipFile
 import requests
 
 class VMwareInstaller:
-    PKGVER = "17.5.2"
-    BUILDVER = "23775571"
+    PKGVER = "17.6.0"
+    BUILDVER = "24238078"
     TOOLS_VERSION = "12.4.0-23259341"
     CARCH = "x86_64"
     BASE_URL = f"https://softwareupdate.vmware.com/cds/vmw-desktop/ws/{PKGVER}/{BUILDVER}/linux/packages"

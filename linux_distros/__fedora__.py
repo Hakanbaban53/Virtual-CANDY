@@ -35,12 +35,12 @@ def fedora_package_manager(packages, output, action, dry_run):
 
 def handle_standard_package(package, check_value, action, dry_run, hide):
     result = run(
-        ["dnf", "list", "installed"] + check_value.split(),
+        ["dnf", "list", "--installed", check_value],
         stdout=PIPE,
         stderr=PIPE,
     )
-
-    if check_value not in result.stderr.decode("utf-8").lower():
+    output = result.stdout.decode("utf-8").lower()
+    if check_value.lower() not in output:
         if action == "install":
             print(f"{package['name']} not installed. Installing...")
             if not dry_run:
