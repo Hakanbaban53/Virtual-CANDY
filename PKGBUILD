@@ -23,7 +23,7 @@ build() {
   cd "$srcdir/Container-and-Virtualization-Installer"
   
   # Build the Python project with PyInstaller
-  /home/$USER/.local/bin/pyinstaller --onefile app.py --name=vcandy
+  pyinstaller --onefile app.py --name=vcandy
 }
 
 package() {
