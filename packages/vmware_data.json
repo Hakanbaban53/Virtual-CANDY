@@ -1,0 +1,28 @@
+{
+    "VERSION": "17.6.1",
+    "BUNDLE_URL": "https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.6.1/24319023/linux/core/VMware-Workstation-17.6.1-24319023.x86_64.bundle.tar",
+    "BUNDLE_FILENAME": "VMware-Workstation-17.6.1-24319023.x86_64.bundle.tar",
+    "COMPONENT_FILENAMES": [
+        "https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.6.1/24319023/linux/packages/vmware-tools-windows-12.4.5-23787635.x86_64.component.tar",
+        "https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.6.1/24319023/linux/packages/vmware-tools-windows-x86-12.4.5-23787635.x86_64.component.tar",
+        "https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-linux-12.4.0-23259341.x86_64.component.tar",
+        "https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-linuxPreGlibc25-12.4.0-23259341.x86_64.component.tar",
+        "https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-netware-12.4.0-23259341.x86_64.component.tar",
+        "https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-solaris-12.4.0-23259341.x86_64.component.tar",
+        "https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-winPre2k-12.4.0-23259341.x86_64.component.tar",
+        "https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-windows-12.4.0-23259341.x86_64.component.tar"
+    ],
+    "CACHE_DIR": "~/.cache/vcandy/VMware",
+    "SERVICES": [
+      "vmware-networks-configuration.service",
+      "vmware-networks.service",
+      "vmware-usbarbitrator.service",
+      "vmware-networks.path",
+      "vmware-usbarbitrator.path"
+    ],
+    "GITHUB_HOST_MODULES_REPO_URL": "https://github.com/nan0desu/vmware-host-modules",
+    "GITHUB_HOST_MODULES_BRANCH": "workstation-17.5.2-k6.9%2B",
+    "GITHUB_REPO_URL": "https://github.com/Hakanbaban53/Virtual-CANDY",
+    "GITHUB_BRANCH": "main"
+  }
+  
