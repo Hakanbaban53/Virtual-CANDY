@@ -6,14 +6,18 @@ import requests
 import time
 
 class PackagesJSONHandler:
-    def __init__(self, json_file_url=None):
-        self.json_file_url = json_file_url or "https://raw.githubusercontent.com/Hakanbaban53/Container-and-Virtualization-Installer/main/packages/packages.json"
-        self.json_file_path = self.get_cache_file_path()
+    def __init__(self, json_file_url=None, json_file_name="packages.json"):
+        if json_file_url == None:
+            self.json_file_url = "https://raw.githubusercontent.com/Hakanbaban53/Container-and-Virtualization-Installer/main/packages/packages.json"
+        else:
+            self.json_file_url = json_file_url
 
-    def get_cache_file_path(self):
-        cache_dir = Path(os.path.expanduser("~")) / ".cache" / "vcandy"
+        self.json_file_path = self.get_cache_file_path(json_file_name)
+
+    def get_cache_file_path(self, json_file_name):
+        cache_dir = Path(os.path.expanduser("~")) / ".cache" / "vcandy" / "data"
         cache_dir.mkdir(parents=True, exist_ok=True)
-        return cache_dir / "packages.json"
+        return cache_dir / json_file_name
 
     def download_json_file(self, url, file_path, max_retries=3, retry_delay=1):
         retries = 0

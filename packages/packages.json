@@ -1,7 +1,7 @@
 {
   "arch": [
     {
-      "name": "VMware_Workstation-17.6.0",
+      "name": "VMware_Workstation-17.6.1",
       "values": [
         {
           "name": "VMware Workstation Keymaps",
@@ -272,7 +272,7 @@
   ],
   "debian": [
     {
-      "name": "VMware_Workstation-17.6.0",
+      "name": "VMware_Workstation-17.6.1",
       "values": [
         {
           "name": "VMware Workstation",
@@ -509,7 +509,7 @@
   ],
   "fedora": [
     {
-      "name": "VMware_Workstation-17.6.0",
+      "name": "VMware_Workstation-17.6.1",
       "values": [
         {
           "name": "VMware Workstation",
@@ -863,7 +863,7 @@
   ],
   "ubuntu": [
     {
-      "name": "VMware_Workstation-17.6.0",
+      "name": "VMware_Workstation-17.6.1",
       "values": [
         {
           "name": "VMware Workstation",

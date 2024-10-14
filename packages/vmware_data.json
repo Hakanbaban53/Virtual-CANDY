@@ -10,7 +10,6 @@
         "https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-netware-12.4.0-23259341.x86_64.component.tar",
         "https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-solaris-12.4.0-23259341.x86_64.component.tar",
         "https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-winPre2k-12.4.0-23259341.x86_64.component.tar",
-        "https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-windows-12.4.0-23259341.x86_64.component.tar"
     ],
     "CACHE_DIR": "~/.cache/vcandy/VMware",
     "SERVICES": [

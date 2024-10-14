@@ -6,47 +6,13 @@ import logging
 from zipfile import ZipFile
 import requests
 
-class VMwareInstaller:
-    PKGVER = "17.6.0"
-    BUILDVER = "24238078"
-    TOOLS_VERSION = "12.4.0-23259341"
-    CARCH = "x86_64"
-    BASE_URL = f"https://softwareupdate.vmware.com/cds/vmw-desktop/ws/{PKGVER}/{BUILDVER}/linux/packages"
-    BUNDLE_URL = f"https://softwareupdate.vmware.com/cds/vmw-desktop/ws/{PKGVER}/{BUILDVER}/linux/core/VMware-Workstation-{PKGVER}-{BUILDVER}.{CARCH}.bundle.tar"
-    BUNDLE_FILENAME = f"VMware-Workstation-{PKGVER}-{BUILDVER}.{CARCH}.bundle.tar"
-    CACHE_DIR = Path(path.expanduser("~")) / ".cache" / "vcandy" / "VMware"
-    CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    COMPONENT_FILENAMES = [
-        f"vmware-tools-linux-{TOOLS_VERSION}.{CARCH}.component.tar",
-        f"vmware-tools-linuxPreGlibc25-{TOOLS_VERSION}.{CARCH}.component.tar",
-        f"vmware-tools-netware-{TOOLS_VERSION}.{CARCH}.component.tar",
-        f"vmware-tools-solaris-{TOOLS_VERSION}.{CARCH}.component.tar",
-        f"vmware-tools-windows-{TOOLS_VERSION}.{CARCH}.component.tar",
-        f"vmware-tools-winPre2k-{TOOLS_VERSION}.{CARCH}.component.tar",
-        f"vmware-tools-winPreVista-{TOOLS_VERSION}.{CARCH}.component.tar",
-    ]
-    EXTRACTED_DIR = path.join(CACHE_DIR, "extracted_components")
-    DEPENDENCIES = []
-    PACKAGE_MANAGER = ""
-    PACKAGE_NAME = "vmware-host-modules"
-    PACKAGE_VERSION = PKGVER  # Do not make the PACKAGE_VERSION to PKGVER
-    SERVICES = {
-        "vmware-networks-configuration.service",
-        "vmware-networks.service",
-        "vmware-usbarbitrator.service",
-        "vmware-networks.path",
-        "vmware-usbarbitrator.path",
-    }
-    GITHUB_HOST_MODULES_REPO_URL = "https://github.com/nan0desu/vmware-host-modules"
-    GITHUB_HOST_MODULES_BRANCH = "workstation-17.5.2-k6.9%2B"
-    SOURCE_DIR = f"{CACHE_DIR}/vmware-host-modules-workstation-17.5.2-k6.9-"
-    GITHUB_REPO_URL = "https://github.com/Hakanbaban53/Virtual-CANDY"
-    GITHUB_BRANCH = "main"
+from functions.__get_packages_data__ import PackagesJSONHandler
 
+class VMwareInstaller:
+    DATA_URL = "https://raw.githubusercontent.com/Hakanbaban53/Virtual-CANDY/refs/heads/main/packages/vmware_data.json"
     def __init__(self, hide, action, linux_distro):
-        self.COMPONENT_URLS = [
-            f"{self.BASE_URL}/{filename}" for filename in self.COMPONENT_FILENAMES
-        ]
+        self.load_config()
+
         self.setup_logging()
         self.hide = hide
         self.action = action
@@ -59,6 +25,35 @@ class VMwareInstaller:
             self.uninstall_vmware()
         else:
             logging.error("Invalid action specified. Use 'install' or 'remove'.")
+
+    def load_config(self):
+        """Load configuration data from config.json."""
+        packages_data = PackagesJSONHandler(self.DATA_URL, json_file_name="vmware_config.json").load_json_data(refresh=True)
+
+        self.VERSION = packages_data['VERSION']
+        self.PACKAGE_NAME = packages_data['PACKAGE_NAME']
+        self.BUNDLE_URL = packages_data['BUNDLE_URL']
+        self.BUNDLE_FILENAME = path.basename(self.BUNDLE_URL)
+        self.BUNDLE_INSTALLER = packages_data['BUNDLE_INSTALLER']
+        
+        self.CACHE_DIR = Path(path.expanduser(packages_data['CACHE_DIR']))
+        self.CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        self.SOURCE_DIR = f"{self.CACHE_DIR}/vmware-host-modules-workstation-17.5.2-k6.9-"
+
+        self.COMPONENT_URLS = packages_data['COMPONENT_URLS']
+        self.EXTRACTED_DIR = path.join(self.CACHE_DIR, "extracted_components")
+        self.SERVICES = set(packages_data['SERVICES'])
+        self.GITHUB_HOST_MODULES_REPO_URL = packages_data['GITHUB_HOST_MODULES_REPO_URL']
+        self.GITHUB_HOST_MODULES_BRANCH = packages_data['GITHUB_HOST_MODULES_BRANCH']
+        self.GITHUB_REPO_URL = packages_data['GITHUB_REPO_URL']
+        self.GITHUB_BRANCH = packages_data['GITHUB_BRANCH']
+
+        print(self.VERSION)
+        print(self.PACKAGE_NAME)
+        print(self.BUNDLE_URL)
+        print(self.BUNDLE_FILENAME)
+        print(self.BUNDLE_INSTALLER)
+        print(self.CACHE_DIR)
 
     def _configure_distro(self):
         """Configure package manager and dependencies based on the Linux distribution."""
@@ -201,21 +196,21 @@ class VMwareInstaller:
 
         logging.info("Creating directories for DKMS...")
         self.run_command(
-            f"sudo mkdir -p /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}"
+            f"sudo mkdir -p /usr/src/{self.PACKAGE_NAME}-{self.VERSION}"
         )
 
         logging.info("Moving source files to DKMS directory...")
         self.run_command(
-            f"sudo cp -r vmmon-only /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/"
+            f"sudo cp -r vmmon-only /usr/src/{self.PACKAGE_NAME}-{self.VERSION}/"
         )
         self.run_command(
-            f"sudo cp -r vmnet-only /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/"
+            f"sudo cp -r vmnet-only /usr/src/{self.PACKAGE_NAME}-{self.VERSION}/"
         )
 
 
         logging.info("Copying Makefile and dkms.conf to DKMS directory...")
         self.run_command(
-            f"sudo cp -r {self.CACHE_DIR}/vmware_files/DKMS_files/Makefile /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/"
+            f"sudo cp -r {self.CACHE_DIR}/vmware_files/DKMS_files/Makefile /usr/src/{self.PACKAGE_NAME}-{self.VERSION}/"
         )
 
         logging.info("Creating DKMS configuration for vmware-host-modules...")
@@ -225,37 +220,37 @@ class VMwareInstaller:
             dkms_conf_template = template_file.read()
 
         dkms_conf_vmware_host_modules = dkms_conf_template.format(
-            PACKAGE_NAME=self.PACKAGE_NAME, PACKAGE_VERSION=self.PACKAGE_VERSION
+            PACKAGE_NAME=self.PACKAGE_NAME, PACKAGE_VERSION=self.VERSION
         )
 
-        temp_conf_path = f"/tmp/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}-dkms.conf"
+        temp_conf_path = f"/tmp/{self.PACKAGE_NAME}-{self.VERSION}-dkms.conf"
         with open(temp_conf_path, "w") as conf_file:
             conf_file.write(dkms_conf_vmware_host_modules)
 
         self.run_command(
-            f"sudo mv {temp_conf_path} /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/dkms.conf"
+            f"sudo mv {temp_conf_path} /usr/src/{self.PACKAGE_NAME}-{self.VERSION}/dkms.conf"
         )
         logging.info(
-            f"DKMS configuration file created at /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/dkms.conf"
+            f"DKMS configuration file created at /usr/src/{self.PACKAGE_NAME}-{self.VERSION}/dkms.conf"
         )
 
         logging.info("Applying patches...")
         self.run_command(
-            f"sudo patch -N -p2 -d /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/vmmon-only < {self.CACHE_DIR}/vmware_files/DKMS_files/vmmon.patch"
+            f"sudo patch -N -p2 -d /usr/src/{self.PACKAGE_NAME}-{self.VERSION}/vmmon-only < {self.CACHE_DIR}/vmware_files/DKMS_files/vmmon.patch"
         )
         self.run_command(
-            f"sudo patch -N -p2 -d /usr/src/{self.PACKAGE_NAME}-{self.PACKAGE_VERSION}/vmnet-only < {self.CACHE_DIR}/vmware_files/DKMS_files/vmnet.patch"
+            f"sudo patch -N -p2 -d /usr/src/{self.PACKAGE_NAME}-{self.VERSION}/vmnet-only < {self.CACHE_DIR}/vmware_files/DKMS_files/vmnet.patch"
         )
 
         logging.info("Adding and building vmware-host-modules module with DKMS...")
         self.run_command(
-            f"sudo dkms add --force -m {self.PACKAGE_NAME} -v {self.PACKAGE_VERSION}"
+            f"sudo dkms add --force -m {self.PACKAGE_NAME} -v {self.VERSION}"
         )
         self.run_command(
-            f"sudo dkms build --force -m {self.PACKAGE_NAME} -v {self.PACKAGE_VERSION}"
+            f"sudo dkms build --force -m {self.PACKAGE_NAME} -v {self.VERSION}"
         )
         self.run_command(
-            f"sudo dkms install --force -m {self.PACKAGE_NAME} -v {self.PACKAGE_VERSION}"
+            f"sudo dkms install --force -m {self.PACKAGE_NAME} -v {self.VERSION}"
         )
 
         logging.info("Running vmware-modconfig to install all modules...")
@@ -308,7 +303,8 @@ class VMwareInstaller:
         )
         makedirs(self.CACHE_DIR, exist_ok=True)
         self.download_file(self.BUNDLE_URL, self.BUNDLE_FILENAME)
-        for url, filename in zip(self.COMPONENT_URLS, self.COMPONENT_FILENAMES):
+        for url in self.COMPONENT_URLS:
+            filename = path.basename(url)
             self.download_file(url, filename)
 
         logging.info("\nStep 4: Extracting the bundle file...")
@@ -317,14 +313,12 @@ class VMwareInstaller:
         )
 
         makedirs(self.EXTRACTED_DIR, exist_ok=True)
-        for filename in self.COMPONENT_FILENAMES:
+        for url in self.COMPONENT_URLS:
+            filename = path.basename(url)
             self.extract_tar(filename)
 
         logging.info("\nStep 5: Making the installer executable...")
-        bundle_installer = (
-            f"VMware-Workstation-{self.PKGVER}-{self.BUILDVER}.{self.CARCH}.bundle"
-        )
-        self.run_command(f"chmod +x {path.join(self.CACHE_DIR, bundle_installer)}")
+        self.run_command(f"chmod +x {path.join(self.CACHE_DIR, self.BUNDLE_INSTALLER)}")
 
         logging.info(
             "\nStep 6: Running the VMware Workstation installer with extracted components..."
@@ -334,7 +328,7 @@ class VMwareInstaller:
             for filename in listdir(self.EXTRACTED_DIR)
         ]
         install_command = (
-            f"sudo {path.join(self.CACHE_DIR, bundle_installer)} --console --required --eulas-agreed "
+            f"sudo {path.join(self.CACHE_DIR, self.BUNDLE_INSTALLER)} --console --required --eulas-agreed "
             + " ".join(
                 [
                     f'--install-component "{path.abspath(filename)}"'
@@ -376,7 +370,7 @@ class VMwareInstaller:
 
         logging.info("\nStep 3: Removing VMware modules from DKMS...")
         self.run_command(
-            f"sudo dkms remove -m {self.PACKAGE_NAME} -v {self.PACKAGE_VERSION} --all"
+            f"sudo dkms remove -m {self.PACKAGE_NAME} -v {self.VERSION} --all"
         )
 
         logging.info("\nStep 4: Running the uninstallation script...")
