@@ -39,7 +39,7 @@ class VMwareInstaller:
         self.CACHE_DIR = Path(path.expanduser(packages_data['CACHE_DIR']))
         self.CACHE_DIR.mkdir(parents=True, exist_ok=True)
         self.MODULES_DIR = path.abspath(packages_data['MODULES_DIR'])
-        self.DKMS_DIR = f"/usr/src/{self.PACKAGE_NAME}-{self.VERSION}"
+        self.DKMS_DIR = path.abspath(f"/usr/src/{self.PACKAGE_NAME}-{self.VERSION}")
 
         self.COMPONENT_URLS = packages_data['COMPONENT_URLS']
         self.EXTRACTED_DIR = path.join(self.CACHE_DIR, "extracted_components")
@@ -176,7 +176,7 @@ class VMwareInstaller:
             f"sudo mkdir -p {self.DKMS_DIR}"
         )
 
-        logging.INFO(f"Exract the modules files to dkms path")
+        logging.INFO(f"Exract the modules files to dkms directories")
         for folder in folders:
             self.run_command(
                 f"tar -xf {self.MODULES_DIR}/{folder}.tar -C {self.DKMS_DIR}"
@@ -209,12 +209,10 @@ class VMwareInstaller:
         )
 
         logging.info("Applying patches...")
-        self.run_command(
-            f"sudo patch -N -p2 -d {self.DKMS_DIR}/vmmon-only < {self.CACHE_DIR}/vmware_files/DKMS_files/vmmon.patch"
-        )
-        self.run_command(
-            f"sudo patch -N -p2 -d {self.DKMS_DIR}/vmnet-only < {self.CACHE_DIR}/vmware_files/DKMS_files/vmnet.patch"
-        )
+        for folder in folders:
+            self.run_command(
+                f"sudo patch -N -p2 -d {self.DKMS_DIR}/{folder}-only < {self.CACHE_DIR}/vmware_files/DKMS_files/{folder}.patch"
+            )
 
         logging.info("Adding and building vmware-host-modules module with DKMS...")
         self.run_command(
@@ -229,8 +227,6 @@ class VMwareInstaller:
 
         logging.info("Running vmware-modconfig to install all modules...")
         self.run_command("sudo vmware-modconfig --console --install-all")
-
-        chdir("..")  # Return to previous directory
 
     def copy_service_files(self):
         """Copy systemd service files for VMware."""
