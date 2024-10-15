@@ -38,7 +38,6 @@ class VMwareInstaller:
         
         self.CACHE_DIR = Path(path.expanduser(packages_data['CACHE_DIR']))
         self.CACHE_DIR.mkdir(parents=True, exist_ok=True)
-        self.SOURCE_DIR = f"{self.CACHE_DIR}/vmware-host-modules-workstation-17.5.2-k6.9-"
 
         self.COMPONENT_URLS = packages_data['COMPONENT_URLS']
         self.EXTRACTED_DIR = path.join(self.CACHE_DIR, "extracted_components")
@@ -48,12 +47,6 @@ class VMwareInstaller:
         self.GITHUB_REPO_URL = packages_data['GITHUB_REPO_URL']
         self.GITHUB_BRANCH = packages_data['GITHUB_BRANCH']
 
-        print(self.VERSION)
-        print(self.PACKAGE_NAME)
-        print(self.BUNDLE_URL)
-        print(self.BUNDLE_FILENAME)
-        print(self.BUNDLE_INSTALLER)
-        print(self.CACHE_DIR)
 
     def _configure_distro(self):
         """Configure package manager and dependencies based on the Linux distribution."""
@@ -176,37 +169,19 @@ class VMwareInstaller:
 
     def install_vmware_modules(self):
         """Install VMware modules."""
-        dest_dir = "/usr/lib/vmware/modules/source/"
-        folders_to_copy = ["vmmon-only", "vmnet-only"]
-
-        chdir(self.SOURCE_DIR)
-        logging.info("Copying vmmon and vmnet folders...")
-
-        for folder in folders_to_copy:
-            src_folder = path.join(self.SOURCE_DIR, folder)
-            dest_folder = path.join(dest_dir, folder)
-
-            if not path.exists(dest_folder):
-                self.run_command(f"sudo mkdir -p {dest_folder}")
-
-            logging.info(f"Copying {src_folder} to {dest_folder}...")
-            self.run_command(f"sudo cp -r {src_folder} {dest_folder}")
-
-        logging.info("Folders copied successfully.")
+        dest_dir = "/usr/lib/vmware/modules/source"
+        folders = ["vmmon", "vmnet"]
 
         logging.info("Creating directories for DKMS...")
         self.run_command(
             f"sudo mkdir -p /usr/src/{self.PACKAGE_NAME}-{self.VERSION}"
         )
 
-        logging.info("Moving source files to DKMS directory...")
-        self.run_command(
-            f"sudo cp -r vmmon-only /usr/src/{self.PACKAGE_NAME}-{self.VERSION}/"
-        )
-        self.run_command(
-            f"sudo cp -r vmnet-only /usr/src/{self.PACKAGE_NAME}-{self.VERSION}/"
-        )
-
+        for folder in folders:
+            logging.INFO(f"Exract the files from {dest_dir}/{folder}.tar")
+            self.run_command(
+                f"tar -xf {dest_dir}/{folder}.tar -C /usr/src/{self.PACKAGE_NAME}-{self.VERSION}"
+            )
 
         logging.info("Copying Makefile and dkms.conf to DKMS directory...")
         self.run_command(
