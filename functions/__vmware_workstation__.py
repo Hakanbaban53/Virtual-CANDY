@@ -38,12 +38,12 @@ class VMwareInstaller:
         
         self.CACHE_DIR = Path(path.expanduser(packages_data['CACHE_DIR']))
         self.CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        self.MODULES_DIR = path.abspath(packages_data['MODULES_DIR'])
+        self.DKMS_DIR = f"/usr/src/{self.PACKAGE_NAME}-{self.VERSION}"
 
         self.COMPONENT_URLS = packages_data['COMPONENT_URLS']
         self.EXTRACTED_DIR = path.join(self.CACHE_DIR, "extracted_components")
         self.SERVICES = set(packages_data['SERVICES'])
-        self.GITHUB_HOST_MODULES_REPO_URL = packages_data['GITHUB_HOST_MODULES_REPO_URL']
-        self.GITHUB_HOST_MODULES_BRANCH = packages_data['GITHUB_HOST_MODULES_BRANCH']
         self.GITHUB_REPO_URL = packages_data['GITHUB_REPO_URL']
         self.GITHUB_BRANCH = packages_data['GITHUB_BRANCH']
 
@@ -169,23 +169,22 @@ class VMwareInstaller:
 
     def install_vmware_modules(self):
         """Install VMware modules."""
-        dest_dir = "/usr/lib/vmware/modules/source"
         folders = ["vmmon", "vmnet"]
 
         logging.info("Creating directories for DKMS...")
         self.run_command(
-            f"sudo mkdir -p /usr/src/{self.PACKAGE_NAME}-{self.VERSION}"
+            f"sudo mkdir -p {self.DKMS_DIR}"
         )
 
+        logging.INFO(f"Exract the modules files to dkms path")
         for folder in folders:
-            logging.INFO(f"Exract the files from {dest_dir}/{folder}.tar")
             self.run_command(
-                f"tar -xf {dest_dir}/{folder}.tar -C /usr/src/{self.PACKAGE_NAME}-{self.VERSION}"
+                f"tar -xf {self.MODULES_DIR}/{folder}.tar -C {self.DKMS_DIR}"
             )
 
         logging.info("Copying Makefile and dkms.conf to DKMS directory...")
         self.run_command(
-            f"sudo cp -r {self.CACHE_DIR}/vmware_files/DKMS_files/Makefile /usr/src/{self.PACKAGE_NAME}-{self.VERSION}/"
+            f"sudo cp -r {self.CACHE_DIR}/vmware_files/DKMS_files/Makefile {self.DKMS_DIR}/"
         )
 
         logging.info("Creating DKMS configuration for vmware-host-modules...")
@@ -203,18 +202,18 @@ class VMwareInstaller:
             conf_file.write(dkms_conf_vmware_host_modules)
 
         self.run_command(
-            f"sudo mv {temp_conf_path} /usr/src/{self.PACKAGE_NAME}-{self.VERSION}/dkms.conf"
+            f"sudo mv {temp_conf_path} {self.DKMS_DIR}/dkms.conf"
         )
         logging.info(
-            f"DKMS configuration file created at /usr/src/{self.PACKAGE_NAME}-{self.VERSION}/dkms.conf"
+            f"DKMS configuration file created at {self.DKMS_DIR}/dkms.conf"
         )
 
         logging.info("Applying patches...")
         self.run_command(
-            f"sudo patch -N -p2 -d /usr/src/{self.PACKAGE_NAME}-{self.VERSION}/vmmon-only < {self.CACHE_DIR}/vmware_files/DKMS_files/vmmon.patch"
+            f"sudo patch -N -p2 -d {self.DKMS_DIR}/vmmon-only < {self.CACHE_DIR}/vmware_files/DKMS_files/vmmon.patch"
         )
         self.run_command(
-            f"sudo patch -N -p2 -d /usr/src/{self.PACKAGE_NAME}-{self.VERSION}/vmnet-only < {self.CACHE_DIR}/vmware_files/DKMS_files/vmnet.patch"
+            f"sudo patch -N -p2 -d {self.DKMS_DIR}/vmnet-only < {self.CACHE_DIR}/vmware_files/DKMS_files/vmnet.patch"
         )
 
         logging.info("Adding and building vmware-host-modules module with DKMS...")
@@ -257,15 +256,7 @@ class VMwareInstaller:
         logging.info("\nStep 1: Installing necessary dependencies...")
         self.install_dependencies()
 
-        logging.info("\nStep 2: Clone the required repositories...")
-        logging.info(f"Cloning {self.PACKAGE_NAME} repository...")
-        self.download_and_extract_zip(
-            repo_url=self.GITHUB_HOST_MODULES_REPO_URL,
-            branch=self.GITHUB_HOST_MODULES_BRANCH,
-            extract_to=self.CACHE_DIR,
-        )
-
-        logging.info("Getting the DKMS modules")
+        logging.info("Step 2:Getting the DKMS build files")
         self.download_and_extract_zip(
             repo_url=self.GITHUB_REPO_URL,
             branch=self.GITHUB_BRANCH,

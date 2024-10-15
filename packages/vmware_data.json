@@ -12,6 +12,7 @@
     "https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-winPre2k-12.4.0-23259341.x86_64.component.tar"
   ],
   "CACHE_DIR": "~/.cache/vcandy/VMware",
+  "MODULES_DIR": "/usr/lib/vmware/modules/source",
   "SERVICES": [
     "vmware-networks-configuration.service",
     "vmware-networks.service",
@@ -20,8 +21,6 @@
     "vmware-usbarbitrator.path"
   ],
   "PACKAGE_NAME": "vmware-host-modules",
-  "GITHUB_HOST_MODULES_REPO_URL": "https://github.com/nan0desu/vmware-host-modules",
-  "GITHUB_HOST_MODULES_BRANCH": "workstation-17.5.2-k6.9%2B",
   "GITHUB_REPO_URL": "https://github.com/Hakanbaban53/Virtual-CANDY",
   "GITHUB_BRANCH": "main"
 }
