@@ -176,10 +176,10 @@ class VMwareInstaller:
             f"sudo mkdir -p {self.DKMS_DIR}"
         )
 
-        logging.INFO(f"Exract the modules files to dkms directories")
+        logging.info("Exract the modules files to dkms directories")
         for folder in folders:
             self.run_command(
-                f"tar -xf {self.MODULES_DIR}/{folder}.tar -C {self.DKMS_DIR}"
+                f"sudo tar -xf {self.MODULES_DIR}/{folder}.tar -C {self.DKMS_DIR}"
             )
 
         logging.info("Copying Makefile and dkms.conf to DKMS directory...")
