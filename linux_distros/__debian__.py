@@ -21,7 +21,7 @@ def debian_package_manager(packages, output, action, dry_run):
             if package_type in {"package", "url-package", "local-package"}:
                 handle_standard_package(package, action, dry_run, hide)
             elif package_type == "special-package":
-                handle_special_package(package, action, dry_run, hide)
+                SelectSpecialInstaller(hide, action, package, "ubuntu", dry_run)
             elif package_type == "remove-package":
                 handle_removable_package(package, action, dry_run, hide)
             elif package_type == "get-keys":
@@ -227,15 +227,6 @@ def package_installer(package, hide):
 
     except CalledProcessError as err:
         print(f"An error occurred while installing {package.get('name', '')}: {err}")
-
-
-def handle_special_package(package, action, dry_run, hide):
-    name = package.get("name", "")
-    if dry_run:
-        print(f"{name} special package operation: {action}.")
-    else:
-        SelectSpecialInstaller(hide, action, package, "ubuntu")
-
 
 def package_remover(package, hide):
     package_type = package.get("type", "")

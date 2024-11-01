@@ -1,5 +1,5 @@
 from io import BytesIO
-from os import makedirs, path, chdir, listdir
+from os import makedirs, path, listdir
 from pathlib import Path
 from subprocess import run
 import logging
@@ -10,15 +10,20 @@ from functions.__get_packages_data__ import PackagesJSONHandler
 
 class VMwareInstaller:
     DATA_URL = "https://raw.githubusercontent.com/Hakanbaban53/Virtual-CANDY/refs/heads/main/packages/vmware_data.json"
-    def __init__(self, hide, action, linux_distro):
-        self.load_config()
-
-        self.setup_logging()
+    def __init__(self, hide, action, linux_distro, dry_run=False):
         self.hide = hide
         self.action = action
         self.linux_distro = linux_distro
+        self.dry_run = dry_run
+        
+        self.load_config()
+        self.setup_logging()
+        
         self.PACKAGE_MANAGER, self.DEPENDENCIES = self._configure_distro()
-
+        
+        if self.dry_run:
+            logging.info("Dry-run mode: No actions will be performed.")
+            
         if self.action == "install":
             self.install_vmware()
         elif self.action == "remove":
@@ -47,6 +52,35 @@ class VMwareInstaller:
         self.GITHUB_REPO_URL = packages_data['GITHUB_REPO_URL']
         self.GITHUB_BRANCH = packages_data['GITHUB_BRANCH']
 
+    def setup_logging(self):
+        """Setup logging configuration."""
+        logging.basicConfig(
+            level=logging.DEBUG if self.dry_run else logging.INFO,
+            format="%(levelname)s: %(message)s",
+            handlers=[
+                logging.FileHandler(f"{self.CACHE_DIR}/vmware_installer.log"),
+                logging.StreamHandler(),
+            ],
+        )
+
+    def run_command(self, command):
+        """Run a shell command, log it, and show/hide output based on 'hide'."""
+        if self.dry_run:
+            logging.info(f"[DRY RUN] Command: {command}")
+            return True, ""
+        
+        logging.debug(f"Running command: {command}")
+        result = run(command, shell=True, text=True, stderr=self.hide, stdout=self.hide)
+        
+        if result.returncode != 0:
+            logging.error(f"Command failed: {command}")
+            logging.error(f"Error output: {result.stderr}")
+            return False, result.stderr
+        
+        if not self.hide:
+            print("Command output:")
+            logging.info(f"Command output: {result.stdout}")
+        return True, ""
 
     def _configure_distro(self):
         """Configure package manager and dependencies based on the Linux distribution."""
@@ -81,6 +115,7 @@ class VMwareInstaller:
             logging.error(f"Unsupported Linux distribution: {self.linux_distro}")
             raise ValueError(f"Unsupported Linux distribution: {self.linux_distro}")
 
+
     def _get_kernel_version(self):
         """Retrieve the current kernel version."""
         try:
@@ -94,31 +129,12 @@ class VMwareInstaller:
             logging.exception("Exception occurred while retrieving kernel version.")
             return None
 
-    def setup_logging(self):
-        """Setup logging configuration."""
-        logging.basicConfig(
-            level=logging.INFO,
-            format="%(levelname)s: %(message)s",
-            handlers=[
-                logging.FileHandler(f"{self.CACHE_DIR}/vmware_installer.log"),
-                logging.StreamHandler(),
-            ],
-        )
-
-    def run_command(self, command):
-        """Run a shell command and logging. Error its output."""
-        result = run(
-            command, shell=True, text=True, stderr=self.hide,
-            stdout=self.hide
-        )
-        if result.returncode != 0:
-            logging.error(f"Command failed: {command}")
-            logging.error(f"Error output: {result.stderr}")
-            return False, result.stderr
-        return True, ""
-
     def download_file(self, url, filename):
-        """Download a file from a URL using wget."""
+        """Download a file from a URL with optional dry-run."""
+        if self.dry_run:
+            logging.info(f"[DRY RUN] Would download {filename} from {url}.")
+            return
+        
         logging.info(f"Downloading {filename} from {url}...")
         self.run_command(f"wget -O {path.join(self.CACHE_DIR, filename)} {url}")
         logging.info(f"Downloaded {filename}.\n")
