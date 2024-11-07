@@ -107,14 +107,14 @@
           "remove_value": "docker-desktop"
         },
         {
-          "name": "Start and Enable docker.service",
+          "name": "Start and Enable docker.service and docker.socket",
           "type": "service",
-          "install_value": "docker.service"
+          "install_value": "docker.service docker.socket"
         },
         {
-          "name": "Start and Enable docker.socket",
-          "type": "service",
-          "install_value": "docker.socket"
+          "name": "Add User to docker Group.",
+          "type": "group",
+          "install_value": "docker"
         }
       ]
     },
@@ -408,14 +408,14 @@
           "remove_value": "docker-desktop"
         },
         {
-          "name": "Start and Enable docker.service",
+          "name": "Start and Enable docker.service and docker.socket",
           "type": "service",
-          "install_value": "docker.service"
+          "install_value": "docker.service docker.socket"
         },
         {
-          "name": "Start and Enable docker.socket",
-          "type": "service",
-          "install_value": "docker.socket"
+          "name": "Add User to docker Group.",
+          "type": "group",
+          "install_value": "docker"
         }
       ]
     },
@@ -624,13 +624,18 @@
         {
           "name": "Docker Desktop",
           "type": "local-package",
-          "install_value": "https://desktop.docker.com/linux/main/amd64/157355/docker-desktop-x86_64.rpm",
+          "install_value": "https://desktop.docker.com/linux/main/amd64/173168/docker-desktop-x86_64.rpm",
           "check_value": "docker-desktop",
           "remove_value": "docker-desktop"
         },
         {
-          "name": "Start and Enable docker.service",
+          "name": "Start and Enable docker.service and docker.socket",
           "type": "service",
+          "install_value": "docker.service docker.socket"
+        },
+        {
+          "name": "Add User to docker Group.",
+          "type": "group",
           "install_value": "docker"
         }
       ]
@@ -1003,14 +1008,14 @@
           "remove_value": "docker-desktop"
         },
         {
-          "name": "Start and Enable docker.service",
+          "name": "Start and Enable docker.service and docker.socket",
           "type": "service",
-          "install_value": "docker.service"
+          "install_value": "docker.service docker.socket"
         },
         {
-          "name": "Start and Enable docker.socket",
-          "type": "service",
-          "install_value": "docker.socket"
+          "name": "Add User to docker Group.",
+          "type": "group",
+          "install_value": "docker"
         }
       ]
     },
