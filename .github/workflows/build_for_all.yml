@@ -3,7 +3,8 @@ name: Build and Deploy RPM, DEB
 on:
   push:
     tags:
-      - v*
+      - 'v*'
+      - 'V*'
 
 jobs:
   build-rpm:
