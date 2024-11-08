@@ -299,6 +299,13 @@ class VMwareInstaller:
         self.run_command(f"chmod +x {path.join(self.CACHE_DIR, self.BUNDLE_INSTALLER)}")
 
         logging.info(
+            "\nStep 5.1: Masking the services to prevent them from starting..."
+        )
+        vmware_service = ["vmware.service"]
+        for service in vmware_service:
+            self.run_command(f"sudo systemctl mask {service}")
+
+        logging.info(
             "\nStep 6: Running the VMware Workstation installer with extracted components..."
         )
         extracted_components = [
@@ -315,6 +322,10 @@ class VMwareInstaller:
             )
         )
         self.run_command(install_command)
+
+        logging.info("\nStep 6.1: Unmask the VMware services...")
+        for service in vmware_service:
+            self.run_command(f"sudo systemctl unmask {service}")
 
         logging.info("\nStep 7: Compiling kernel modules...")
         self.install_vmware_modules()
