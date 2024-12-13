@@ -1,17 +1,14 @@
 import curses
-from scripts.TUI.utils.__clear_midde_section__ import ClearMiddleSection
-
-MAX_DISPLAYED_PACKAGES = 15
 
 class PrintApps:
-    def __init__(self, stdscr, use_dark_mode, width, height):
+    def __init__(self, stdscr, use_dark_mode, width, height, cmd):
         self.stdscr = stdscr
         self.use_dark_mode = use_dark_mode
         self.width = width
         self.height = height
-        self.cmd = ClearMiddleSection(self.stdscr, self.width, self.height)
+        self.cmd = cmd
     
-    def print_menu(self, selected_row, relevant_packages, selected_status):
+    def print_menu(self, selected_row, relevant_packages, selected_status, MAX_DISPLAYED_PACKAGES):
         self.cmd.clear_middle_section()
         
         header_color = curses.color_pair(6 if self.use_dark_mode else 15)

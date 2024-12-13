@@ -3,11 +3,12 @@ from curses import napms, color_pair, A_BOLD
 from functions.__check_repository_connection__ import check_linux_package_manager_connection
 
 class CheckPackageManagerConnection:
-    def __init__(self, stdscr, width, height, linux_distro_id, OPTIONS_YES_NO):
+    def __init__(self, stdscr, width, height, linux_distro_id, OPTIONS_YES_NO, clean_line):
         """
         Initialize the CheckPackageManagerConnection class with the stdscr object and dimensions.
         """
         self.stdscr = stdscr
+        self.clean_line = clean_line
         self.width = width
         self.height = height
         self.linux_distro_id = linux_distro_id
@@ -46,9 +47,9 @@ class CheckPackageManagerConnection:
                 #     prompt, self.width // 2, self.height // 2, self.OPTIONS_YES_NO
                 # )
                 # if retry == "No":
-                self.clean_line(0, self.height // 2)
-                self.clean_line(0, self.height // 2 + 2)
+                self.clean_line.clean_line(0, self.height // 2)
+                self.clean_line.clean_line(0, self.height // 2 + 2)
                 return False
                 # else:
-                #     self.clean_line(x, y)
+                #     self.clean_line.clean_line(x, y)
         
