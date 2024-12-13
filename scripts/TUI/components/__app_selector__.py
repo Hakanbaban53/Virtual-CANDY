@@ -85,7 +85,7 @@ class AppSelector:
                     prompt = "Do you want to continue?"
                     x = curses.COLS // 2 - len(prompt) // 2
                     y = 4 + len(selected_entities)
-                    selection = self.selections.selections(self.use_dark_mode, prompt, x, y, self.height, self.width, OPTIONS_YES_NO)
+                    selection = self.selections.selections(self.use_dark_mode, prompt, x, y, self.height, self.width, OPTIONS_YES_NO, MIN_COLS, MIN_LINES)
 
                     if selection == "Yes":
                         curses.reset_shell_mode()
