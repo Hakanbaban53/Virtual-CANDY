@@ -1,7 +1,7 @@
 {
   "VERSION": "17.6.2",
   "BUNDLE_URL": "https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.6.2/24409262/linux/core/VMware-Workstation-17.6.2-24409262.x86_64.bundle.tar",
-  "BUNDLE_INSTALLER": "VMware-Workstation-17.6.1-24319023.x86_64.bundle",
+  "BUNDLE_INSTALLER": "VMware-Workstation-17.6.2-24409262.x86_64.bundle",
   "COMPONENT_URLS": [
     "https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.6.2/24409262/linux/packages/vmware-tools-windows-12.4.5-23787635.x86_64.component.tar",
     "https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.6.2/24409262/linux/packages/vmware-tools-windows-x86-12.4.5-23787635.x86_64.component.tar",
