@@ -141,7 +141,7 @@ def package_installer(distro, package, hide):
             if package_type == "package":
                 run(["sudo", "pacman", "-S", install_value, "--noconfirm"], stderr=hide, stdout=hide)
             elif package_type == "local-package":
-                local_package_installer(install_value, target_directory, hide)
+                handle_local_package(install_value, distro, target_directory, hide)
             elif package_type == "service":
                 run(["sudo", "systemctl", "restart", install_value], stderr=hide, stdout=hide)
                 run(["sudo", "systemctl", "enable", install_value], stderr=hide, stdout=hide)
@@ -161,7 +161,7 @@ def package_installer(distro, package, hide):
                 for command in package.get("install_script", []):
                     run(command, shell=True, stderr=hide, stdout=hide)
             elif package_type == "local-package":
-                handle_local_package(install_value, target_directory, hide)
+                handle_local_package(install_value, distro, target_directory, hide)
             elif package_type == "service":
                 run(["sudo", "systemctl", "restart", install_value], stderr=hide, stdout=hide)
                 run(["sudo", "systemctl", "enable", install_value], stderr=hide, stdout=hide)
@@ -182,7 +182,7 @@ def package_installer(distro, package, hide):
                 install_value = replace_fedora_version(install_value)
                 run(["sudo", "dnf", "install", "-y", install_value], stderr=hide, stdout=hide)
             elif package_type == "local-package":
-                handle_local_package(install_value, target_directory, hide)
+                handle_local_package(install_value, distro, target_directory, hide)
             elif package_type == "service":
                 run(["sudo", "systemctl", "restart", install_value], stderr=hide, stdout=hide)
                 run(["sudo", "systemctl", "enable", install_value], stderr=hide, stdout=hide)
@@ -228,10 +228,35 @@ def package_remover(distro, package, hide):
     except CalledProcessError as err:
         print(f"An error occurred: {err}")
 
-def local_package_installer(install_value, target_directory, hide):
-    run(["wget", "--progress=bar:force", "-O", "local.package.pkg.tar.zst", install_value], cwd=target_directory, stderr=hide, stdout=hide)
-    run(["sudo", "pacman", "-U", "local.package.pkg.tar.zst", "--noconfirm"], cwd=target_directory, stderr=hide, stdout=hide)
-    run(["sudo", "rm", "-f", "local.package.pkg.tar.zst"], cwd=target_directory, stderr=hide, stdout=hide)
+def handle_local_package(install_value, distro, target_directory, hide):
+    package_types = {
+        "arch": "tar.gz",
+        "debian": "deb",
+        "ubuntu": "deb",
+        "fedora": "rpm"
+    }
+
+    if distro not in package_types:
+        raise ValueError(f"Unsupported distribution: {distro}")
+
+    package_type = package_types[distro]
+    local_path = path.join(target_directory, f"local.package.{package_type}")
+
+    try:
+        run(["wget", "--progress=bar:force", "-O", local_path, install_value], cwd=target_directory, stderr=hide, stdout=hide, check=True)
+
+        if distro == "arch":
+            run(["sudo", "pacman", "-U", local_path, "--noconfirm"], cwd=target_directory, stderr=hide, stdout=hide, check=True)
+        elif distro in {"debian", "ubuntu"}:
+            run(["sudo", "dpkg", "-i", local_path], stderr=hide, stdout=hide, check=True)
+            run(["sudo", "apt", "--fix-broken", "install", "-y"], stderr=hide, stdout=hide, check=True)
+        elif distro == "fedora":
+            run(["sudo", "dnf", "install", "-y", local_path], stderr=hide, stdout=hide, check=True)
+    except CalledProcessError as err:
+        print(f"An error occurred: {err}")
+    finally:
+        if path.exists(local_path):
+            run(["sudo", "rm", "-f", local_path], cwd=target_directory, stderr=hide, stdout=hide)
 
 def handle_aur_package(install_value, target_directory, hide):
     repository_directory = f"{target_directory}/{install_value}"
@@ -244,10 +269,3 @@ def handle_aur_package(install_value, target_directory, hide):
 def replace_fedora_version(value):
     fedora_version = check_output(["rpm", "-E", "%fedora"], text=True).strip()
     return value.replace("$(rpm -E %fedora)", fedora_version)
-
-def handle_local_package(install_value, target_directory, hide):
-    local_path = path.join(target_directory, "local.package.deb")
-    run(["wget", "--progress=bar:force", "-O", local_path, install_value])
-    run(["sudo", "dpkg", "-i", local_path], stderr=hide, stdout=hide)
-    run(["sudo", "apt", "--fix-broken", "install", "-y"], stderr=hide, stdout=hide)
-    run(["sudo", "rm", "-f", local_path], stderr=hide, stdout=hide)
