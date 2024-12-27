@@ -11,6 +11,7 @@ SOURCES_DIR=~/rpmbuild/SOURCES
 SPECS_DIR=~/rpmbuild/SPECS
 SPEC_FILE="$SPECS_DIR/$PACKAGE_NAME.spec"
 TAR_FILE="$SOURCE_DIR.tar.gz"
+PYTHONPATH=$(python3 -m site --user-site)
 
 # Log function
 log() {
@@ -22,38 +23,41 @@ cd "$(dirname "$0")" || exit
 
 # Clean previous build artifacts
 log "Cleaning previous build artifacts..."
-rm -rf ~/rpmbuild "$SOURCE_DIR" dist build
+rm -rf ~/rpmbuild "$SOURCE_DIR" dist build || true
 
 # Check and install dependencies
 log "Checking and installing dependencies..."
-sudo dnf install python3-pip rpmdevtools rpmlint -y
+sudo dnf install -y python3-pip rpmdevtools rpmlint tar
 
 # Set up the RPM development files home directory
 rpmdev-setuptree
 
-# Install requests and PyInstaller using pip
+# Install required Python packages
 log "Installing Python dependencies..."
-pip3 install --no-cache-dir requests pyinstaller setuptools
+pip3 install --user --no-cache-dir requests pyinstaller setuptools
 
 # Build the Python project with PyInstaller
 log "Building the Python project with PyInstaller..."
-pyinstaller --onefile app.py --name=$PACKAGE_NAME
+~/.local/bin/pyinstaller --onefile app.py --name=$PACKAGE_NAME
 
 # Create the binary folder
+log "Creating the binary folder..."
 mkdir "$SOURCE_DIR"
 
-# Move the binary file to the binary folder we created
+# Move the binary file to the binary folder
 mv dist/$PACKAGE_NAME "$SOURCE_DIR"
 
-# Add the .tar.gz folder to the RPM SOURCES directory
-log "Moving the .tar.gz file to the RPM SOURCES directory..."
-tar --create --file "$TAR_FILE" "$SOURCE_DIR"
+# Package the binary into a tar.gz archive and move to the SOURCES directory
+log "Packaging the binary into a tar.gz file..."
+tar -czf "$TAR_FILE" "$SOURCE_DIR"
 mv "$TAR_FILE" "$SOURCES_DIR"
 
-# Create the spec file
+# Create the spec file for RPM
 log "Creating the spec file..."
 cat <<EOF > "$SPEC_FILE"
-Summary: A python CLI application that installs automatic container and virtualization tools for many Linux systems
+%global debug_package %{nil}
+
+Summary: A Python CLI application that installs automatic container and virtualization tools for Linux systems
 Name: $PACKAGE_NAME
 Version: $VERSION
 Release: 1%{?dist}
@@ -62,15 +66,15 @@ URL: https://github.com/Hakanbaban53/Container-and-Virtualization-Installer
 Source0: %{name}-%{version}.tar.gz
 
 %description
-$PACKAGE_NAME is a command-line tool that simplifies the installation process of container and virtualization tools on Linux systems.
+$PACKAGE_NAME is a command-line tool that simplifies the installation of container and virtualization tools on Linux systems.
 
 %prep
 %setup -q
 
 %install
 rm -rf \$RPM_BUILD_ROOT
-mkdir -p \$RPM_BUILD_ROOT/%{_bindir}
-cp %{name} \$RPM_BUILD_ROOT/%{_bindir}
+mkdir -p \$RPM_BUILD_ROOT%{_bindir}
+cp %{name} \$RPM_BUILD_ROOT%{_bindir}
 
 %clean
 rm -rf \$RPM_BUILD_ROOT
@@ -79,7 +83,7 @@ rm -rf \$RPM_BUILD_ROOT
 %{_bindir}/%{name}
 
 %changelog
-* Thu Mar 19 2024 Hakan İSMAİL <hakanismail53@gmail.com> - $VERSION
+* Tue Dec 19 2024 Hakan İSMAİL <hakanismail53@gmail.com> - $VERSION
 - Initial release
 EOF
 
@@ -89,10 +93,10 @@ rpmbuild -bb "$SPEC_FILE"
 
 # Install the RPM package
 log "Installing the RPM package..."
-sudo dnf install $RPMS_DIR/*/$PACKAGE_NAME-$VERSION* -y
+sudo dnf install -y $RPMS_DIR/*/$PACKAGE_NAME-$VERSION*.rpm
 
-# Clean up
-log "Cleaning up..."
+# Clean up after the build process
+log "Cleaning up temporary build files..."
 rm -rf ~/rpmbuild "$SOURCE_DIR" dist build
 
 log "Installation completed successfully!"
