@@ -1,7 +1,8 @@
 from subprocess import run, PIPE, CalledProcessError, check_output
-from os import path, devnull, getenv
+from os import path, devnull, getenv, chdir, getcwd
 from time import sleep
-from functions.__special_install_selector__ import SelectSpecialInstaller
+
+CACHE_PATH = path.join(path.expanduser("~"), ".cache", "vcandy")
 
 def package_manager(distro, packages, output, action, dry_run):
     hide = open(devnull, "w") if not output else None
@@ -19,10 +20,10 @@ def package_manager(distro, packages, output, action, dry_run):
             if package_type in {"package", "url-package", "local-package", "AUR-package"}:
                 handle_standard_package(distro, package, check_value, action, dry_run, hide)
             elif package_type == "special-package":
-                SelectSpecialInstaller(hide, action, package, distro, dry_run)
+                special_package_installer(distro, package, check_script, action, dry_run, hide)
             elif package_type == "remove-package":
                 handle_removable_package(distro, package, check_value, action, dry_run, hide)
-            elif package_type == "get-keys":
+            elif package_type in ["get-keys", "special-package"]:
                 handle_repo_keys(distro, package, check_script, action, dry_run, hide)
             elif package_type in {"service", "group"}:
                 handle_service_or_group(distro, package, action, dry_run, hide)
@@ -71,13 +72,13 @@ def handle_removable_package(distro, package, check_value, action, dry_run, hide
         elif action == "remove":
             print(f"{package['name']} not installed. Skipping...")
 
-def handle_repo_keys(distro, package, check_script, action, dry_run, hide):
-    for path_key in check_script:
-        if not path_key:
+def special_package_installer(distro, package, check_script, action, dry_run, hide):
+    for script in check_script:
+        if not script:
             print("Skipping...")
             continue
 
-        if path.exists(path_key):
+        if path.exists(script):
             if action == "install":
                 print(f"{package['name']} repo key installed. Skipping...")
             elif action == "remove":
@@ -91,6 +92,48 @@ def handle_repo_keys(distro, package, check_script, action, dry_run, hide):
                     package_installer(distro, package, hide)
             elif action == "remove":
                 print(f"{package['name']} repo key not installed. Skipping...")
+
+def handle_repo_keys(distro, package, check_script, action, dry_run, hide):
+    """
+    Handles repository keys installation and removal.
+
+    Args:
+        distro (str): The target distribution.
+        package (dict): Package metadata, including workdir and name.
+        check_script (list): List of paths or commands to check.
+        action (str): Action to perform, either 'install' or 'remove'.
+        dry_run (bool): If True, no changes are applied.
+        hide (bool): If True, suppress output.
+    """
+    workdir = package.get("workdir")
+
+    for path_key in check_script:
+        if not path_key:
+            print("Skipping empty check_script entry...")
+            continue
+
+        if workdir:
+            original_dir = getcwd()
+            chdir(workdir)
+
+        try:
+            if path.exists(path_key):
+                if action == "install":
+                    print(f"{package['name']} repo key already installed. Skipping...")
+                elif action == "remove":
+                    print(f"{package['name']} repo key found. Removing...")
+                    if not dry_run:
+                        package_remover(distro, package, hide)
+            else:
+                if action == "install":
+                    print(f"{package['name']} repo key not found. Installing...")
+                    if not dry_run:
+                        package_installer(distro, package, hide)
+                elif action == "remove":
+                    print(f"{package['name']} repo key not found. Skipping removal...")
+        finally:
+            if workdir:
+                chdir(original_dir)
 
 def handle_service_or_group(distro, package, action, dry_run, hide):
     if action == "install":
@@ -157,7 +200,7 @@ def package_installer(distro, package, hide):
         elif distro in {"debian", "ubuntu"}:
             if package_type == "package":
                 run(["sudo", "apt", "install", "-y"] + install_value.split(), stderr=hide, stdout=hide)
-            elif package_type == "get-keys":
+            elif package_type in ["get-keys", "special-package"]:
                 for command in package.get("install_script", []):
                     run(command, shell=True, stderr=hide, stdout=hide)
             elif package_type == "local-package":
@@ -175,7 +218,7 @@ def package_installer(distro, package, hide):
         elif distro == "fedora":
             if package_type == "package":
                 run(["sudo", "dnf", "install", "-y"] + install_value.split(), stderr=hide, stdout=hide)
-            elif package_type == "get-keys":
+            elif package_type in ["get-keys", "special-package"]:
                 for command in package.get("install_script", []):
                     run(command, shell=True, stderr=hide, stdout=hide)
             elif package_type == "url-package":
@@ -212,7 +255,7 @@ def package_remover(distro, package, hide):
                 run(["sudo", "apt", "remove", "-y"] + remove_value.split(), stderr=hide, stdout=hide)
             elif package_type == "package-flatpak":
                 run(["sudo", "flatpak", "remove", "-y", remove_value], stderr=hide, stdout=hide)
-            elif package_type == "get-keys":
+            elif package_type in ["get-keys", "special-package"]:
                 for command in package.get("remove_script", []):
                     run(command, shell=True, stderr=hide, stdout=hide)
 
@@ -221,7 +264,7 @@ def package_remover(distro, package, hide):
                 run(["sudo", "dnf", "remove", "-y"] + remove_value.split(), stderr=hide, stdout=hide)
             elif package_type == "package-flatpak":
                 run(["sudo", "flatpak", "remove", "-y", remove_value], stderr=hide, stdout=hide)
-            elif package_type == "get-keys":
+            elif package_type in ["get-keys", "special-package"]:
                 for command in package.get("remove_script", []):
                     run(command, shell=True, stderr=hide, stdout=hide)
 

@@ -520,7 +520,8 @@
         },
         {
           "name": "VMware Workstation Files",
-          "type": "get-keys",
+          "type": "special-package",
+          "workdir": "VMware_Workstation",
           "install_script": [
             "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.6.2/24409262/linux/core/VMware-Workstation-17.6.2-24409262.x86_64.bundle.tar",
             "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.6.2/24409262/linux/packages/vmware-tools-windows-12.4.5-23787635.x86_64.component.tar",
