@@ -1,7 +1,7 @@
 {
   "arch": [
     {
-      "name": "VMware_Workstation-17.6.1",
+      "name": "VMware_Workstation",
       "values": [
         {
           "name": "VMware Workstation Keymaps",
@@ -272,7 +272,7 @@
   ],
   "debian": [
     {
-      "name": "VMware_Workstation-17.6.1",
+      "name": "VMware_Workstation",
       "values": [
         {
           "name": "VMware Workstation",
@@ -509,7 +509,7 @@
   ],
   "fedora": [
     {
-      "name": "VMware_Workstation-17.6.1",
+      "name": "VMware_Workstation",
       "values": [
         {
           "name": "VMware Workstation",
@@ -796,8 +796,8 @@
           "name": "Tuxedo Repository",
           "type": "get-keys",
           "install_script": [
-            "sudo rpm --import https://rpm.tuxedocomputers.com/fedora/40/0x54840598.pub.asc",
-            "echo -e '[tuxedo]\\nname=tuxedo\\nbaseurl=https://rpm.tuxedocomputers.com/fedora/40/x86_64/base\\nenabled=1\\ngpgcheck=1\\ngpgkey=https://rpm.tuxedocomputers.com/fedora/40/0x54840598.pub.asc\\nskip_if_unavailable=False' | sudo tee /etc/yum.repos.d/tuxedo.repo"
+            "sudo rpm --import https://rpm.tuxedocomputers.com/fedora/41/0x54840598.pub.asc",
+            "echo -e '[tuxedo]\\nname=tuxedo\\nbaseurl=https://rpm.tuxedocomputers.com/fedora/41/x86_64/base\\nenabled=1\\ngpgcheck=1\\ngpgkey=https://rpm.tuxedocomputers.com/fedora/40/0x54840598.pub.asc\\nskip_if_unavailable=False' | sudo tee /etc/yum.repos.d/tuxedo.repo"
           ],
           "check_script": ["/etc/yum.repos.d/tuxedo.repo"],
           "remove_script": ["sudo rm -rf /etc/yum.repos.d/tuxedo.repo"]
@@ -868,7 +868,7 @@
   ],
   "ubuntu": [
     {
-      "name": "VMware_Workstation-17.6.1",
+      "name": "VMware_Workstation",
       "values": [
         {
           "name": "VMware Workstation",

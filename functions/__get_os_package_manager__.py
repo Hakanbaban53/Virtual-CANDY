@@ -1,10 +1,5 @@
-from linux_distros.__arch__ import arch_package_manager
-from linux_distros.__debian__ import debian_package_manager
-from linux_distros.__fedora__ import fedora_package_manager
-from linux_distros.__ubuntu__ import ubuntu_package_manager
+from linux_distros.__combined__ import package_manager
 from functions.__get_packages_data__ import PackagesJSONHandler
-
-
 
 def get_linux_distribution():
     try:
@@ -20,33 +15,39 @@ def identify_distribution():
     linux_distribution = get_linux_distribution()
 
     if linux_distribution:
-        if 'arch' in linux_distribution.lower():
+        distro_lower = linux_distribution.lower()
+        if 'arch' in distro_lower:
             return 'arch'
-        elif 'debian' in linux_distribution.lower():
+        elif 'debian' in distro_lower:
             return 'debian'
-        elif 'fedora' in linux_distribution.lower():
+        elif 'fedora' in distro_lower:
             return 'fedora'
-        elif 'ubuntu' in linux_distribution.lower():
+        elif 'ubuntu' in distro_lower:
             return 'ubuntu'
         else:
             return 'Unknown Linux distribution'
     else:
         return 'Not running on Linux'
 
-
 def get_linux_package_manager(linux_distribution, package_name, output, action, dry_run=False):
     handler = PackagesJSONHandler()
     packages_data = handler.load_json_data()
 
-    package_manager_func = globals().get(f"{linux_distribution.lower()}_package_manager")
-    if package_manager_func:
-        package_data_ref = packages_data.get(linux_distribution, [])
-        for data in package_data_ref:
-            name = data.get("name", "")
-            if package_name in name or package_name in name.lower():
-                values = data.get("values", [])
-                package_manager_func(values, output, action, dry_run)
-                return
-    else:
+    if not packages_data:
+        print("Failed to load packages data.")
+        return
+
+    package_manager_func = package_manager
+    if not package_manager_func:
         print(f"No installation instructions found for {linux_distribution}.")
-        exit(1)
+        return
+
+    package_data_ref = packages_data.get(linux_distribution, [])
+    for data in package_data_ref:
+        name = data.get("name", "").lower()
+        if package_name.lower() in name:
+            values = data.get("values", [])
+            package_manager_func(linux_distribution, values, output, action, dry_run)
+            return
+
+    print(f"No matching package found for {package_name} in {linux_distribution}.")

@@ -25,6 +25,9 @@ class VMwareInstaller:
             logging.info("Dry-run mode: No actions will be performed.")
             
         if self.action == "install":
+            if self.is_installed():
+                logging.info("VMware Workstation is already installed.")
+                return
             self.install_vmware()
         elif self.action == "remove":
             self.uninstall_vmware()
@@ -51,6 +54,10 @@ class VMwareInstaller:
         self.SERVICES = set(packages_data['SERVICES'])
         self.GITHUB_REPO_URL = packages_data['GITHUB_REPO_URL']
         self.GITHUB_BRANCH = packages_data['GITHUB_BRANCH']
+
+    def is_installed(self):
+        """Check if VMware Workstation is installed."""
+        return path.exists("/usr/bin/vmware-installer")
 
     def setup_logging(self):
         """Setup logging configuration."""
