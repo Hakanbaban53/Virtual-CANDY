@@ -525,7 +525,7 @@
             {
               "app_name": "VMware",
               "version": "17.6.2",
-              "dkms_name": "$dkms_name"
+              "dkms_name": "VMware-Host-Modules"
             }
           ],
           "install_script": [
@@ -567,7 +567,7 @@
             "sudo dkms install --force -m $dkms_name -v $version",
             "sudo vmware-modconfig --console --install-all"
           ],
-          "check_script": ["/usr/bin/vmware-installer"],
+          "check_script": ["/usr/bin/vmware-installer --version"],
           "remove_script": [
             "sudo sytemctl stop vmware; sudo systemctl disable vmware; sudo dkms remove $dkms_name/$version --all; echo \"yes\" | sudo /usr/bin/vmware-installer --uninstall-product vmware-workstation"
           ]
