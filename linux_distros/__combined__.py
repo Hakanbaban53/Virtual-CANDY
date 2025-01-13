@@ -13,7 +13,7 @@ def setup_logger(verbose, dry_run):
     handler = logging.StreamHandler()
     dry_run_text = " [DRY RUN]" if dry_run else ""
     if verbose:
-        formatter = logging.Formatter(f"%(levelname)s -{dry_run_text} - %(message)s")
+        formatter = logging.Formatter(f"%(levelname)s {'-'+dry_run_text+'-' if dry_run else ''} %(message)s")
     else:
         formatter = logging.Formatter("%(message)s")
     handler.setFormatter(formatter)
