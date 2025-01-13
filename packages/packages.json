@@ -107,9 +107,14 @@
           "remove_value": "docker-desktop"
         },
         {
-          "name": "Start and Enable docker.service and docker.socket",
+          "name": "Start and Enable docker.service",
           "type": "service",
-          "install_value": "docker.service docker.socket"
+          "install_value": "docker.service"
+        },
+        {
+          "name": "Start and Enable docker.socket",
+          "type": "service",
+          "install_value": "docker.socket"
         },
         {
           "name": "Add User to docker Group.",
@@ -408,9 +413,14 @@
           "remove_value": "docker-desktop"
         },
         {
-          "name": "Start and Enable docker.service and docker.socket",
+          "name": "Start and Enable docker.service",
           "type": "service",
-          "install_value": "docker.service docker.socket"
+          "install_value": "docker.service"
+        },
+        {
+          "name": "Start and Enable docker.socket",
+          "type": "service",
+          "install_value": "docker.socket"
         },
         {
           "name": "Add User to docker Group.",
@@ -578,27 +588,20 @@
           "type": "get-keys",
           "install_script": [
             "sudo wget https://aur.archlinux.org/cgit/aur.git/plain/vmware-networks-configuration.service?h=vmware-workstation -O /etc/systemd/system/vmware-networks-configuration.service",
-            "sudo wget https://aur.archlinux.org/cgit/aur.git/plain/vmware-networks.service?h=vmware-workstation -O /etc/systemd/system/vmware-networks.service",
             "sudo wget https://aur.archlinux.org/cgit/aur.git/plain/vmware-networks.path?h=vmware-workstation -O /etc/systemd/system/vmware-networks.path",
             "sudo wget https://aur.archlinux.org/cgit/aur.git/plain/vmware-usbarbitrator.path?h=vmware-workstation -O /etc/systemd/system/vmware-usbarbitrator.path",
-            "sudo wget https://aur.archlinux.org/cgit/aur.git/plain/vmware-usbarbitrator.service?h=vmware-workstation -O /etc/systemd/system/vmware-usbarbitrator.service",
             "sudo systemctl enable vmware",
-            "sudo systemctl enable vmware-networks-configuration",
-            "sudo systemctl enable vmware-networks"
+            "sudo systemctl enable vmware-networks-configuration"
           ],
           "check_script": [
             "/etc/systemd/system/vmware-networks-configuration.service",
-            "/etc/systemd/system/vmware-networks.service",
             "/etc/systemd/system/vmware-networks.path",
-            "/etc/systemd/system/vmware-usbarbitrator.path",
-            "/etc/systemd/system/vmware-usbarbitrator.service"
+            "/etc/systemd/system/vmware-usbarbitrator.path"
           ],
           "remove_script": [
             "sudo rm -rf /etc/systemd/system/vmware-networks-configuration.service",
-            "sudo rm -rf /etc/systemd/system/vmware-networks.service",
             "sudo rm -rf /etc/systemd/system/vmware-networks.path",
-            "sudo rm -rf /etc/systemd/system/vmware-usbarbitrator.path",
-            "sudo rm -rf /etc/systemd/system/vmware-usbarbitrator.service"
+            "sudo rm -rf /etc/systemd/system/vmware-usbarbitrator.path"
           ]
         }
       ]
@@ -712,9 +715,14 @@
           "remove_value": "docker-desktop"
         },
         {
-          "name": "Start and Enable docker.service and docker.socket",
+          "name": "Start and Enable docker.service",
           "type": "service",
-          "install_value": "docker.service docker.socket"
+          "install_value": "docker.service"
+        },
+        {
+          "name": "Start and Enable docker.socket",
+          "type": "service",
+          "install_value": "docker.socket"
         },
         {
           "name": "Add User to docker Group.",
@@ -837,42 +845,6 @@
       ]
     },
     {
-      "name": "Vlc",
-      "values": [
-        {
-          "name": "Vlc",
-          "type": "package",
-          "install_value": "vlc",
-          "check_value": "vlc",
-          "remove_value": "vlc"
-        }
-      ]
-    },
-    {
-      "name": "Easyeffects",
-      "values": [
-        {
-          "name": "Easyeffects",
-          "type": "package",
-          "install_value": "easyeffects",
-          "check_value": "easyeffects",
-          "remove_value": "easyeffects"
-        }
-      ]
-    },
-    {
-      "name": "Wine",
-      "values": [
-        {
-          "name": "Wine",
-          "type": "package",
-          "install_value": "wine",
-          "check_value": "wine",
-          "remove_value": "wine"
-        }
-      ]
-    },
-    {
       "name": "Tuxedo",
       "values": [
         {
@@ -905,18 +877,34 @@
           "remove_value": "gnome-extensions-app"
         },
         {
-          "name": "Blur My Shell",
-          "type": "package",
-          "install_value": "gnome-shell-extension-blur-my-shell",
-          "check_value": "gnome-shell-extension-blur-my-shell",
-          "remove_value": "gnome-shell-extension-blur-my-shell"
-        },
-        {
-          "name": "App Indicator Support",
-          "type": "package",
-          "install_value": "gnome-shell-extension-appindicator",
-          "check_value": "gnome-shell-extension-appindicator",
-          "remove_value": "gnome-shell-extension-appindicator"
+          "name": "Extensions",
+          "type": "special-package",
+          "special_values": [
+            {
+              "install_dir": "Gnome_Extensions"
+            }
+          ],
+          "install_script": [
+            "mkdir -p $CACHE_PATH/$install_dir",
+            "wget https://extensions.gnome.org/extension-data/AlphabeticalAppGridstuarthayhurst.v41.shell-extension.zip -O $CACHE_PATH/$install_dir/AlphabeticalAppGridstuarthayhurst.v41.shell-extension.zip",
+            "wget https://extensions.gnome.org/extension-data/appindicatorsupportrgcjonas.gmail.com.v59.shell-extension.zip -O $CACHE_PATH/$install_dir/appindicatorsupportrgcjonas.gmail.com.v59.shell-extension.zip",
+            "wget https://extensions.gnome.org/extension-data/blur-my-shellaunetx.v67.shell-extension.zip -O $CACHE_PATH/$install_dir/blur-my-shellaunetx.v67.shell-extension.zip",
+            "wget https://extensions.gnome.org/extension-data/clipboard-indicatortudmotu.com.v65.shell-extension.zip -O $CACHE_PATH/$install_dir/clipboard-indicatortudmotu.com.v65.shell-extension.zip",
+            "wget https://extensions.gnome.org/extension-data/gtk4-dingsmedius.gitlab.com.v94.shell-extension.zip -O $CACHE_PATH/$install_dir/gtk4-dingsmedius.gitlab.com.v94.shell-extension.zip",
+            "wget https://extensions.gnome.org/extension-data/light-stylegnome-shell-extensions.gcampax.github.com.v9.shell-extension.zip -O $CACHE_PATH/$install_dir/light-stylegnome-shell-extensions.gcampax.github.com.v9.shell-extension.zip",
+            "wget https://extensions.gnome.org/extension-data/lockkeysvaina.lt.v59.shell-extension.zip -O $CACHE_PATH/$install_dir/lockkeysvaina.lt.v59.shell-extension.zip",
+            "wget https://extensions.gnome.org/extension-data/tiling-assistantleleat-on-github.v49.shell-extension.zip -O $CACHE_PATH/$install_dir/tiling-assistantleleat-on-github.v49.shell-extension.zip",
+            "gnome-extensions install $CACHE_PATH/$install_dir/AlphabeticalAppGridstuarthayhurst.v41.shell-extension.zip",
+            "gnome-extensions install $CACHE_PATH/$install_dir/appindicatorsupportrgcjonas.gmail.com.v59.shell-extension.zip",
+            "gnome-extensions install $CACHE_PATH/$install_dir/blur-my-shellaunetx.v67.shell-extension.zip",
+            "gnome-extensions install $CACHE_PATH/$install_dir/clipboard-indicatortudmotu.com.v65.shell-extension.zip",
+            "gnome-extensions install $CACHE_PATH/$install_dir/gtk4-dingsmedius.gitlab.com.v94.shell-extension.zip",
+            "gnome-extensions install $CACHE_PATH/$install_dir/light-stylegnome-shell-extensions.gcampax.github.com.v9.shell-extension.zip",
+            "gnome-extensions install $CACHE_PATH/$install_dir/lockkeysvaina.lt.v59.shell-extension.zip",
+            "gnome-extensions install $CACHE_PATH/$install_dir/tiling-assistantleleat-on-github.v49.shell-extension.zip"
+          ],
+          "check_script": [""],
+          "remove_script": [""]
         },
         {
           "name": "App Indicator libappindicator",
@@ -933,8 +921,8 @@
         {
           "name": "Cloudflare WARP repository",
           "type": "get-keys",
-          "install_script": [
-            "curl -fsSl https://pkg.cloudflareclient.com/cloudflare-warp-ascii.repo | sudo tee /etc/yum.repos.d/cloudflare-warp.repo"
+            "install_script": [
+            "echo -e '[cloudflare-warp-stable]\\nname=cloudflare-warp-stable\\nbaseurl=https://pkg.cloudflareclient.com/rpm\\nenabled=1\\ntype=rpm\\ngpgcheck=1\\ngpgkey=https://pkg.cloudflareclient.com/pubkey.gpg' | sudo tee /etc/yum.repos.d/cloudflare-warp.repo"
           ],
           "check_script": ["/etc/yum.repos.d/cloudflare-warp.repo"],
           "remove_script": ["sudo rm -rf /etc/yum.repos.d/cloudflare-warp.repo"]
@@ -945,6 +933,166 @@
           "install_value": "cloudflare-warp",
           "check_value": "cloudflare-warp",
           "remove_value": "cloudflare-warp"
+        }
+      ]
+    },
+    {
+      "name": "Oh_My_Posh",
+      "values": [
+        {
+          "name": "Oh My Posh",
+          "type": "special-package",
+          "special_values": [
+            {
+              "install_dir": "Oh_My_Posh",
+              "app_name": "oh-my-posh"
+            }
+          ],
+          "install_script": [
+            "mkdir -p $CACHE_PATH/$install_dir",
+            "curl -s https://ohmyposh.dev/install.sh | bash -s -- -d $CACHE_PATH/$install_dir",
+            "sudo mv $CACHE_PATH/$install_dir/oh-my-posh /usr/local/bin/oh-my-posh",
+            "sudo chmod +x /usr/local/bin/oh-my-posh"
+          ],
+          "check_script": ["/usr/local/bin/oh-my-posh"],
+          "remove_script": [
+            "sudo rm -rf /usr/local/bin/oh-my-posh",
+            "sudo rm -rf $CACHE_PATH/$install_dir"
+          ]
+        },
+        {
+          "name": "Oh My Meslo Nerd Font",
+          "type": "get-keys",
+          "install_script": [
+            "oh-my-posh font install meslo"
+          ],
+          "check_script": [""],
+          "remove_script": [""]
+        },
+        {
+          "name": "Enable Oh My Posh",
+          "type": "special-package",
+          "special_values": [
+            {
+              "theme_location": "~/Documents/hakanbaban53zav.json"
+            }
+          ],
+            "install_script": [
+            "if [ -f /etc/bashrc ]; then echo 'eval \"$(oh-my-posh --init --shell bash --config $theme_location)\"' | sudo tee -a /etc/bashrc; fi",
+            "if [ -f /etc/zshrc ]; then echo 'eval \"$(oh-my-posh --init --shell zsh --config $theme_location)\"' | sudo tee -a /etc/zshrc; fi"
+          ],
+          "check_script": ["if [ -f /etc/bashrc ]; then grep 'oh-my-posh' /etc/bashrc; fi",
+            "if [ -f /etc/zshrc ]; then grep 'oh-my-posh' /etc/zshrc; fi"
+          ],
+          "remove_script": [
+            "if [ -f /etc/bashrc ]; then sudo sed -i '/oh-my-posh/d' /etc/bashrc; fi",
+            "if [ -f /etc/zshrc ]; then sudo sed -i '/oh-my-posh/d' /etc/zshrc; fi"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Zsh_and_Oh_My_Zsh",
+      "values": [
+        {
+          "name": "Zsh",
+          "type": "package",
+          "install_value": "zsh",
+          "check_value": "zsh",
+          "remove_value": "zsh"
+        },
+        {
+          "name": "Oh My Zsh",
+          "type": "get-keys",
+          "install_script": [
+            "sh -c \"$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)\"",
+            "chsh -s $(which zsh)"
+          ],
+          "check_script": ["~/.oh-my-zsh"],
+          "remove_script": ["rm -rf ~/.oh-my-zsh"]
+        }
+      ]
+    },
+    {
+      "name": "Ani_Cli",
+      "values": [
+        {
+          "name": "Ani Cli",
+          "type": "special-package",
+          "special_values": [
+            {
+              "install_dir": "Ani_Cli",
+              "app_name": "ani-cli"
+            }
+          ],
+          "install_script": [
+            "mkdir -p $CACHE_PATH/$install_dir",
+            "wget https://github.com/pystardust/ani-cli/releases/download/v4.9/ani-cli -O $CACHE_PATH/$install_dir/ani-cli",
+            "wget https://github.com/pystardust/ani-cli/releases/download/v4.9/ani-cli.1 -O $CACHE_PATH/$install_dir/ani-cli.1",
+            "sudo mv $CACHE_PATH/$install_dir/ani-cli /usr/local/bin/ani-cli",
+            "sudo mv $CACHE_PATH/$install_dir/ani-cli.1 /usr/local/bin/ani-cli.1",
+            "sudo chmod +x /usr/local/bin/ani-cli"
+          ],
+          "check_script": [
+            "/usr/local/bin/ani-cli",
+            "/usr/local/bin/ani-cli.1"
+          ],
+          "remove_script": [
+            "sudo rm -rf /usr/local/bin/ani-cli",
+            "sudo rm -rf /usr/local/bin/ani-cli.1",
+            "sudo rm -rf $CACHE_PATH/$install_dir"
+          ]
+        },
+        {
+          "name": "Ani Cli Dependencies",
+          "type": "package",
+          "install_value": "mpv fzf aria2 ffmpeg",
+          "check_value": "mpv fzf aria2 ffmpeg",
+          "remove_value": "mpv fzf aria2 ffmpeg"
+        }
+      ]
+    },
+    {
+      "name": "Gnome Configuration Tools",
+      "values": [
+        {
+          "name": "Gnome Tweaks",
+          "type": "package",
+          "install_value": "gnome-tweaks",
+          "check_value": "gnome-tweaks",
+          "remove_value": "gnome-tweaks"
+        },
+        {
+          "name": "Dconf Editor",
+          "type": "package",
+          "install_value": "dconf-editor",
+          "check_value": "dconf-editor",
+          "remove_value": "dconf-editor"
+        },
+        {
+          "name": "Gnome Extensions",
+          "type": "package",
+          "install_value": "gnome-extensions-app",
+          "check_value": "gnome-extensions-app",
+          "remove_value": "gnome-extensions-app"
+        },
+        {
+          "name": "Startup Applications",
+          "type": "special-package",
+          "install_script": [
+            "sudo wget https://download.copr.fedorainfracloud.org/results/gloriouseggroll/nobara-41/fedora-41-x86_64/08286249-gnome-startup-applications/gnome-startup-applications-46.0-1.fc41.x86_64.rpm -O $CACHE_PATH/gnome-startup-applications-46.0-1.fc41.x86_64.rpm",
+            "sudo dnf install $CACHE_PATH/gnome-startup-applications-46.0-1.fc41.x86_64.rpm -y",
+            "sudo rm -rf $CACHE_PATH/gnome-startup-applications-46.0-1.fc41.x86_64.rpm"
+          ],
+          "check_script": ["gnome-startup-applications"],
+          "remove_script": ["sudo dnf remove gnome-startup-applications -y"]
+        },
+        {
+          "name": "GDM Settings",
+          "type": "package-flatpak",
+          "install_value": "app/io.github.realmazharhussain.GdmSettings/x86_64/stable",
+          "check_value": "app/io.github.realmazharhussain.GdmSettings/x86_64/stable",
+          "remove_value": "app/io.github.realmazharhussain.GdmSettings/x86_64/stable"
         }
       ]
     }
@@ -1091,9 +1239,14 @@
           "remove_value": "docker-desktop"
         },
         {
-          "name": "Start and Enable docker.service and docker.socket",
+          "name": "Start and Enable docker.service",
           "type": "service",
-          "install_value": "docker.service docker.socket"
+          "install_value": "docker.service"
+        },
+        {
+          "name": "Start and Enable docker.socket",
+          "type": "service",
+          "install_value": "docker.socket"
         },
         {
           "name": "Add User to docker Group.",

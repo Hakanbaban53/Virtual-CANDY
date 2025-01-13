@@ -37,6 +37,10 @@ def package_manager(distro, packages, output, action, dry_run):
         check_script = package.get("check_script", [])
 
         try:
+            os.makedirs(path.join(CACHE_PATH), exist_ok=True)
+            original_dir = getcwd()
+            chdir(path.join(CACHE_PATH))
+
             if package_type in {
                 "package",
                 "url-package",
@@ -54,7 +58,7 @@ def package_manager(distro, packages, output, action, dry_run):
                 handle_removable_package(
                     distro, package, check_value, action, dry_run, verbose
                 )
-            elif package_type in ["get-keys", "special-package"]:
+            elif package_type in ["get-keys"]:
                 handle_repo_keys(
                     distro, package, check_script, action, dry_run, verbose
                 )
@@ -64,6 +68,9 @@ def package_manager(distro, packages, output, action, dry_run):
                 handle_flatpak_package(package, check_value, action, dry_run, verbose)
         except CalledProcessError as e:
             handle_error(e, check_value, action, name, dry_run, package, verbose)
+
+        finally:
+            chdir(original_dir)
 
 
 def handle_standard_package(distro, package, check_value, action, dry_run, verbose):
@@ -182,20 +189,13 @@ def special_package_installer(package, check_script, action, dry_run, verbose):
     special_values = package.get("special_values", [])
     install_script = package.get("install_script", [])
     remove_script = package.get("remove_script", [])
-    workdir = package.get("workdir", None)
     app_name = package.get("name", "unknown")
     script_executed = False
     for script in check_script:
         result = run(script, shell=True, stdout=PIPE, stderr=PIPE)
-        if result.returncode == 0:
+        if result.returncode == 0 and script != "":
             script_executed = True
             break
-
-    # Create and navigate to working directory
-    if workdir:
-        os.makedirs(path.join(CACHE_PATH, workdir), exist_ok=True)
-        original_dir = getcwd()
-        chdir(path.join(CACHE_PATH, workdir))
 
     try:
 
@@ -255,9 +255,6 @@ def special_package_installer(package, check_script, action, dry_run, verbose):
             logging.info(f"{app_name} removal completed.")
     except Exception as e:
         logging.error(f"An error occurred while handling {app_name}: {e}")
-    finally:
-        if workdir:
-            chdir(original_dir)
 
 
 def handle_service_or_group(distro, package, action, dry_run, verbose):
