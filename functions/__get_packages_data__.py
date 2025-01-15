@@ -6,20 +6,26 @@ import requests
 import time
 
 class PackagesJSONHandler:
-    def __init__(self, json_file_url=None, json_file_name="packages.json"):
-        if json_file_url == None:
-            self.json_file_url = "https://raw.githubusercontent.com/Hakanbaban53/Container-and-Virtualization-Installer/main/packages/packages.json"
+    def __init__(self, json_file_url=None, json_file_name="packages.json", json_file_path=None):
+        self.json_file_url = json_file_url or "https://raw.githubusercontent.com/Hakanbaban53/Container-and-Virtualization-Installer/main/packages/packages.json"
+        
+        if json_file_path is not None:
+            # Use the custom path without downloading JSON
+            self.json_file_path = Path(json_file_path)
+            if not self.json_file_path.exists():
+                raise FileNotFoundError(f"Custom JSON path provided but file does not exist: {self.json_file_path}")
         else:
-            self.json_file_url = json_file_url
-
-        self.json_file_path = self.get_cache_file_path(json_file_name)
+            # Use cache directory for storing the JSON file
+            self.json_file_path = self.get_cache_file_path(json_file_name)
 
     def get_cache_file_path(self, json_file_name):
+        """Get the path to the cache directory for the JSON file."""
         cache_dir = Path(os.path.expanduser("~")) / ".cache" / "vcandy" / "data"
         cache_dir.mkdir(parents=True, exist_ok=True)
         return cache_dir / json_file_name
 
     def download_json_file(self, url, file_path, max_retries=3, retry_delay=1):
+        """Download the JSON file from the specified URL."""
         retries = 0
         while retries < max_retries:
             try:
@@ -27,33 +33,39 @@ class PackagesJSONHandler:
                 response.raise_for_status()
                 with open(file_path, "w") as file:
                     json.dump(response.json(), file)
+                print(f"JSON file downloaded successfully: {file_path}")
                 return True
             except requests.exceptions.RequestException as e:
                 retries += 1
-                print(f"Failed to download JSON file (Attempt {retries}/{max_retries}): {e}")
+                print(f"Failed to download JSON file from {url} (Attempt {retries}/{max_retries}): {e}")
                 if retries < max_retries:
                     print(f"Retrying in {retry_delay} seconds...")
                     time.sleep(retry_delay)
         return False
 
-    def load_json_data(self, json_file_path=None, refresh=False):
-        json_file_path = json_file_path or self.json_file_path
+    def load_json_data(self, refresh=False):
+        """Load the JSON data, refreshing it if necessary."""
         try:
-            if os.path.exists(json_file_path):
-                file_age = datetime.datetime.now() - datetime.datetime.fromtimestamp(os.path.getmtime(json_file_path))
-                if (file_age > datetime.timedelta(days=1) or refresh):
-                    print(f"Updating JSON file from {self.json_file_url}...")
-                    os.remove(json_file_path)
-                    if not self.download_json_file(self.json_file_url, json_file_path):
-                        raise RuntimeError(f"Failed to update JSON file from {self.json_file_url}.")
-            else:
-                print(f"Downloading JSON data file from {self.json_file_url}...")
-                if not self.download_json_file(self.json_file_url, json_file_path):
-                    raise RuntimeError(f"Failed to download JSON file from {self.json_file_url}.")
+            if not self.json_file_path.exists():
+                if self.json_file_url:
+                    print(f"JSON file not found. Downloading from {self.json_file_url}...")
+                    if not self.download_json_file(self.json_file_url, self.json_file_path):
+                        raise RuntimeError(f"Failed to download JSON file from {self.json_file_url}.")
+                else:
+                    raise FileNotFoundError(f"JSON file path does not exist: {self.json_file_path}")
 
-            with open(json_file_path, "r") as file:
+            # Check file age if refresh is needed
+            file_age = datetime.datetime.now() - datetime.datetime.fromtimestamp(self.json_file_path.stat().st_mtime)
+            if file_age > datetime.timedelta(days=1) or refresh:
+                print(f"Refreshing JSON file from {self.json_file_url}...")
+                if not self.download_json_file(self.json_file_url, self.json_file_path):
+                    raise RuntimeError(f"Failed to refresh JSON file from {self.json_file_url}.")
+
+            # Load and return JSON data
+            with open(self.json_file_path, "r") as file:
+                print(f"Loading JSON data from {self.json_file_path}...")
                 return json.load(file)
-        except (json.JSONDecodeError, requests.exceptions.RequestException) as e:
-            raise RuntimeError(f"Error retrieving or decoding JSON: {e}")
+        except json.JSONDecodeError as e:
+            raise RuntimeError(f"Error decoding JSON file: {e}")
         except Exception as e:
             raise RuntimeError(f"An error occurred: {e}")

@@ -20,6 +20,8 @@ class ArgumentHandler:
         # Add command-line arguments
         parser.add_argument("--distribution", default=linux_distro_id, help="Linux distribution")
         parser.add_argument("-a", "--action", choices=["install", "remove"], default="install", help="Install or remove package")
+        parser.add_argument("-j", "--json", help="URL or path to JSON file containing package data")
+        parser.add_argument("-u", "--url", help="URL to JSON file containing package data")
         parser.add_argument("-r", "--refresh", action="store_true", help="Refresh the JSON data regardless of file age")
         parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output")
         parser.add_argument("-d", "--dry-run", action="store_true", help="Perform a dry run without making any changes")
@@ -42,6 +44,8 @@ class ArgumentHandler:
         print(40*f"={Fore.BLUE}")
         print(f"{Fore.CYAN}Linux Distribution ID:{Style.RESET_ALL} {self.args.distribution}")
         print(f"{Fore.GREEN}Action:{Style.RESET_ALL} {'Install' if self.args.action == 'install' else 'Remove'}")
+        print(f"{Fore.LIGHTRED_EX}JSON File:{Style.RESET_ALL} {"Default" if not self.args.json else self.args.json}")
+        print(f"{Fore.LIGHTMAGENTA_EX}Custom URL:{Style.RESET_ALL} {"None" if not self.args.url else self.args.url}")
         print(f"{Fore.YELLOW}Selected Packages:{Style.RESET_ALL} {', '.join(self.args.packages)}")
         print(f"{Fore.MAGENTA}Refresh JSON Data:{Style.RESET_ALL} {self.format_bool(self.args.refresh)}")
         print(f"{Fore.BLUE}Verbose Mode:{Style.RESET_ALL} {self.format_bool(self.args.verbose)}")

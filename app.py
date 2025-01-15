@@ -9,7 +9,7 @@ class PackageManagerApp:
         # Initialize argument handler and load JSON data
         self.args = ArgumentHandler()
         self.get_args = self.args.get_args()
-        self.json_handler = PackagesJSONHandler()
+        self.json_handler = PackagesJSONHandler(json_file_path=self.get_args.json, json_file_url=self.get_args.url)
         self.packages_data = self.json_handler.load_json_data(refresh=self.get_args.refresh)
 
     def packages(self, linux_distro):

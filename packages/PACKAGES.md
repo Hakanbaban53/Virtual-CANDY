@@ -171,7 +171,7 @@ After adding the package entry:
 3. **Check Logging**:
    Enable verbose mode to confirm the package is detected and the commands execute correctly:
    ```bash
-   python app.py --verbose --dry-run -custom-json /your/json/file --all
+   python app.py --verbose --dry-run --json /your/json/file --all
    #Or
-   vcandy --verbose --dry-run -custom-json /your/json/file --all
+   vcandy --verbose --dry-run --json /your/json/file --all
    ```
