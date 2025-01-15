@@ -650,9 +650,9 @@
         {
           "name": "Virtual Box",
           "type": "package",
-          "install_value": "VirtualBox",
-          "check_value": "VirtualBox",
-          "remove_value": "VirtualBox"
+          "install_value": "VirtualBox akmod-VirtualBox",
+          "check_value": "VirtualBox akmod-VirtualBox",
+          "remove_value": "VirtualBox akmod-VirtualBox"
         },
         {
           "name": "Start and Enable vboxdrv",
