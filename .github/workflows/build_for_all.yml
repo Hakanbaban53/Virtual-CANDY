@@ -34,8 +34,8 @@ jobs:
           %global debug_package %{nil}
 
           Summary: A Python CLI application that installs automatic container and virtualization tools for Linux systems
-          Name: VCANDY
-          Version: ${GITHUB_REF/refs\/tags\/v/}
+          Name: vcandy
+          Version: $(echo ${GITHUB_REF#refs/tags/} | sed 's/^[Vv]//')
           Release: 1%{?dist}
           License: MIT
           URL: https://github.com/Hakanbaban53/Container-and-Virtualization-Installer
@@ -59,20 +59,20 @@ jobs:
           %{_bindir}/%{name}
 
           %changelog
-          * Thu Mar 19 2024 Hakan İSMAİL <hakanismail53@gmail.com> - ${GITHUB_REF/refs\/tags\/v/}
+          * Thu Mar 19 2024 Hakan İSMAİL <hakanismail53@gmail.com> - $(echo ${GITHUB_REF#refs/tags/} | sed 's/^[Vv]//')
           - UI improvements and bug fixes
           EOF
 
       - name: Create binary folder
-        run: mkdir vcandy-${GITHUB_REF/refs\/tags\/v/}
+        run: mkdir vcandy-$(echo ${GITHUB_REF#refs/tags/} | sed 's/^[Vv]//')
 
       - name: Move binary to binary folder
-        run: mv ./dist/vcandy vcandy-${GITHUB_REF/refs\/tags\/v/}
+        run: mv ./dist/vcandy vcandy-$(echo ${GITHUB_REF#refs/tags/} | sed 's/^[Vv]//')
 
       - name: Create .tar.gz file and move to SOURCES folder
         run: |
-          tar --create --file vcandy-${GITHUB_REF/refs\/tags\/v/}.tar.gz vcandy-${GITHUB_REF/refs\/tags\/v/}
-          mv vcandy-${GITHUB_REF/refs\/tags\/v/}.tar.gz ~/rpmbuild/SOURCES
+          tar --create --file vcandy-$(echo ${GITHUB_REF#refs/tags/} | sed 's/^[Vv]//').tar.gz vcandy-$(echo ${GITHUB_REF#refs/tags/} | sed 's/^[Vv]//')
+          mv vcandy-$(echo ${GITHUB_REF#refs/tags/} | sed 's/^[Vv]//').tar.gz ~/rpmbuild/SOURCES
 
       - name: Build RPM package
         run: rpmbuild -bb ~/rpmbuild/SPECS/vcandy.spec
@@ -108,7 +108,7 @@ jobs:
         run: |
           cat <<EOF > ~/vcandy/DEBIAN/control
           Package: vcandy
-          Version: ${GITHUB_REF/refs\/tags\/v/}
+          Version: $(echo ${GITHUB_REF#refs/tags/} | sed 's/^[Vv]//')
           Architecture: all
           Section: python
           Priority: optional
@@ -142,7 +142,7 @@ jobs:
         id: tags
         shell: bash
         run: |
-          echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\/v/}
+          echo ::set-output name=VERSION::$(echo ${GITHUB_REF#refs/tags/} | sed 's/^[Vv]//')
           echo ::set-output name=TAG::${GITHUB_REF/refs\/tags\//}
 
       - name: Download RPM Artifact

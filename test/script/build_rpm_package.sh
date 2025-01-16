@@ -3,7 +3,7 @@
 set -e  # Exit immediately if a command fails
 
 # Global variables
-VERSION="2.4"
+VERSION="2.2.8"
 PACKAGE_NAME="vcandy"
 SOURCE_DIR="$PACKAGE_NAME-$VERSION"
 RPMS_DIR=~/rpmbuild/RPMS
@@ -38,7 +38,7 @@ pip3 install --user --no-cache-dir requests pyinstaller setuptools
 
 # Build the Python project with PyInstaller
 log "Building the Python project with PyInstaller..."
-~/.local/bin/pyinstaller --onefile app.py --name=$PACKAGE_NAME
+~/.local/bin/pyinstaller --onefile ../../app.py --name=$PACKAGE_NAME
 
 # Create the binary folder
 log "Creating the binary folder..."

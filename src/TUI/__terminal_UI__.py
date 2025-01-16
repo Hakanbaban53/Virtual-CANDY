@@ -40,7 +40,7 @@ class PackageManagerApp:
             "fedora": ["fedora"],
             "ubuntu": ["ubuntu"],
         }
-        self.header = Header(self.stdscr, "VCANDY", "v2.4")
+        self.header = Header(self.stdscr, "VCANDY", "V2.2.8")
         self.footer = Footer(self.stdscr)
         self.errors = Errors(self.stdscr, self.width, self.height)
         self.resize_handler = ResizeHandler(self.stdscr, self.clean_line, self.header, self.footer, self.errors)

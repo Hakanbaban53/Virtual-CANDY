@@ -4,7 +4,7 @@ set -e  # Exit immediately if a command fails
 
 # Global variables
 SCRIPT_DIR="$(dirname "$0")"
-VERSION="2.4"
+VERSION="2.2.8"
 PACKAGE_NAME="vcandy"
 BIN_DIR="$SCRIPT_DIR/$PACKAGE_NAME/bin"
 DEBIAN_DIR="$SCRIPT_DIR/$PACKAGE_NAME/DEBIAN"
@@ -64,7 +64,7 @@ mkdir -p "$BIN_DIR"
 
 # Build the Python project
 log "Building the Python project..."
-pyinstaller --onefile app.py --name=$PACKAGE_NAME
+~/.local/bin/pyinstaller --onefile ../../app.py --name=$PACKAGE_NAME
 
 # Move the binary file to the build directory
 mv dist/$PACKAGE_NAME "$BIN_DIR"
