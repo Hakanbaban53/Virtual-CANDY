@@ -107,9 +107,14 @@
           "remove_value": "docker-desktop"
         },
         {
-          "name": "Start and Enable docker.service and docker.socket",
+          "name": "Start and Enable docker.service",
           "type": "service",
-          "install_value": "docker.service docker.socket"
+          "install_value": "docker.service"
+        },
+        {
+          "name": "Start and Enable docker.socket",
+          "type": "service",
+          "install_value": "docker.socket"
         },
         {
           "name": "Add User to docker Group.",
@@ -408,9 +413,14 @@
           "remove_value": "docker-desktop"
         },
         {
-          "name": "Start and Enable docker.service and docker.socket",
+          "name": "Start and Enable docker.service",
           "type": "service",
-          "install_value": "docker.service docker.socket"
+          "install_value": "docker.service"
+        },
+        {
+          "name": "Start and Enable docker.socket",
+          "type": "service",
+          "install_value": "docker.socket"
         },
         {
           "name": "Add User to docker Group.",
@@ -512,11 +522,104 @@
       "name": "VMware_Workstation",
       "values": [
         {
+          "name": "VMware Workstation Dependencies",
+          "type": "package",
+          "install_value": "kernel-devel kernel-headers gcc dkms make patch net-tools",
+          "check_value": "kernel-devel kernel-headers gcc dkms make patch net-tools",
+          "remove_value": ""
+        },
+        {
           "name": "VMware Workstation",
           "type": "special-package",
-          "install_value": "vmware-workstation",
-          "check_value": "vmware-workstation",
-          "remove_value": "vmware-workstation"
+          "special_values": [
+            {
+              "app_name": "VMware",
+              "version": "17.6.2"
+            }
+          ],
+          "install_script": [
+            "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.6.2/24409262/linux/core/VMware-Workstation-17.6.2-24409262.x86_64.bundle.tar -O $CACHE_PATH/$app_name/VMware-Workstation-17.6.2-24409262.x86_64.bundle.tar",
+            "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.6.2/24409262/linux/packages/vmware-tools-windows-12.4.5-23787635.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-windows-12.4.5-23787635.x86_64.component.tar",
+            "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.6.2/24409262/linux/packages/vmware-tools-windows-x86-12.4.5-23787635.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-windows-x86-12.4.5-23787635.x86_64.component.tar",
+            "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-winPreVista-12.4.0-23259341.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-winPreVista-12.4.0-23259341.x86_64.component.tar",
+            "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-linux-12.4.0-23259341.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-linux-12.4.0-23259341.x86_64.component.tar",
+            "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-linuxPreGlibc25-12.4.0-23259341.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-linuxPreGlibc25-12.4.0-23259341.x86_64.component.tar",
+            "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-netware-12.4.0-23259341.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-netware-12.4.0-23259341.x86_64.component.tar",
+            "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-solaris-12.4.0-23259341.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-solaris-12.4.0-23259341.x86_64.component.tar",
+            "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-winPre2k-12.4.0-23259341.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-winPre2k-12.4.0-23259341.x86_64.component.tar",
+            "tar -xf $CACHE_PATH/$app_name/VMware-Workstation-17.6.2-24409262.x86_64.bundle.tar -C $CACHE_PATH/$app_name",
+            "tar -xf $CACHE_PATH/$app_name/vmware-tools-windows-12.4.5-23787635.x86_64.component.tar -C $CACHE_PATH/$app_name",
+            "tar -xf $CACHE_PATH/$app_name/vmware-tools-windows-x86-12.4.5-23787635.x86_64.component.tar -C $CACHE_PATH/$app_name",
+            "tar -xf $CACHE_PATH/$app_name/vmware-tools-winPreVista-12.4.0-23259341.x86_64.component.tar -C $CACHE_PATH/$app_name",
+            "tar -xf $CACHE_PATH/$app_name/vmware-tools-linux-12.4.0-23259341.x86_64.component.tar -C $CACHE_PATH/$app_name",
+            "tar -xf $CACHE_PATH/$app_name/vmware-tools-linuxPreGlibc25-12.4.0-23259341.x86_64.component.tar -C $CACHE_PATH/$app_name",
+            "tar -xf $CACHE_PATH/$app_name/vmware-tools-netware-12.4.0-23259341.x86_64.component.tar -C $CACHE_PATH/$app_name",
+            "tar -xf $CACHE_PATH/$app_name/vmware-tools-solaris-12.4.0-23259341.x86_64.component.tar -C $CACHE_PATH/$app_name",
+            "tar -xf $CACHE_PATH/$app_name/vmware-tools-winPre2k-12.4.0-23259341.x86_64.component.tar -C $CACHE_PATH/$app_name",
+            "sudo systemctl mask vmware.service",
+            "sudo chmod +x $CACHE_PATH/$app_name/VMware-Workstation-17.6.2-24409262.x86_64.bundle",
+            "sudo $CACHE_PATH/$app_name/VMware-Workstation-17.6.2-24409262.x86_64.bundle --console --required --eulas-agreed --install-component=$CACHE_PATH/$app_name/vmware-tools-windows-12.4.5-23787635.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-windows-x86-12.4.5-23787635.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-winPreVista-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-linux-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-linuxPreGlibc25-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-netware-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-solaris-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-winPre2k-12.4.0-23259341.x86_64.component",
+            "sudo systemctl unmask vmware.service"
+          ],
+          "check_script": ["/usr/bin/vmware-installer --version"],
+          "remove_script": [
+            "sudo sytemctl stop vmware; sudo systemctl disable vmware;echo \"yes\" | sudo /usr/bin/vmware-installer --uninstall-product vmware-workstation"
+          ]
+        },
+        {
+          "name": "VMware Workstation DKMS Modules",
+          "type": "special-package",
+          "special_values": [
+            {
+              "app_name": "VMware",
+              "version": "17.6.2",
+              "dkms_name": "VMware-Host-Modules"
+            }
+          ],
+          "install_script": [
+            "sudo mkdir -p /usr/src/$dkms_name-$version",
+            "sudo tar -xf /usr/lib/vmware/modules/source/vmmon.tar -C /usr/src/$dkms_name-$version",
+            "sudo tar -xf /usr/lib/vmware/modules/source/vmnet.tar -C /usr/src/$dkms_name-$version",
+            "sudo wget https://aur.archlinux.org/cgit/aur.git/plain/Makefile?h=vmware-workstation -O /usr/src/$dkms_name-$version/Makefile",
+            "sudo wget https://aur.archlinux.org/cgit/aur.git/plain/dkms.conf.in?h=vmware-workstation -O /usr/src/$dkms_name-$version/dkms.conf",
+            "sudo sed -i 's/@PKGNAME@/$dkms_name/' /usr/src/$dkms_name-$version/dkms.conf",
+            "sudo sed -i 's/@PKGVER@/$version/' /usr/src/$dkms_name-$version/dkms.conf",
+            "wget https://aur.archlinux.org/cgit/aur.git/plain/vmmon.patch?h=vmware-workstation -O $CACHE_PATH/$app_name/vmmon.patch",
+            "wget https://aur.archlinux.org/cgit/aur.git/plain/vmnet.patch?h=vmware-workstation -O $CACHE_PATH/$app_name/vmnet.patch",
+            "sudo patch -N -p2 -d /usr/src/$dkms_name-$version/vmmon-only < $CACHE_PATH/$app_name/vmmon.patch",
+            "sudo patch -N -p2 -d /usr/src/$dkms_name-$version/vmnet-only < $CACHE_PATH/$app_name/vmnet.patch",
+            "sudo dkms add --force -m $dkms_name -v $version",
+            "sudo dkms build --force -m $dkms_name -v $version",
+            "sudo dkms install --force -m $dkms_name -v $version",
+            "sudo vmware-modconfig --console --install-all"
+          ],
+          "check_script": ["dkms status | grep $dkms_name"],
+          "remove_script": [
+            "sudo dkms remove -m $dkms_name -v $version --all",
+            "sudo rm -rf /usr/src/$dkms_name-$version",
+            "sudo rm -rf /var/lib/dkms/$dkms_name"
+          ]
+        },
+        {
+          "name": "VMware Workstation Service Files",
+          "type": "get-keys",
+          "install_script": [
+            "sudo wget https://aur.archlinux.org/cgit/aur.git/plain/vmware-networks-configuration.service?h=vmware-workstation -O /etc/systemd/system/vmware-networks-configuration.service",
+            "sudo wget https://aur.archlinux.org/cgit/aur.git/plain/vmware-networks.path?h=vmware-workstation -O /etc/systemd/system/vmware-networks.path",
+            "sudo wget https://aur.archlinux.org/cgit/aur.git/plain/vmware-usbarbitrator.path?h=vmware-workstation -O /etc/systemd/system/vmware-usbarbitrator.path",
+            "sudo systemctl enable vmware",
+            "sudo systemctl enable vmware-networks-configuration"
+          ],
+          "check_script": [
+            "/etc/systemd/system/vmware-networks-configuration.service",
+            "/etc/systemd/system/vmware-networks.path",
+            "/etc/systemd/system/vmware-usbarbitrator.path"
+          ],
+          "remove_script": [
+            "sudo rm -rf /etc/systemd/system/vmware-networks-configuration.service",
+            "sudo rm -rf /etc/systemd/system/vmware-networks.path",
+            "sudo rm -rf /etc/systemd/system/vmware-usbarbitrator.path"
+          ]
         }
       ]
     },
@@ -547,9 +650,9 @@
         {
           "name": "Virtual Box",
           "type": "package",
-          "install_value": "VirtualBox",
-          "check_value": "VirtualBox",
-          "remove_value": "VirtualBox"
+          "install_value": "VirtualBox akmod-VirtualBox",
+          "check_value": "VirtualBox akmod-VirtualBox",
+          "remove_value": "VirtualBox akmod-VirtualBox"
         },
         {
           "name": "Start and Enable vboxdrv",
@@ -580,7 +683,7 @@
           "name": "Qemu package group",
           "type": "package",
           "install_value": "@virtualization",
-          "check_value": "virt-manager",
+          "check_value": "virt-manager qemu-common libvirt",
           "remove_value": "@virtualization"
         },
         {
@@ -629,9 +732,14 @@
           "remove_value": "docker-desktop"
         },
         {
-          "name": "Start and Enable docker.service and docker.socket",
+          "name": "Start and Enable docker.service",
           "type": "service",
-          "install_value": "docker.service docker.socket"
+          "install_value": "docker.service"
+        },
+        {
+          "name": "Start and Enable docker.socket",
+          "type": "service",
+          "install_value": "docker.socket"
         },
         {
           "name": "Add User to docker Group.",
@@ -754,42 +862,6 @@
       ]
     },
     {
-      "name": "Vlc",
-      "values": [
-        {
-          "name": "Vlc",
-          "type": "package",
-          "install_value": "vlc",
-          "check_value": "vlc",
-          "remove_value": "vlc"
-        }
-      ]
-    },
-    {
-      "name": "Easyeffects",
-      "values": [
-        {
-          "name": "Easyeffects",
-          "type": "package",
-          "install_value": "easyeffects",
-          "check_value": "easyeffects",
-          "remove_value": "easyeffects"
-        }
-      ]
-    },
-    {
-      "name": "Wine",
-      "values": [
-        {
-          "name": "Wine",
-          "type": "package",
-          "install_value": "wine",
-          "check_value": "wine",
-          "remove_value": "wine"
-        }
-      ]
-    },
-    {
       "name": "Tuxedo",
       "values": [
         {
@@ -822,18 +894,34 @@
           "remove_value": "gnome-extensions-app"
         },
         {
-          "name": "Blur My Shell",
-          "type": "package",
-          "install_value": "gnome-shell-extension-blur-my-shell",
-          "check_value": "gnome-shell-extension-blur-my-shell",
-          "remove_value": "gnome-shell-extension-blur-my-shell"
-        },
-        {
-          "name": "App Indicator Support",
-          "type": "package",
-          "install_value": "gnome-shell-extension-appindicator",
-          "check_value": "gnome-shell-extension-appindicator",
-          "remove_value": "gnome-shell-extension-appindicator"
+          "name": "Extensions",
+          "type": "special-package",
+          "special_values": [
+            {
+              "install_dir": "Gnome_Extensions"
+            }
+          ],
+          "install_script": [
+            "mkdir -p $CACHE_PATH/$install_dir",
+            "wget https://extensions.gnome.org/extension-data/AlphabeticalAppGridstuarthayhurst.v41.shell-extension.zip -O $CACHE_PATH/$install_dir/AlphabeticalAppGridstuarthayhurst.v41.shell-extension.zip",
+            "wget https://extensions.gnome.org/extension-data/appindicatorsupportrgcjonas.gmail.com.v59.shell-extension.zip -O $CACHE_PATH/$install_dir/appindicatorsupportrgcjonas.gmail.com.v59.shell-extension.zip",
+            "wget https://extensions.gnome.org/extension-data/blur-my-shellaunetx.v67.shell-extension.zip -O $CACHE_PATH/$install_dir/blur-my-shellaunetx.v67.shell-extension.zip",
+            "wget https://extensions.gnome.org/extension-data/clipboard-indicatortudmotu.com.v65.shell-extension.zip -O $CACHE_PATH/$install_dir/clipboard-indicatortudmotu.com.v65.shell-extension.zip",
+            "wget https://extensions.gnome.org/extension-data/gtk4-dingsmedius.gitlab.com.v94.shell-extension.zip -O $CACHE_PATH/$install_dir/gtk4-dingsmedius.gitlab.com.v94.shell-extension.zip",
+            "wget https://extensions.gnome.org/extension-data/light-stylegnome-shell-extensions.gcampax.github.com.v9.shell-extension.zip -O $CACHE_PATH/$install_dir/light-stylegnome-shell-extensions.gcampax.github.com.v9.shell-extension.zip",
+            "wget https://extensions.gnome.org/extension-data/lockkeysvaina.lt.v59.shell-extension.zip -O $CACHE_PATH/$install_dir/lockkeysvaina.lt.v59.shell-extension.zip",
+            "wget https://extensions.gnome.org/extension-data/tiling-assistantleleat-on-github.v49.shell-extension.zip -O $CACHE_PATH/$install_dir/tiling-assistantleleat-on-github.v49.shell-extension.zip",
+            "gnome-extensions install $CACHE_PATH/$install_dir/AlphabeticalAppGridstuarthayhurst.v41.shell-extension.zip",
+            "gnome-extensions install $CACHE_PATH/$install_dir/appindicatorsupportrgcjonas.gmail.com.v59.shell-extension.zip",
+            "gnome-extensions install $CACHE_PATH/$install_dir/blur-my-shellaunetx.v67.shell-extension.zip",
+            "gnome-extensions install $CACHE_PATH/$install_dir/clipboard-indicatortudmotu.com.v65.shell-extension.zip",
+            "gnome-extensions install $CACHE_PATH/$install_dir/gtk4-dingsmedius.gitlab.com.v94.shell-extension.zip",
+            "gnome-extensions install $CACHE_PATH/$install_dir/light-stylegnome-shell-extensions.gcampax.github.com.v9.shell-extension.zip",
+            "gnome-extensions install $CACHE_PATH/$install_dir/lockkeysvaina.lt.v59.shell-extension.zip",
+            "gnome-extensions install $CACHE_PATH/$install_dir/tiling-assistantleleat-on-github.v49.shell-extension.zip"
+          ],
+          "check_script": [""],
+          "remove_script": [""]
         },
         {
           "name": "App Indicator libappindicator",
@@ -851,7 +939,7 @@
           "name": "Cloudflare WARP repository",
           "type": "get-keys",
           "install_script": [
-            "curl -fsSl https://pkg.cloudflareclient.com/cloudflare-warp-ascii.repo | sudo tee /etc/yum.repos.d/cloudflare-warp.repo"
+            "echo -e '[cloudflare-warp-stable]\\nname=cloudflare-warp-stable\\nbaseurl=https://pkg.cloudflareclient.com/rpm\\nenabled=1\\ntype=rpm\\ngpgcheck=1\\ngpgkey=https://pkg.cloudflareclient.com/pubkey.gpg' | sudo tee /etc/yum.repos.d/cloudflare-warp.repo"
           ],
           "check_script": ["/etc/yum.repos.d/cloudflare-warp.repo"],
           "remove_script": ["sudo rm -rf /etc/yum.repos.d/cloudflare-warp.repo"]
@@ -862,6 +950,203 @@
           "install_value": "cloudflare-warp",
           "check_value": "cloudflare-warp",
           "remove_value": "cloudflare-warp"
+        }
+      ]
+    },
+    {
+      "name": "Oh_My_Posh",
+      "values": [
+        {
+          "name": "Oh My Posh",
+          "type": "special-package",
+          "special_values": [
+            {
+              "install_dir": "Oh_My_Posh",
+              "app_name": "oh-my-posh"
+            }
+          ],
+          "install_script": [
+            "mkdir -p $CACHE_PATH/$install_dir",
+            "curl -s https://ohmyposh.dev/install.sh | bash -s -- -d $CACHE_PATH/$install_dir",
+            "sudo mv $CACHE_PATH/$install_dir/oh-my-posh /usr/local/bin/oh-my-posh",
+            "sudo chmod +x /usr/local/bin/oh-my-posh"
+          ],
+          "check_script": ["/usr/local/bin/oh-my-posh"],
+          "remove_script": [
+            "sudo rm -rf /usr/local/bin/oh-my-posh",
+            "sudo rm -rf $CACHE_PATH/$install_dir"
+          ]
+        },
+        {
+          "name": "Oh My Meslo Nerd Font",
+          "type": "get-keys",
+          "install_script": ["oh-my-posh font install meslo"],
+          "check_script": [""],
+          "remove_script": [""]
+        },
+        {
+          "name": "Enable Oh My Posh",
+          "type": "special-package",
+          "special_values": [
+            {
+              "theme_location": "~/Documents/hakanbaban53zav.json"
+            }
+          ],
+          "install_script": [
+            "if [ -f /etc/bashrc ]; then echo 'eval \"$(oh-my-posh --init --shell bash --config $theme_location)\"' | sudo tee -a /etc/bashrc; fi",
+            "if [ -f /etc/zshrc ]; then echo 'eval \"$(oh-my-posh --init --shell zsh --config $theme_location)\"' | sudo tee -a /etc/zshrc; fi"
+          ],
+          "check_script": [
+            "if [ -f /etc/bashrc ]; then grep 'oh-my-posh' /etc/bashrc; fi",
+            "if [ -f /etc/zshrc ]; then grep 'oh-my-posh' /etc/zshrc; fi"
+          ],
+          "remove_script": [
+            "if [ -f /etc/bashrc ]; then sudo sed -i '/oh-my-posh/d' /etc/bashrc; fi",
+            "if [ -f /etc/zshrc ]; then sudo sed -i '/oh-my-posh/d' /etc/zshrc; fi"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Zsh_and_Oh_My_Zsh",
+      "values": [
+        {
+          "name": "Zsh",
+          "type": "package",
+          "install_value": "zsh",
+          "check_value": "zsh",
+          "remove_value": "zsh"
+        },
+        {
+          "name": "Oh My Zsh",
+          "type": "get-keys",
+          "install_script": [
+            "sh -c \"$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)\"",
+            "chsh -s $(which zsh)"
+          ],
+          "check_script": ["~/.oh-my-zsh"],
+          "remove_script": ["rm -rf ~/.oh-my-zsh"]
+        }
+      ]
+    },
+    {
+      "name": "Ani_Cli",
+      "values": [
+        {
+          "name": "Ani Cli",
+          "type": "special-package",
+          "special_values": [
+            {
+              "install_dir": "Ani_Cli",
+              "app_name": "ani-cli"
+            }
+          ],
+          "install_script": [
+            "mkdir -p $CACHE_PATH/$install_dir",
+            "wget https://github.com/pystardust/ani-cli/releases/download/v4.9/ani-cli -O $CACHE_PATH/$install_dir/ani-cli",
+            "wget https://github.com/pystardust/ani-cli/releases/download/v4.9/ani-cli.1 -O $CACHE_PATH/$install_dir/ani-cli.1",
+            "sudo mv $CACHE_PATH/$install_dir/ani-cli /usr/local/bin/ani-cli",
+            "sudo mv $CACHE_PATH/$install_dir/ani-cli.1 /usr/local/bin/ani-cli.1",
+            "sudo chmod +x /usr/local/bin/ani-cli"
+          ],
+          "check_script": [
+            "/usr/local/bin/ani-cli",
+            "/usr/local/bin/ani-cli.1"
+          ],
+          "remove_script": [
+            "sudo rm -rf /usr/local/bin/ani-cli",
+            "sudo rm -rf /usr/local/bin/ani-cli.1",
+            "sudo rm -rf $CACHE_PATH/$install_dir"
+          ]
+        },
+        {
+          "name": "Ani Cli Dependencies",
+          "type": "package",
+          "install_value": "mpv fzf aria2 ffmpeg",
+          "check_value": "mpv fzf aria2 ffmpeg",
+          "remove_value": "mpv fzf aria2 ffmpeg"
+        }
+      ]
+    },
+    {
+      "name": "Gnome Configuration Tools",
+      "values": [
+        {
+          "name": "Gnome Tweaks",
+          "type": "package",
+          "install_value": "gnome-tweaks",
+          "check_value": "gnome-tweaks",
+          "remove_value": "gnome-tweaks"
+        },
+        {
+          "name": "Dconf Editor",
+          "type": "package",
+          "install_value": "dconf-editor",
+          "check_value": "dconf-editor",
+          "remove_value": "dconf-editor"
+        },
+        {
+          "name": "Gnome Extensions",
+          "type": "package",
+          "install_value": "gnome-extensions-app",
+          "check_value": "gnome-extensions-app",
+          "remove_value": "gnome-extensions-app"
+        },
+        {
+          "name": "Startup Applications",
+          "type": "special-package",
+          "install_script": [
+            "sudo wget https://download.copr.fedorainfracloud.org/results/gloriouseggroll/nobara-41/fedora-41-x86_64/08286249-gnome-startup-applications/gnome-startup-applications-46.0-1.fc41.x86_64.rpm -O $CACHE_PATH/gnome-startup-applications-46.0-1.fc41.x86_64.rpm",
+            "sudo dnf install $CACHE_PATH/gnome-startup-applications-46.0-1.fc41.x86_64.rpm -y",
+            "sudo rm -rf $CACHE_PATH/gnome-startup-applications-46.0-1.fc41.x86_64.rpm"
+          ],
+          "check_script": ["gnome-startup-applications"],
+          "remove_script": ["sudo dnf remove gnome-startup-applications -y"]
+        },
+        {
+          "name": "GDM Settings",
+          "type": "package-flatpak",
+          "install_value": "app/io.github.realmazharhussain.GdmSettings/x86_64/stable",
+          "check_value": "app/io.github.realmazharhussain.GdmSettings/x86_64/stable",
+          "remove_value": "app/io.github.realmazharhussain.GdmSettings/x86_64/stable"
+        }
+      ]
+    },
+
+    {
+      "name": "Microsoft_Core_TTF_Fonts",
+      "values": [
+        {
+          "name": "Microsoft Core TTF Fonts",
+          "type": "special-package",
+          "special_values": [
+            {
+              "install_dir": "Microsoft_Core_TTF_Fonts"
+            }
+          ],
+          "install_script": [
+            "mkdir -p $CACHE_PATH/$install_dir",
+            "wget https://downloads.sourceforge.net/project/corefonts/the%20fonts/final/andale32.exe -O $CACHE_PATH/$install_dir/andale32.exe",
+            "wget https://downloads.sourceforge.net/project/corefonts/the%20fonts/final/arial32.exe -O $CACHE_PATH/$install_dir/arial32.exe",
+            "wget https://downloads.sourceforge.net/project/corefonts/the%20fonts/final/arialb32.exe -O $CACHE_PATH/$install_dir/arialb32.exe",
+            "wget https://downloads.sourceforge.net/project/corefonts/the%20fonts/final/comic32.exe -O $CACHE_PATH/$install_dir/comic32.exe",
+            "wget https://downloads.sourceforge.net/project/corefonts/the%20fonts/final/courie32.exe -O $CACHE_PATH/$install_dir/courie32.exe",
+            "wget https://downloads.sourceforge.net/project/corefonts/the%20fonts/final/georgi32.exe -O $CACHE_PATH/$install_dir/georgi32.exe",
+            "wget https://downloads.sourceforge.net/project/corefonts/the%20fonts/final/impact32.exe -O $CACHE_PATH/$install_dir/impact32.exe",
+            "wget https://downloads.sourceforge.net/project/corefonts/the%20fonts/final/times32.exe -O $CACHE_PATH/$install_dir/times32.exe",
+            "wget https://downloads.sourceforge.net/project/corefonts/the%20fonts/final/trebuc32.exe -O $CACHE_PATH/$install_dir/trebuc32.exe",
+            "wget https://downloads.sourceforge.net/project/corefonts/the%20fonts/final/verdan32.exe -O $CACHE_PATH/$install_dir/verdan32.exe",
+            "wget https://downloads.sourceforge.net/project/corefonts/the%20fonts/final/webdin32.exe -O $CACHE_PATH/$install_dir/webdin32.exe",
+            "cabextract -d $CACHE_PATH/$install_dir $CACHE_PATH/$install_dir/*.exe",
+            "sudo mkdir -p /usr/share/fonts/TTF",
+            "sudo mv $CACHE_PATH/$install_dir/*.{ttf,TTF} /usr/share/fonts/TTF",
+            "sudo fc-cache -f"
+          ],
+          "check_script": ["/usr/share/fonts/TTF/arial.ttf"],
+          "remove_script": [
+            "sudo rm -rf /usr/share/fonts/TTF",
+            "sudo fc-cache -f"
+          ]
         }
       ]
     }
@@ -1008,9 +1293,14 @@
           "remove_value": "docker-desktop"
         },
         {
-          "name": "Start and Enable docker.service and docker.socket",
+          "name": "Start and Enable docker.service",
           "type": "service",
-          "install_value": "docker.service docker.socket"
+          "install_value": "docker.service"
+        },
+        {
+          "name": "Start and Enable docker.socket",
+          "type": "service",
+          "install_value": "docker.socket"
         },
         {
           "name": "Add User to docker Group.",

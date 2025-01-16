@@ -1,59 +1,52 @@
-from scripts.__arguments__ import ArgumentHandler
-from functions.__check_repository_connection__ import (
-    check_linux_package_manager_connection,
-)
-from functions.__get_os_package_manager__ import (
-    get_linux_package_manager,
-)
-from scripts.__terminal_UI__ import start_terminal_ui
-from functions.__get_packages_data__ import PackagesJSONHandler
+
+from src.core.__logging_manager__ import LoggingManager
+from src.TUI.__terminal_UI__ import start_terminal_ui
+from src.core.__check_repository_connection__ import check_linux_package_manager_connection
+from src.core.__get_os_package_manager__ import get_linux_package_manager
+from src.core.__get_packages_data__ import PackagesJSONHandler
+from src.utils.cli.__arguments__ import ArgumentHandler
 
 
 class PackageManagerApp:
     def __init__(self):
-        self.args = ArgumentHandler().get_args()
-        self.json_handler = PackagesJSONHandler()
-        self.packages_data = self.json_handler.load_json_data(refresh=self.args.refresh)
+        # Initialize argument handler and load JSON data
+        self.args = ArgumentHandler()
+        self.get_args = self.args.get_args()
+
+        LoggingManager(self.get_args.verbose, self.get_args.dry_run)
+
+        self.json_handler = PackagesJSONHandler(json_file_path=self.get_args.json, json_file_url=self.get_args.url)
+        self.packages_data = self.json_handler.load_json_data(refresh=self.get_args.refresh)
+
 
     def packages(self, linux_distro):
+        """Get relevant packages for the given Linux distribution."""
         if linux_distro in self.packages_data:
-            package_list = self.packages_data[linux_distro]
-            relevant_packages = [package.get("name", "") for package in package_list]
-            return relevant_packages
-        else:
-            return []
-
+            return [package.get("name", "") for package in self.packages_data[linux_distro]]
+        return []
+        
     def run(self):
         """Run the main application logic."""
         try:
+            # Handle package actions (install/remove)
+            if self.get_args.packages or self.get_args.list or self.get_args.all:
+                relevant_packages = self.packages(self.get_args.distribution)
 
-            if self.args.packages or self.args.list or self.args.all:
-                relevant_packages = self.packages(self.args.distribution)
-
-                if self.args.list:
-                    print("Relevant packages for distribution:", relevant_packages)
+                if self.get_args.list:
+                    self.args.print_relevant_packages(relevant_packages)
                     return
 
-                user_packages = set(self.args.packages)
-                valid_packages = [
-                    pkg for pkg in user_packages if pkg in relevant_packages
-                ]
+                user_packages = set(self.get_args.packages)
+                valid_packages = [pkg for pkg in user_packages if pkg in relevant_packages]
+                valid_packages = relevant_packages if self.get_args.all else valid_packages
 
-                valid_packages = relevant_packages if self.args.all else valid_packages
+                self.args.print_verbose_package_info(relevant_packages, valid_packages)
 
-                if self.args.verbose:
-                    print("Relevant packages for distribution:", relevant_packages)
-                    print("Filtered packages to be processed:", valid_packages)
-
-                if self.args.action == "install":
+                if self.get_args.action == "install" and not self.get_args.dry_run:
                     print("Checking package manager connection...")
-                    stasus = check_linux_package_manager_connection(
-                        self.args.distribution
-                    )
-                    if not stasus:
-                        print(
-                            "Failed to connect to package manager repository. Exiting..."
-                        )
+                    status = check_linux_package_manager_connection(self.get_args.distribution)
+                    if not status:
+                        print("Failed to connect to package manager repository. Exiting...")
                         return
 
                 if valid_packages:
@@ -63,15 +56,14 @@ class PackageManagerApp:
                         print("========================================\n")
 
                         get_linux_package_manager(
-                            linux_distribution=self.args.distribution,
+                            linux_distribution=self.get_args.distribution,
                             package_name=package,
-                            output=self.args.verbose,
-                            action=self.args.action,
-                            dry_run=self.args.dry_run,
+                            output=self.get_args.verbose,
+                            action=self.get_args.action,
+                            dry_run=self.get_args.dry_run,
                         )
                 else:
                     print("No valid packages found for the specified distribution.")
-
             else:
                 start_terminal_ui()
 
@@ -82,7 +74,6 @@ class PackageManagerApp:
             print(f"Runtime error: {re}")
         except Exception as e:
             print(f"An unexpected error occurred: {e}")
-
 
 if __name__ == "__main__":
     app = PackageManagerApp()

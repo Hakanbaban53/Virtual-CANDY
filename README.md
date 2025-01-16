@@ -95,6 +95,8 @@ dnf install git && git clone https://github.com/Hakanbaban53/Container-and-Virtu
 | Option         | Description                                                                                                               |
 | -------------- | ------------------------------------------------------------------------------------------------------------------------- |
 | `-a`, `--action` | Specifies the action to perform. Choices are `'install'` or `'remove'`. Default is `'install'`.                         |
+| `-j`, `--json`   | Specifies the JSON file to use for package information. Defaults to predefined.                                    |
+| `-u`, `--url`    | Specifies the URL to use for package information. Overrides the JSON file. Its need the use with `-r` or `--refresh`. |
 | `-r`, `--refresh` | Refreshes the JSON data regardless of its file age. Useful to get the latest package information.                        |
 | `-v`, `--verbose` | Enables verbose output for detailed information during execution. Helps with debugging or understanding process details. |
 | `-d`, `--dry-run` | Performs a dry run of the command without making any changes. Useful for testing what would be done.                   |

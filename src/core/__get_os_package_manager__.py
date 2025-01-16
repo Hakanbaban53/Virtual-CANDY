@@ -1,5 +1,5 @@
-from linux_distros.__combined__ import package_manager
-from functions.__get_packages_data__ import PackagesJSONHandler
+from src.utils.installer.__combined__ import package_manager
+from src.core.__get_packages_data__ import PackagesJSONHandler
 
 def get_linux_distribution():
     try:
