@@ -1,22 +1,19 @@
 import curses
 import sys
 
-from functions.__get_os_package_manager__ import (
-    get_linux_distribution,
-    identify_distribution,
-)
-from functions.__get_packages_data__ import PackagesJSONHandler
-from scripts.TUI.components.__app_selector__ import AppSelector
-from scripts.TUI.components.__footer__ import Footer
-from scripts.TUI.components.__header__ import Header
-from scripts.TUI.utils.__check_connection__ import CheckPackageManagerConnection
-from scripts.TUI.utils.__clean_line__ import CleanLine
-from scripts.TUI.utils.__clear_midde_section__ import ClearMiddleSection
-from scripts.TUI.utils.__errors_ import Errors
-from scripts.TUI.utils.__color_manager__ import ColorManager
-from scripts.TUI.utils.__input__ import Input
-from scripts.TUI.utils.__resize_handler__ import ResizeHandler
-from scripts.TUI.utils.__selections__ import Selections
+from src.TUI.core.components.__app_selector__ import AppSelector
+from src.TUI.core.components.__footer__ import Footer
+from src.TUI.core.components.__header__ import Header
+from src.TUI.core.utils.__check_connection__ import CheckPackageManagerConnection
+from src.TUI.core.utils.__clean_line__ import CleanLine
+from src.TUI.core.utils.__clear_midde_section__ import ClearMiddleSection
+from src.TUI.core.utils.__color_manager__ import ColorManager
+from src.TUI.core.utils.__errors_ import Errors
+from src.TUI.core.utils.__input__ import Input
+from src.TUI.core.utils.__resize_handler__ import ResizeHandler
+from src.TUI.core.utils.__selections__ import Selections
+from src.core.__get_os_package_manager__ import get_linux_distribution, identify_distribution
+from src.core.__get_packages_data__ import PackagesJSONHandler
 
 OPTIONS_YES_NO = ["Yes", "No"]
 OPTIONS_INSTALL_REMOVE = ["install", "remove"]

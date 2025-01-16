@@ -1,6 +1,7 @@
 from curses import napms, color_pair, A_BOLD
 
-from functions.__check_repository_connection__ import check_linux_package_manager_connection
+from src.core.__check_repository_connection__ import check_linux_package_manager_connection
+
 
 class CheckPackageManagerConnection:
     def __init__(self, stdscr, width, height, linux_distro_id, OPTIONS_YES_NO, clean_line):

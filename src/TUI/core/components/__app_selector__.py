@@ -1,8 +1,8 @@
 import curses
 
-from functions.__get_os_package_manager__ import get_linux_package_manager
+from src.TUI.core.components.__print_apps__ import PrintApps
+from src.core.__get_os_package_manager__ import get_linux_package_manager
 
-from scripts.TUI.components.__print_apps__ import PrintApps
 
 class AppSelector:
     def __init__(self, stdscr, app_list, width, height, use_dark_mode, cmd, selections, header, footer, resize_handler):

@@ -1,6 +1,7 @@
 from colorama import Fore, Style
 from argparse import ArgumentParser
-from functions.__get_os_package_manager__ import identify_distribution
+from src.core.__get_os_package_manager__ import identify_distribution
+
 
 class ArgumentHandler:
     def __init__(self):

@@ -1,16 +1,23 @@
-from scripts.__arguments__ import ArgumentHandler
-from functions.__check_repository_connection__ import check_linux_package_manager_connection
-from functions.__get_os_package_manager__ import get_linux_package_manager
-from scripts.__terminal_UI__ import start_terminal_ui
-from functions.__get_packages_data__ import PackagesJSONHandler
+
+from src.core.__logging_manager__ import LoggingManager
+from src.TUI.__terminal_UI__ import start_terminal_ui
+from src.core.__check_repository_connection__ import check_linux_package_manager_connection
+from src.core.__get_os_package_manager__ import get_linux_package_manager
+from src.core.__get_packages_data__ import PackagesJSONHandler
+from src.utils.cli.__arguments__ import ArgumentHandler
+
 
 class PackageManagerApp:
     def __init__(self):
         # Initialize argument handler and load JSON data
         self.args = ArgumentHandler()
         self.get_args = self.args.get_args()
+
+        LoggingManager(self.get_args.verbose, self.get_args.dry_run)
+
         self.json_handler = PackagesJSONHandler(json_file_path=self.get_args.json, json_file_url=self.get_args.url)
         self.packages_data = self.json_handler.load_json_data(refresh=self.get_args.refresh)
+
 
     def packages(self, linux_distro):
         """Get relevant packages for the given Linux distribution."""

@@ -6,27 +6,9 @@ from time import sleep
 
 CACHE_PATH = path.join(path.expanduser("~"), ".cache", "vcandy")
 
-
-def setup_logger(verbose, dry_run):
-    """Set up the logger."""
-    logger = logging.getLogger()
-    handler = logging.StreamHandler()
-    dry_run_text = " [DRY RUN]" if dry_run else ""
-    if verbose:
-        formatter = logging.Formatter(f"%(levelname)s {'-'+dry_run_text+'-' if dry_run else ''} %(message)s")
-    else:
-        formatter = logging.Formatter("%(message)s")
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
-    logger.setLevel(logging.DEBUG if verbose else logging.INFO)
-    return logger
-
-
 def package_manager(distro, packages, output, action, dry_run):
     verbose = open(devnull, "w") if not output else None
-
-    setup_logger(True if verbose is None else False, dry_run)
-
+    
     if distro in {"debian", "ubuntu"} and not dry_run:
         run(["sudo", "apt", "update"], stderr=verbose, stdout=verbose)
 
