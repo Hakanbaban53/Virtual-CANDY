@@ -140,7 +140,7 @@ def handle_repo_keys(distro, package, check_script, action, dry_run, verbose):
             logging.warning("No script provided to check the repo key. Skipping...")
             continue
 
-        if path.exists(script):
+        if (path.exists(script) or path.dirname(script)):
             if action == "install":
                 logging.info(f"{package['name']} repo key installed. Skipping...")
             elif action == "remove":
@@ -174,13 +174,11 @@ def special_package_installer(package, check_script, action, dry_run, verbose):
     app_name = package.get("name", "unknown")
     script_executed = False
     for script in check_script:
-        result = run(script, shell=True, stdout=PIPE, stderr=PIPE)
-        if result.returncode == 0 and script != "":
+        if (path.exists(script) or path.dirname(script)) and script != "":
             script_executed = True
             break
 
     try:
-
         if action == "install":
             logging.info(f"Installing {app_name}...")
 

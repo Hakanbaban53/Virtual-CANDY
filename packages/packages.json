@@ -1044,18 +1044,14 @@
           "install_script": [
             "mkdir -p $CACHE_PATH/$install_dir",
             "wget https://github.com/pystardust/ani-cli/releases/download/v4.9/ani-cli -O $CACHE_PATH/$install_dir/ani-cli",
-            "wget https://github.com/pystardust/ani-cli/releases/download/v4.9/ani-cli.1 -O $CACHE_PATH/$install_dir/ani-cli.1",
             "sudo mv $CACHE_PATH/$install_dir/ani-cli /usr/local/bin/ani-cli",
-            "sudo mv $CACHE_PATH/$install_dir/ani-cli.1 /usr/local/bin/ani-cli.1",
             "sudo chmod +x /usr/local/bin/ani-cli"
           ],
           "check_script": [
-            "/usr/local/bin/ani-cli",
-            "/usr/local/bin/ani-cli.1"
+            "/usr/local/bin/ani-cli"
           ],
           "remove_script": [
             "sudo rm -rf /usr/local/bin/ani-cli",
-            "sudo rm -rf /usr/local/bin/ani-cli.1",
             "sudo rm -rf $CACHE_PATH/$install_dir"
           ]
         },
