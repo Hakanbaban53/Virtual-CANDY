@@ -1,7 +1,7 @@
 import curses
 
-from src.TUI.core.components.__print_apps__ import PrintApps
-from src.core.__get_os_package_manager__ import get_linux_package_manager
+from TUI.core.components.__print_apps__ import PrintApps
+from core.__get_os_package_manager__ import get_linux_package_manager
 
 
 class AppSelector:

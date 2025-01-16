@@ -1,10 +1,11 @@
 
-from src.core.__logging_manager__ import LoggingManager
-from src.TUI.__terminal_UI__ import start_terminal_ui
-from src.core.__check_repository_connection__ import check_linux_package_manager_connection
-from src.core.__get_os_package_manager__ import get_linux_package_manager
-from src.core.__get_packages_data__ import PackagesJSONHandler
-from src.utils.cli.__arguments__ import ArgumentHandler
+import logging
+from core.__logging_manager__ import LoggingManager
+from TUI.__terminal_UI__ import start_terminal_ui
+from core.__check_repository_connection__ import check_linux_package_manager_connection
+from core.__get_os_package_manager__ import get_linux_package_manager
+from core.__get_packages_data__ import PackagesJSONHandler
+from utils.cli.__arguments__ import ArgumentHandler
 
 
 class PackageManagerApp:
@@ -43,10 +44,10 @@ class PackageManagerApp:
                 self.args.print_verbose_package_info(relevant_packages, valid_packages)
 
                 if self.get_args.action == "install" and not self.get_args.dry_run:
-                    print("Checking package manager connection...")
+                    logging.info("Checking package manager connection...")
                     status = check_linux_package_manager_connection(self.get_args.distribution)
                     if not status:
-                        print("Failed to connect to package manager repository. Exiting...")
+                        logging.error("Failed to connect to package manager repository. Exiting...")
                         return
 
                 if valid_packages:
@@ -63,7 +64,7 @@ class PackageManagerApp:
                             dry_run=self.get_args.dry_run,
                         )
                 else:
-                    print("No valid packages found for the specified distribution.")
+                    logging.warning("No valid packages found for the specified distribution.")
             else:
                 start_terminal_ui()
 
@@ -71,9 +72,9 @@ class PackageManagerApp:
             print("\nCtrl + C pressed. Exiting...")
             print("Goodbye 👋")
         except RuntimeError as re:
-            print(f"Runtime error: {re}")
+            logging.error(f"Runtime error: {re}")
         except Exception as e:
-            print(f"An unexpected error occurred: {e}")
+            logging.error(f"An unexpected error occurred: {e}")
 
 if __name__ == "__main__":
     app = PackageManagerApp()

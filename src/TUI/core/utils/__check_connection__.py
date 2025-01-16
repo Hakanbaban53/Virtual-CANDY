@@ -1,6 +1,6 @@
 from curses import napms, color_pair, A_BOLD
 
-from src.core.__check_repository_connection__ import check_linux_package_manager_connection
+from core.__check_repository_connection__ import check_linux_package_manager_connection
 
 
 class CheckPackageManagerConnection:

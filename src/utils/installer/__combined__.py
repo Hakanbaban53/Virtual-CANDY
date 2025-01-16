@@ -438,7 +438,7 @@ def package_installer(distro, package, verbose):
                 )
 
     except CalledProcessError as err:
-        print(f"An error occurred: {err}")
+        logging.error(f"An error occurred: {err}")
 
 
 def package_remover(distro, package, verbose):

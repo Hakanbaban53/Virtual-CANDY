@@ -1,5 +1,6 @@
 import datetime
 import json
+import logging
 import os
 from pathlib import Path
 import requests
@@ -33,13 +34,13 @@ class PackagesJSONHandler:
                 response.raise_for_status()
                 with open(file_path, "w") as file:
                     json.dump(response.json(), file)
-                print(f"JSON file downloaded successfully: {file_path}")
+                logging.debug(f"JSON file downloaded successfully: {file_path}")
                 return True
             except requests.exceptions.RequestException as e:
                 retries += 1
-                print(f"Failed to download JSON file from {url} (Attempt {retries}/{max_retries}): {e}")
+                logging.debug(f"Failed to download JSON file from {url} (Attempt {retries}/{max_retries}): {e}")
                 if retries < max_retries:
-                    print(f"Retrying in {retry_delay} seconds...")
+                    logging.debug(f"Retrying in {retry_delay} seconds...")
                     time.sleep(retry_delay)
         return False
 
@@ -48,7 +49,7 @@ class PackagesJSONHandler:
         try:
             if not self.json_file_path.exists():
                 if self.json_file_url:
-                    print(f"JSON file not found. Downloading from {self.json_file_url}...")
+                    logging.debug(f"JSON file not found. Downloading from {self.json_file_url}...")
                     if not self.download_json_file(self.json_file_url, self.json_file_path):
                         raise RuntimeError(f"Failed to download JSON file from {self.json_file_url}.")
                 else:
@@ -57,13 +58,13 @@ class PackagesJSONHandler:
             # Check file age if refresh is needed
             file_age = datetime.datetime.now() - datetime.datetime.fromtimestamp(self.json_file_path.stat().st_mtime)
             if file_age > datetime.timedelta(days=1) or refresh:
-                print(f"Refreshing JSON file from {self.json_file_url}...")
+                logging.debug(f"Refreshing JSON file from {self.json_file_url}...")
                 if not self.download_json_file(self.json_file_url, self.json_file_path):
                     raise RuntimeError(f"Failed to refresh JSON file from {self.json_file_url}.")
 
             # Load and return JSON data
             with open(self.json_file_path, "r") as file:
-                print(f"Loading JSON data from {self.json_file_path}...")
+                logging.debug(f"Loading JSON data from {self.json_file_path}...")
                 return json.load(file)
         except json.JSONDecodeError as e:
             raise RuntimeError(f"Error decoding JSON file: {e}")

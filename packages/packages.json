@@ -1096,7 +1096,7 @@
             "sudo dnf install $CACHE_PATH/gnome-startup-applications-46.0-1.fc41.x86_64.rpm -y",
             "sudo rm -rf $CACHE_PATH/gnome-startup-applications-46.0-1.fc41.x86_64.rpm"
           ],
-          "check_script": ["gnome-startup-applications"],
+          "check_script": ["/usr/bin/gnome-session-properties"],
           "remove_script": ["sudo dnf remove gnome-startup-applications -y"]
         },
         {

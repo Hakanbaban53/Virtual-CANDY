@@ -1,6 +1,6 @@
 from colorama import Fore, Style
 from argparse import ArgumentParser
-from src.core.__get_os_package_manager__ import identify_distribution
+from core.__get_os_package_manager__ import identify_distribution
 
 
 class ArgumentHandler:
