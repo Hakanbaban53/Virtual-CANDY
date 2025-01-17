@@ -1,11 +1,10 @@
 from colorama import Fore, Style
 from argparse import ArgumentParser
-from core.__get_os_package_manager__ import identify_distribution
-
 
 class ArgumentHandler:
-    def __init__(self):
+    def __init__(self, linux_distro_id):
         # Parse arguments and adjust them
+        self.linux_distro_id = linux_distro_id
         self.args = self.parse_arguments()
         self.adjust_arguments()
 
@@ -15,11 +14,10 @@ class ArgumentHandler:
 
     def parse_arguments(self):
         """Parse command-line arguments."""
-        linux_distro_id = identify_distribution()
         parser = ArgumentParser(description="Linux Package Manager")
 
         # Add command-line arguments
-        parser.add_argument("--distribution", default=linux_distro_id, help="Linux distribution")
+        parser.add_argument("--distribution", default=self.linux_distro_id, help="Linux distribution")
         parser.add_argument("-a", "--action", choices=["install", "remove"], default="install", help="Install or remove package")
         parser.add_argument("-j", "--json", help="URL or path to JSON file containing package data")
         parser.add_argument("-u", "--url", help="URL to JSON file containing package data")

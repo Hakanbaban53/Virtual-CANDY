@@ -1,16 +1,22 @@
 import logging
+import threading
 
 class LoggingManager:
     """Logging manager for the application."""
-    def __init__(self, verbose, dry_run):
+    def __init__(self, verbose, dry_run, log_stream=None):
         """Set up the logger."""
-        logger = logging.getLogger()
-        handler = logging.StreamHandler()
+        self.logger = logging.getLogger()
+        self.logger.handlers = []  # Clear existing handlers
+        handler = logging.StreamHandler(log_stream if log_stream else None)
         dry_run_text = " [DRY RUN]" if dry_run else ""
         if verbose:
-            formatter = logging.Formatter(f"%(levelname)s {'-'+dry_run_text+'-' if dry_run else ''} %(message)s")
+            formatter = logging.Formatter(f"%(levelname)s {dry_run_text} %(message)s")
         else:
             formatter = logging.Formatter("%(message)s")
         handler.setFormatter(formatter)
-        logger.addHandler(handler)
-        logger.setLevel(logging.DEBUG if verbose else logging.INFO)
+        self.logger.addHandler(handler)
+        self.logger.setLevel(logging.DEBUG if verbose else logging.INFO)
+
+    def get_thread(self, target, args):
+        """Get a thread with the given target and arguments."""
+        return threading.Thread(target=target, args=args)

@@ -4,6 +4,7 @@ import sys
 from TUI.core.components.__app_selector__ import AppSelector
 from TUI.core.components.__footer__ import Footer
 from TUI.core.components.__header__ import Header
+from TUI.core.static.__data__ import APP_NAME, APP_VERSION, MAX_DISPLAYED_PACKAGES, MIN_COLS, MIN_LINES, OPTIONS_INSTALL_REMOVE, OPTIONS_YES_NO
 from TUI.core.utils.__check_connection__ import CheckPackageManagerConnection
 from TUI.core.utils.__clean_line__ import CleanLine
 from TUI.core.utils.__clear_midde_section__ import ClearMiddleSection
@@ -12,21 +13,16 @@ from TUI.core.utils.__errors_ import Errors
 from TUI.core.utils.__input__ import Input
 from TUI.core.utils.__resize_handler__ import ResizeHandler
 from TUI.core.utils.__selections__ import Selections
-from core.__get_os_package_manager__ import get_linux_distribution, identify_distribution
-from core.__get_packages_data__ import PackagesJSONHandler
-
-OPTIONS_YES_NO = ["Yes", "No"]
-OPTIONS_INSTALL_REMOVE = ["install", "remove"]
-
-MIN_LINES = 20
-MIN_COLS = 80
-MAX_DISPLAYED_PACKAGES = 15
-
 
 class PackageManagerApp:
-    def __init__(self, stdscr):
+    def __init__(
+        self, stdscr, linux_distro_id, linux_distro_pretty_name, instructions_data
+    ):
 
         self.stdscr = stdscr
+        self.linux_distro_id = linux_distro_id
+        self.linux_distro_pretty_name = linux_distro_pretty_name
+        self.instructions_data = instructions_data
         self.height, self.width = self.stdscr.getmaxyx()
         self.cmd = ClearMiddleSection(self.stdscr, self.width, self.height)
         self.clean_line = CleanLine(self.stdscr)
@@ -40,11 +36,15 @@ class PackageManagerApp:
             "fedora": ["fedora"],
             "ubuntu": ["ubuntu"],
         }
-        self.header = Header(self.stdscr, "VCANDY", "V2.2.8")
+        self.header = Header(self.stdscr, APP_NAME, APP_VERSION)
         self.footer = Footer(self.stdscr)
         self.errors = Errors(self.stdscr, self.width, self.height)
-        self.resize_handler = ResizeHandler(self.stdscr, self.clean_line, self.header, self.footer, self.errors)
-        self.selections = Selections(self.stdscr, self.resize_handler, self.clean_line, self.footer, self.header)
+        self.resize_handler = ResizeHandler(
+            self.stdscr, self.clean_line, self.header, self.footer, self.errors
+        )
+        self.selections = Selections(
+            self.stdscr, self.resize_handler, self.clean_line, self.footer, self.header
+        )
 
         ColorManager(self.stdscr).init_colors()
 
@@ -53,7 +53,17 @@ class PackageManagerApp:
             prompt = "Do you want to hide complex outputs?"
             x = curses.COLS // 2 - len(prompt) // 2
             y = curses.LINES // 2 + 3
-            selection = self.selections.selections(self.use_dark_mode, prompt, x, y, self.height, self.width, OPTIONS_YES_NO, MIN_COLS, MIN_LINES)
+            selection = self.selections.selections(
+                self.use_dark_mode,
+                prompt,
+                x,
+                y,
+                self.height,
+                self.width,
+                OPTIONS_YES_NO,
+                MIN_COLS,
+                MIN_LINES,
+            )
 
             if selection == "Yes":
                 return False
@@ -68,19 +78,28 @@ class PackageManagerApp:
             prompt = "Please select the action:"
             x = self.width // 2 - len(prompt) // 2
             y = self.height // 2 - 6
-            actions = self.selections.selections(self.use_dark_mode, prompt, x, y, self.height, self.width, OPTIONS_INSTALL_REMOVE, MIN_COLS, MIN_LINES)
+            actions = self.selections.selections(
+                self.use_dark_mode,
+                prompt,
+                x,
+                y,
+                self.height,
+                self.width,
+                OPTIONS_INSTALL_REMOVE,
+                MIN_COLS,
+                MIN_LINES,
+            )
 
             if actions == "install":
-                linux_distro_id = identify_distribution()
 
                 if CheckPackageManagerConnection(
                     self.stdscr,
                     self.width,
                     self.height,
-                    linux_distro_id,
+                    self.linux_distro_id,
                     OPTIONS_YES_NO,
                     self.clean_line,
-                ).package_manager_connection(linux_distro_id):
+                ).package_manager_connection(self.linux_distro_id):
                     return "install"
                 else:
                     error_message = "Package Manager not connected."
@@ -115,8 +134,8 @@ class PackageManagerApp:
                 header_message,
                 curses.color_pair(4) | curses.A_BOLD | curses.A_UNDERLINE,
             )
-            linux_distribution = get_linux_distribution()
-            linux_distro_id = identify_distribution()
+            linux_distribution = self.linux_distro_pretty_name
+            linux_distro_id = self.linux_distro_id
 
             distro_message = "Detected Linux Distro: {}".format(linux_distribution)
             id_message = "Detected Distro ID: {}".format(linux_distro_id)
@@ -137,7 +156,17 @@ class PackageManagerApp:
             prompt = "Is that true?"
             x = self.width // 2 - len(prompt) // 2
             y = self.height // 2 - 1
-            selected_option = self.selections.selections(self.use_dark_mode, prompt, x, y, self.height, self.width, OPTIONS_YES_NO, MIN_COLS, MIN_LINES)
+            selected_option = self.selections.selections(
+                self.use_dark_mode,
+                prompt,
+                x,
+                y,
+                self.height,
+                self.width,
+                OPTIONS_YES_NO,
+                MIN_COLS,
+                MIN_LINES,
+            )
 
             warning_line = self.height // 2 - 2
 
@@ -197,8 +226,7 @@ class PackageManagerApp:
         return [False] * length
 
     def packages(self, linux_distro):
-        handler = PackagesJSONHandler()
-        instructions_data = handler.load_json_data()
+        instructions_data = self.instructions_data
 
         if linux_distro in instructions_data:
             package_list = instructions_data[linux_distro]
@@ -247,9 +275,8 @@ class PackageManagerApp:
                 OPTIONS_YES_NO,
                 MIN_COLS,
                 MIN_LINES,
-                MAX_DISPLAYED_PACKAGES
+                MAX_DISPLAYED_PACKAGES,
             )
-
 
         except curses.error:
             self.errors.terminal_size_error(MIN_LINES, MIN_COLS)
@@ -264,9 +291,16 @@ class PackageManagerApp:
             sys.exit(0)
 
 
-def start_terminal_ui():
+def start_terminal_ui(linux_distro_id, linux_distro_pretty_name, instructions_data):
     try:
-        curses.wrapper(lambda stdscr: PackageManagerApp(stdscr).main())
+        curses.wrapper(
+            lambda stdscr: PackageManagerApp(
+                stdscr,
+                linux_distro_id=linux_distro_id,
+                linux_distro_pretty_name=linux_distro_pretty_name,
+                instructions_data=instructions_data,
+            ).main()
+        )
     except KeyboardInterrupt:
         stdscr = curses.initscr()
         curses.start_color()
