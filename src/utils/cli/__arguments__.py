@@ -20,7 +20,7 @@ class ArgumentHandler:
         parser.add_argument("--distribution", default=self.linux_distro_id, help="Linux distribution")
         parser.add_argument("-a", "--action", choices=["install", "remove"], default="install", help="Install or remove package")
         parser.add_argument("-j", "--json", help="URL or path to JSON file containing package data")
-        parser.add_argument("-u", "--url", help="URL to JSON file containing package data")
+        parser.add_argument("-u", "--url", help="URL to JSON file containing package data. Its need to be used with -r")
         parser.add_argument("-r", "--refresh", action="store_true", help="Refresh the JSON data regardless of file age")
         parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output")
         parser.add_argument("-d", "--dry-run", action="store_true", help="Perform a dry run without making any changes")

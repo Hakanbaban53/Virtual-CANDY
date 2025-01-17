@@ -1,4 +1,3 @@
-
 import logging
 from core.__logging_manager__ import LoggingManager
 from TUI.__terminal_UI__ import start_terminal_ui

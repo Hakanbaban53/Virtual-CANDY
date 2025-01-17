@@ -38,7 +38,7 @@ pip3 install --user --no-cache-dir requests pyinstaller setuptools
 
 # Build the Python project with PyInstaller
 log "Building the Python project with PyInstaller..."
-~/.local/bin/pyinstaller --onefile ../../app.py --name=$PACKAGE_NAME
+~/.local/bin/pyinstaller --onefile ../../src/app.py --name=$PACKAGE_NAME
 
 # Create the binary folder
 log "Creating the binary folder..."

@@ -4,11 +4,11 @@ import sys
 from TUI.core.components.__app_selector__ import AppSelector
 from TUI.core.components.__footer__ import Footer
 from TUI.core.components.__header__ import Header
-from TUI.core.static.__data__ import APP_NAME, APP_VERSION, MAX_DISPLAYED_PACKAGES, MIN_COLS, MIN_LINES, OPTIONS_INSTALL_REMOVE, OPTIONS_YES_NO
+from TUI.core.static.__color_init__ import ColorInit
+from TUI.core.static.__data__ import DARK_MODE, KNOWN_DISTROS, OPTIONS_INSTALL_REMOVE, OPTIONS_YES_NO
 from TUI.core.utils.__check_connection__ import CheckPackageManagerConnection
 from TUI.core.utils.__clean_line__ import CleanLine
 from TUI.core.utils.__clear_midde_section__ import ClearMiddleSection
-from TUI.core.utils.__color_manager__ import ColorManager
 from TUI.core.utils.__errors_ import Errors
 from TUI.core.utils.__input__ import Input
 from TUI.core.utils.__resize_handler__ import ResizeHandler
@@ -23,22 +23,24 @@ class PackageManagerApp:
         self.linux_distro_id = linux_distro_id
         self.linux_distro_pretty_name = linux_distro_pretty_name
         self.instructions_data = instructions_data
+
         self.height, self.width = self.stdscr.getmaxyx()
-        self.cmd = ClearMiddleSection(self.stdscr, self.width, self.height)
+
+        ColorInit(self.stdscr).init_colors()
+        
+        self.color_pair_normal = curses.color_pair(2 if DARK_MODE else 11)
+        self.color_pair_red = curses.color_pair(3 if DARK_MODE else 12)
+        self.color_pair_cyan = curses.color_pair(4 if DARK_MODE else 13)
+
+        self.cmd = ClearMiddleSection(self.stdscr)
         self.clean_line = CleanLine(self.stdscr)
         self.user_input = Input(self.stdscr)
 
         self.selected_status_array = []
-        self.use_dark_mode = True
-        self.known_distros = {
-            "arch": ["arch"],
-            "debian": ["debian"],
-            "fedora": ["fedora"],
-            "ubuntu": ["ubuntu"],
-        }
-        self.header = Header(self.stdscr, APP_NAME, APP_VERSION)
+
+        self.header = Header(self.stdscr)
         self.footer = Footer(self.stdscr)
-        self.errors = Errors(self.stdscr, self.width, self.height)
+        self.errors = Errors(self.stdscr)
         self.resize_handler = ResizeHandler(
             self.stdscr, self.clean_line, self.header, self.footer, self.errors
         )
@@ -46,7 +48,6 @@ class PackageManagerApp:
             self.stdscr, self.resize_handler, self.clean_line, self.footer, self.header
         )
 
-        ColorManager(self.stdscr).init_colors()
 
     def get_output_choice(self):
         try:
@@ -54,15 +55,10 @@ class PackageManagerApp:
             x = curses.COLS // 2 - len(prompt) // 2
             y = curses.LINES // 2 + 3
             selection = self.selections.selections(
-                self.use_dark_mode,
                 prompt,
                 x,
                 y,
-                self.height,
-                self.width,
                 OPTIONS_YES_NO,
-                MIN_COLS,
-                MIN_LINES,
             )
 
             if selection == "Yes":
@@ -71,7 +67,7 @@ class PackageManagerApp:
                 return True
 
         except curses.error:
-            self.errors.terminal_size_error(MIN_LINES, MIN_COLS)
+            self.errors.terminal_size_error()
 
     def install_or_remove(self):
         try:
@@ -79,27 +75,19 @@ class PackageManagerApp:
             x = self.width // 2 - len(prompt) // 2
             y = self.height // 2 - 6
             actions = self.selections.selections(
-                self.use_dark_mode,
                 prompt,
                 x,
                 y,
-                self.height,
-                self.width,
                 OPTIONS_INSTALL_REMOVE,
-                MIN_COLS,
-                MIN_LINES,
             )
 
             if actions == "install":
 
                 if CheckPackageManagerConnection(
                     self.stdscr,
-                    self.width,
-                    self.height,
                     self.linux_distro_id,
-                    OPTIONS_YES_NO,
                     self.clean_line,
-                ).package_manager_connection(self.linux_distro_id):
+                ).package_manager_connection(self.selections.selections):
                     return "install"
                 else:
                     error_message = "Package Manager not connected."
@@ -108,13 +96,13 @@ class PackageManagerApp:
                         self.height // 2,
                         self.width // 2 - len(error_message) // 2,
                         error_message,
-                        curses.color_pair(3) | curses.A_BOLD,
+                        self.color_pair_red | curses.A_BOLD,
                     )
                     self.stdscr.addstr(
                         self.height // 2 + 2,
                         self.width // 2 - len(exit_message) // 2,
                         exit_message,
-                        curses.color_pair(3) | curses.A_BOLD,
+                        self.color_pair_red | curses.A_BOLD,
                     )
                     self.stdscr.refresh()
                     curses.napms(1500)
@@ -123,7 +111,7 @@ class PackageManagerApp:
                 return "remove"
 
         except curses.error:
-            self.errors.terminal_size_error(MIN_LINES, MIN_COLS)
+            self.errors.terminal_size_error()
 
     def get_linux_distro(self):
         try:
@@ -132,7 +120,7 @@ class PackageManagerApp:
                 self.height // 2 - 7,
                 self.width // 2 - len(header_message) // 2,
                 header_message,
-                curses.color_pair(4) | curses.A_BOLD | curses.A_UNDERLINE,
+                self.color_pair_cyan | curses.A_BOLD | curses.A_UNDERLINE,
             )
             linux_distribution = self.linux_distro_pretty_name
             linux_distro_id = self.linux_distro_id
@@ -144,28 +132,23 @@ class PackageManagerApp:
                 self.height // 2 - 5,
                 self.width // 2 - len(distro_message) // 2,
                 distro_message,
-                curses.color_pair(2),
+                self.color_pair_normal,
             )
             self.stdscr.addstr(
                 self.height // 2 - 4,
                 self.width // 2 - len(id_message) // 2,
                 id_message,
-                curses.color_pair(2),
+                self.color_pair_normal,
             )
 
             prompt = "Is that true?"
             x = self.width // 2 - len(prompt) // 2
             y = self.height // 2 - 1
             selected_option = self.selections.selections(
-                self.use_dark_mode,
                 prompt,
                 x,
                 y,
-                self.height,
-                self.width,
                 OPTIONS_YES_NO,
-                MIN_COLS,
-                MIN_LINES,
             )
 
             warning_line = self.height // 2 - 2
@@ -177,10 +160,7 @@ class PackageManagerApp:
                 while True:
                     input_prompt = "Please enter the distro: "
                     linux_distribution = self.user_input.get_user_input_string(
-                        self.use_dark_mode,
-                        input_prompt,
-                        self.height // 2 + 3,
-                        self.width // 2 - len(input_prompt) // 2,
+                        input_prompt
                     )
                     linux_distribution_lower = linux_distribution.lower()
 
@@ -193,10 +173,10 @@ class PackageManagerApp:
                         self.height // 2 - 3,
                         self.width // 2 - len(entered_message) // 2,
                         entered_message,
-                        curses.color_pair(2),
+                        self.color_pair_normal,
                     )
 
-                    for distro, keywords in self.known_distros.items():
+                    for distro, keywords in KNOWN_DISTROS.items():
                         if any(
                             keyword in linux_distribution_lower for keyword in keywords
                         ):
@@ -214,12 +194,12 @@ class PackageManagerApp:
                         warning_line,
                         self.width // 2 - len(warning_message) // 2,
                         warning_message,
-                        curses.color_pair(2) | curses.A_BOLD,
+                        self.color_pair_red | curses.A_BOLD,
                     )
                     self.clean_line.clean_line(0, self.height // 2 + 3)
 
         except curses.error:
-            self.errors.terminal_size_error(MIN_LINES, MIN_COLS)
+            self.errors.terminal_size_error()
 
     def initialize_selected_status(self, length):
         # Initialize selected status array
@@ -238,11 +218,7 @@ class PackageManagerApp:
     def main(self):
         try:
             curses.curs_set(0)
-            if curses.LINES < MIN_LINES or curses.COLS < MIN_COLS:
-                self.errors.terminal_size_error(MIN_LINES, MIN_COLS)
-
-            self.header.display(self.use_dark_mode)
-            self.footer.display(self.use_dark_mode)
+            self.resize_handler.resize_handler()
 
             linux_distribution = self.get_linux_distro()
             output = self.get_output_choice()
@@ -258,9 +234,6 @@ class PackageManagerApp:
             AppSelector(
                 self.stdscr,
                 relevant_packages,
-                self.width,
-                self.height,
-                self.use_dark_mode,
                 self.cmd,
                 self.selections,
                 self.header,
@@ -272,19 +245,15 @@ class PackageManagerApp:
                 action,
                 linux_distribution,
                 output,
-                OPTIONS_YES_NO,
-                MIN_COLS,
-                MIN_LINES,
-                MAX_DISPLAYED_PACKAGES,
             )
 
         except curses.error:
-            self.errors.terminal_size_error(MIN_LINES, MIN_COLS)
+            self.errors.terminal_size_error()
 
         except Exception as e:
             curses.reset_prog_mode()
             self.stdscr.clear()
-            self.stdscr.addstr(1, 1, str(e), curses.color_pair(3) | curses.A_BOLD)
+            self.stdscr.addstr(1, 1, str(e), self.color_pair_red | curses.A_BOLD)
             self.stdscr.addstr(2, 1, "[Press any key to exit program]")
             self.stdscr.getch()
             curses.reset_shell_mode()
@@ -303,6 +272,7 @@ def start_terminal_ui(linux_distro_id, linux_distro_pretty_name, instructions_da
         )
     except KeyboardInterrupt:
         stdscr = curses.initscr()
+
         curses.start_color()
         curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
         stdscr.clear()
@@ -310,10 +280,9 @@ def start_terminal_ui(linux_distro_id, linux_distro_pretty_name, instructions_da
             curses.LINES // 2 - 2,
             curses.COLS // 2 - 14,
             "Ctrl + C pressed. Exiting...",
-            curses.color_pair(3) | curses.A_BOLD,
+            curses.color_pair(3 if DARK_MODE else 12) | curses.A_BOLD,
         )
         stdscr.addstr(curses.LINES // 2, curses.COLS // 2 - 3, "Bye 👋")
-        stdscr.refresh()
-        curses.napms(1500)
+        Header(stdscr).stop()
         curses.endwin()
         sys.exit(0)

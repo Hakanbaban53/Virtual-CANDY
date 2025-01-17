@@ -9,6 +9,9 @@ from curses import (
     KEY_RESIZE,
 )
 
+from TUI.core.static.__data__ import toggle_dark_mode
+
+
 class Selections:
     def __init__(self, stdscr, resize_handler, clean_line, footer, header):
         self.stdscr = stdscr
@@ -16,10 +19,20 @@ class Selections:
         self.clean_line = clean_line
         self.footer = footer
         self.header = header
+        self.update_colors()
 
-    def selections(self, use_dark_mode, prompt, x, y, height, width, options, MIN_COLS, MIN_LINES):
+    def update_colors(self):
+        from TUI.core.static.__data__ import DARK_MODE
+
+        self.color_pair_normal = color_pair(2 if DARK_MODE else 11)
+        self.stdscr.bkgd(self.color_pair_normal)
+
+        self.stdscr.refresh()
+
+    def selections(self, prompt, x, y, options):
         # Handle user selections
         selected_option = 0
+        height, width = self.stdscr.getmaxyx()
 
         while True:
             # Clear previous prompt
@@ -31,7 +44,7 @@ class Selections:
                 y,
                 prompt_x,
                 prompt,
-                color_pair(2) | A_BOLD | A_UNDERLINE,
+                self.color_pair_normal | A_BOLD | A_UNDERLINE,
             )
 
             # Calculate the starting x position to center the options
@@ -61,16 +74,10 @@ class Selections:
             elif key in [KEY_ENTER, 10, 13]:
                 return options[selected_option]
             elif key == 4:  # Ctrl + D for toggle dark/light mode
-                use_dark_mode = not use_dark_mode
-                self.stdscr.bkgd(
-                    color_pair(2)
-                    if use_dark_mode
-                    else color_pair(11)
-                )
+                toggle_dark_mode()
+                self.update_colors()
                 self.stdscr.refresh()
-                self.header.display(use_dark_mode)
-                self.footer.display(use_dark_mode)
+                self.header.display()
+                self.footer.display()
             elif key == KEY_RESIZE:
-                self.resize_handler.resize_handler(
-                        use_dark_mode, width, height, MIN_COLS, MIN_LINES
-                    )
+                self.resize_handler.resize_handler()

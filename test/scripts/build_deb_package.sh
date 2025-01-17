@@ -64,7 +64,7 @@ mkdir -p "$BIN_DIR"
 
 # Build the Python project
 log "Building the Python project..."
-~/.local/bin/pyinstaller --onefile ../../app.py --name=$PACKAGE_NAME
+~/.local/bin/pyinstaller --onefile ../../src/app.py --name=$PACKAGE_NAME
 
 # Move the binary file to the build directory
 mv dist/$PACKAGE_NAME "$BIN_DIR"

@@ -1,6 +1,6 @@
 <h1 align="center"> Virtual CANDY "VCANDY" 🖥️<h1>
 
-<h4 align="center">An application that installs certain virtualization applications (Docker/Docker Desktop, VirtManager/QEMU, VMware Workstation (With DKMS host modules), VirtualBox and Podman/Podman Desktop) on Linux via argument or command line user interface.</h4>
+<h4 align="center">It's a package manager for Linux distributions. Handles the installation and removal of packages with a simple command-line interface or terminal UI. Also includes a JSON file for package information and a script for building packages for different distributions.</h4>
 
 <div align="center">
   <img src="./assets/arguments.gif" style="width: 500px; height: auto;">
@@ -11,7 +11,7 @@
 This Packages building with github action. 
 You can download it from [here](https://github.com/Hakanbaban53/Virtual-CANDY/releases) (Not yet available for Arch Linux. Please build from Github repository)
 
-## 🏗️ Build From Github Repository
+## 🏗️ Build From Github Repository and Testing
 
 <details><summary>Arch</summary>
 
@@ -20,15 +20,15 @@ building with makepkg:
 
 ```sh
 pacman -S --needed git
-git clone https://github.com/Hakanbaban53/Container-and-Virtualization-Installer.git
-cd Container-and-Virtualization-Installer
+git clone https://github.com/Hakanbaban53/Virtual-CANDY.git
+cd Virtual-CANDY
 makepkg -si
 ```
 
 If you want to do all of this at once, we can chain the commands like so:
 
 ```sh
-pacman -S --needed git && git clone https://github.com/Hakanbaban53/Container-and-Virtualization-Installer.git && cd Container-and-Virtualization-Installer && makepkg -si
+pacman -S --needed git && git clone https://github.com/Hakanbaban53/Virtual-CANDY.git && cd Virtual-CANDY && makepkg -si
 ```
 
 </details>
@@ -40,8 +40,8 @@ It will automatically create and install the debian package:
 
 ```sh
 apt install git
-git clone https://github.com/Hakanbaban53/Container-and-Virtualization-Installer.git
-cd Container-and-Virtualization-Installer
+git clone https://github.com/Hakanbaban53/Virtual-CANDY.git
+cd Virtual-CANDY/test/scripts
 chmod +x ./build_deb_package.sh
 ./build_deb_package.sh
 ```
@@ -49,7 +49,7 @@ chmod +x ./build_deb_package.sh
 If you want to do all of this at once, we can chain the commands like so:
 
 ```sh
-apt install git && git clone https://github.com/Hakanbaban53/Container-and-Virtualization-Installer.git && cd Container-and-Virtualization-Installer && chmod +x ./build_deb_package.sh && ./build_deb_package.sh
+apt install git && git clone https://github.com/Hakanbaban53/Virtual-CANDY.git && cd Virtual-CANDY/test/scripts && chmod +x ./build_deb_package.sh && ./build_deb_package.sh
 ```
 
 </details>
@@ -61,8 +61,8 @@ It will automatically create and install the rpm package:
 
 ```sh
 dnf install git
-git clone https://github.com/Hakanbaban53/Container-and-Virtualization-Installer.git
-cd Container-and-Virtualization-Installer
+git clone https://github.com/Hakanbaban53/Virtual-CANDY.git
+cd Virtual-CANDY/test/scripts
 chmod +x ./build_rpm_package.sh
 ./build_rpm_package.sh
 ```
@@ -70,7 +70,7 @@ chmod +x ./build_rpm_package.sh
 If you want to do all of this at once, we can chain the commands like so:
 
 ```sh
-dnf install git && git clone https://github.com/Hakanbaban53/Container-and-Virtualization-Installer.git && cd Container-and-Virtualization-Installer && chmod +x ./build_rpm_package.sh && ./build_rpm_package.sh
+dnf install git && git clone https://github.com/Hakanbaban53/Virtual-CANDY.git && cd Virtual-CANDY/test/scripts && chmod +x ./build_rpm_package.sh && ./build_rpm_package.sh
 ```
 
 </details>
@@ -84,6 +84,8 @@ dnf install git && git clone https://github.com/Hakanbaban53/Container-and-Virtu
     
     # Fedora
     dnf remove vcany
+
+- Also you can check the [TEST.md](./docs/TEST.md) file for more information.
 
 ## ⚙️ Usage
 
@@ -157,37 +159,8 @@ And one more thing. Arguments are case-sensitive. You need to give the package n
 
 </details>
 
-## 📦 Packages
-
-<details><summary>Package Names</summary>
-
-- Package names in the packages.json.
-
-```css
-🗃 .
-├── 📦 VMware_Workstation-17.5.2
-│  ├── 🗋 VMware Workstation-17.5.2
-│  └── 🗋 VMware Host Modules DKMS (Dynamic Kernel Modules)
-├── 📦 VirtualBox-7.0
-│  ├── 🗋 VirtualBox-7.0
-│  └── 🗋 Virtual Box Extensions
-├── 📦 Qemu_and_VM_Manager
-│  ├── 🗋 QEMU
-│  └── 🗋 Virtual Machine Manager
-├── 📦 Docker_CLI_and_Docker_Desktop
-│  ├── 🗋 Docker CLI
-│  └── 🗋 Docker Desktop
-├── 📦 Podman_and_Podman_Desktop
-│  ├── 🗋 Podman CLI
-│  └── 🗋 Podman Desktop
-└── 📦 Useful apps I used
-   ├── 🗋 Visual_Studio_Code
-   ├── 🗋 Github_Desktop
-   └── 🗐 And more...
-```
-
-</details>
-
+## 📦 Package Managing
+- If you want to make own package `json` file for your purposes, you can check the [PACKAGES.md](./docs/PACKAGES.md) file for more information.
 
 ## ⁉️ IMPORTANT
 
