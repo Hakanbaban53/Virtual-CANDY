@@ -7,6 +7,8 @@ MAX_DISPLAYED_PACKAGES = 15
 
 APP_NAME = "VCANDY"
 APP_VERSION = "V2.2.8"
+DEVELOPER_NAME = "Hakan İSMAİL"
+GITHUB_URL = "https://github.com/Hakanbaban53/Virtual-CANDY"
 
 
 def is_system_dark_mode():

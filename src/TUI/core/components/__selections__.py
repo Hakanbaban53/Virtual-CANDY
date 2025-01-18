@@ -6,19 +6,13 @@ from curses import (
     KEY_LEFT,
     KEY_RIGHT,
     KEY_ENTER,
-    KEY_RESIZE,
 )
 
-from TUI.core.static.__data__ import toggle_dark_mode
-
-
 class Selections:
-    def __init__(self, stdscr, resize_handler, clean_line, footer, header):
+    def __init__(self, stdscr, clean_line, helper_keys):
         self.stdscr = stdscr
-        self.resize_handler = resize_handler
         self.clean_line = clean_line
-        self.footer = footer
-        self.header = header
+        self.helper_keys = helper_keys
         self.update_colors()
 
     def update_colors(self):
@@ -73,11 +67,5 @@ class Selections:
                 selected_option = (selected_option + 1) % len(options)
             elif key in [KEY_ENTER, 10, 13]:
                 return options[selected_option]
-            elif key == 4:  # Ctrl + D for toggle dark/light mode
-                toggle_dark_mode()
-                self.update_colors()
-                self.stdscr.refresh()
-                self.header.display()
-                self.footer.display()
-            elif key == KEY_RESIZE:
-                self.resize_handler.resize_handler()
+            else:
+                self.helper_keys.keys(key, update_colors=self.update_colors)

@@ -11,15 +11,13 @@ from core.__logging_manager__ import LoggingManager
 
 class AppSelector:
     def __init__(
-        self, stdscr, app_list, cmd, selections, header, footer, resize_handler
+        self, stdscr, app_list, cmd, selections, helper_keys
     ):
         self.stdscr = stdscr
         self.app_list = app_list
         self.cmd = cmd
         self.selections = selections
-        self.header = header
-        self.footer = footer
-        self.resize_handler = resize_handler
+        self.helper_keys = helper_keys
         self.selected_app = None
         self.update_colors()
 
@@ -34,7 +32,7 @@ class AppSelector:
         self.color_pair_normal = curses.color_pair(2 if DARK_MODE else 11)
         self.color_pair_red = curses.color_pair(3 if DARK_MODE else 12)
         self.color_pair_yellow = curses.color_pair(6 if DARK_MODE else 15)
-        self.color_pair_magenta = curses.color_pair(4 if DARK_MODE else 16)
+        self.color_pair_magenta = curses.color_pair(7 if DARK_MODE else 16)
         self.color_pair_blue = curses.color_pair(8 if DARK_MODE else 17)
         self.stdscr.bkgd(self.color_pair_normal)
         self.stdscr.refresh()
@@ -253,11 +251,6 @@ class AppSelector:
 
                     render_output()
 
-                    curses.reset_prog_mode()
-                    self.stdscr.clear()
-                    self.header.display()
-                    self.footer.display()
-
                     success_message = "The selected options have been implemented!"
                     reboot_message = "Some Applications may require a reboot to take effect. (Kernel modules, etc.)"
                     press_any_key = "[Press any key to exit]"
@@ -278,14 +271,8 @@ class AppSelector:
                         self.color_pair_blue | curses.A_BOLD | curses.A_REVERSE,
                     )
 
-            elif key == 4:  # Ctrl + D for toggle dark/light mode
-                toggle_dark_mode()
-                self.update_colors()
-                self.stdscr.refresh()
-                self.header.display()
-                self.footer.display()
-                self.print_menu(current_row, relevant_packages, selected_status_array)
-            elif key == curses.KEY_RESIZE:
-                self.resize_handler.resize_handler()
+            else:
+                self.helper_keys.keys(key, update_colors=self.update_colors)
+
 
             self.print_menu(current_row, relevant_packages, selected_status_array)

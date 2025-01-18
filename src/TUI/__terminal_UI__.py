@@ -1,24 +1,29 @@
 import curses
-import sys
+from sys import exit
 
 from TUI.core.components.__app_selector__ import AppSelector
 from TUI.core.components.__footer__ import Footer
 from TUI.core.components.__header__ import Header
 from TUI.core.static.__color_init__ import ColorInit
-from TUI.core.static.__data__ import DARK_MODE, KNOWN_DISTROS, OPTIONS_INSTALL_REMOVE, OPTIONS_YES_NO
+from TUI.core.static.__data__ import (
+    KNOWN_DISTROS,
+    OPTIONS_INSTALL_REMOVE,
+    OPTIONS_YES_NO,
+)
 from TUI.core.utils.__check_connection__ import CheckPackageManagerConnection
 from TUI.core.utils.__clean_line__ import CleanLine
 from TUI.core.utils.__clear_midde_section__ import ClearMiddleSection
 from TUI.core.utils.__errors_ import Errors
+from TUI.core.utils.__helper_keys__ import HelperKeys
 from TUI.core.utils.__input__ import Input
 from TUI.core.utils.__resize_handler__ import ResizeHandler
-from TUI.core.utils.__selections__ import Selections
+from TUI.core.components.__selections__ import Selections
+
 
 class PackageManagerApp:
     def __init__(
         self, stdscr, linux_distro_id, linux_distro_pretty_name, instructions_data
     ):
-
         self.stdscr = stdscr
         self.linux_distro_id = linux_distro_id
         self.linux_distro_pretty_name = linux_distro_pretty_name
@@ -26,17 +31,15 @@ class PackageManagerApp:
 
         self.height, self.width = self.stdscr.getmaxyx()
 
+        self.init_components()
+
+    def init_components(self):
         ColorInit(self.stdscr).init_colors()
-        
-        self.color_pair_normal = curses.color_pair(2 if DARK_MODE else 11)
-        self.color_pair_red = curses.color_pair(3 if DARK_MODE else 12)
-        self.color_pair_cyan = curses.color_pair(4 if DARK_MODE else 13)
+        self.update_colors()
 
         self.cmd = ClearMiddleSection(self.stdscr)
         self.clean_line = CleanLine(self.stdscr)
         self.user_input = Input(self.stdscr)
-
-        self.selected_status_array = []
 
         self.header = Header(self.stdscr)
         self.footer = Footer(self.stdscr)
@@ -44,10 +47,24 @@ class PackageManagerApp:
         self.resize_handler = ResizeHandler(
             self.stdscr, self.clean_line, self.header, self.footer, self.errors
         )
+        self.helper_keys = HelperKeys(
+            self.stdscr, self.resize_handler, self.header, self.footer
+        )
         self.selections = Selections(
-            self.stdscr, self.resize_handler, self.clean_line, self.footer, self.header
+            self.stdscr, self.clean_line, self.helper_keys
         )
 
+    def update_colors(self):
+        from TUI.core.static.__data__ import DARK_MODE
+
+        self.color_pair_normal = curses.color_pair(2 if DARK_MODE else 11)
+        self.color_pair_red = curses.color_pair(3 if DARK_MODE else 12)
+        self.color_pair_cyan = curses.color_pair(4 if DARK_MODE else 13)
+        self.color_pair_yellow = curses.color_pair(6 if DARK_MODE else 15)
+        self.color_pair_magenta = curses.color_pair(7 if DARK_MODE else 16)
+        self.color_pair_blue = curses.color_pair(8 if DARK_MODE else 17)
+        self.stdscr.bkgd(self.color_pair_normal)
+        self.stdscr.refresh()
 
     def get_output_choice(self):
         try:
@@ -106,7 +123,7 @@ class PackageManagerApp:
                     )
                     self.stdscr.refresh()
                     curses.napms(1500)
-                    sys.exit(0)
+                    exit(0)
             elif actions == "remove":
                 return "remove"
 
@@ -227,21 +244,16 @@ class PackageManagerApp:
             action = self.install_or_remove()
 
             relevant_packages = self.packages(linux_distribution)
-            self.selected_status_array = self.initialize_selected_status(
-                len(relevant_packages)
-            )
 
             AppSelector(
                 self.stdscr,
                 relevant_packages,
                 self.cmd,
                 self.selections,
-                self.header,
-                self.footer,
-                self.resize_handler,
+                self.helper_keys
             ).select_app(
                 relevant_packages,
-                self.selected_status_array,
+                self.initialize_selected_status(len(relevant_packages)),
                 action,
                 linux_distribution,
                 output,
@@ -257,7 +269,7 @@ class PackageManagerApp:
             self.stdscr.addstr(2, 1, "[Press any key to exit program]")
             self.stdscr.getch()
             curses.reset_shell_mode()
-            sys.exit(0)
+            exit(0)
 
 
 def start_terminal_ui(linux_distro_id, linux_distro_pretty_name, instructions_data):
@@ -271,8 +283,9 @@ def start_terminal_ui(linux_distro_id, linux_distro_pretty_name, instructions_da
             ).main()
         )
     except KeyboardInterrupt:
-        stdscr = curses.initscr()
+        from TUI.core.static.__data__ import DARK_MODE
 
+        stdscr = curses.initscr()
         curses.start_color()
         curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
         stdscr.clear()
@@ -285,4 +298,4 @@ def start_terminal_ui(linux_distro_id, linux_distro_pretty_name, instructions_da
         stdscr.addstr(curses.LINES // 2, curses.COLS // 2 - 3, "Bye 👋")
         Header(stdscr).stop()
         curses.endwin()
-        sys.exit(0)
+        exit(0)

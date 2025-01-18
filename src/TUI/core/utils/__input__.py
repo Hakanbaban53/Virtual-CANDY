@@ -1,5 +1,4 @@
 from curses import color_pair, A_BOLD, noecho, error, echo, newwin
-from TUI.core.static.__data__ import DARK_MODE
 
 
 class Input:
