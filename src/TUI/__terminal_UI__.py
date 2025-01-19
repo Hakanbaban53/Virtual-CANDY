@@ -50,9 +50,7 @@ class PackageManagerApp:
         self.helper_keys = HelperKeys(
             self.stdscr, self.resize_handler, self.header, self.footer
         )
-        self.selections = Selections(
-            self.stdscr, self.clean_line, self.helper_keys
-        )
+        self.selections = Selections(self.stdscr, self.clean_line, self.helper_keys)
 
     def update_colors(self):
         from TUI.core.static.__data__ import DARK_MODE
@@ -66,36 +64,16 @@ class PackageManagerApp:
         self.stdscr.bkgd(self.color_pair_normal)
         self.stdscr.refresh()
 
-    def get_output_choice(self):
-        try:
-            prompt = "Do you want to hide complex outputs?"
-            x = curses.COLS // 2 - len(prompt) // 2
-            y = curses.LINES // 2 + 3
-            selection = self.selections.selections(
-                prompt,
-                x,
-                y,
-                OPTIONS_YES_NO,
-            )
-
-            if selection == "Yes":
-                return False
-            else:
-                return True
-
-        except curses.error:
-            self.errors.terminal_size_error()
-
     def install_or_remove(self):
         try:
             prompt = "Please select the action:"
             x = self.width // 2 - len(prompt) // 2
-            y = self.height // 2 - 6
+            y = self.height // 2 - 2
             actions = self.selections.selections(
-                prompt,
-                x,
-                y,
-                OPTIONS_INSTALL_REMOVE,
+                x=x,
+                y=y,
+                question=prompt,
+                options=OPTIONS_INSTALL_REMOVE,
             )
 
             if actions == "install":
@@ -110,13 +88,14 @@ class PackageManagerApp:
                     error_message = "Package Manager not connected."
                     exit_message = "Exiting..."
                     self.stdscr.addstr(
-                        self.height // 2,
+                        self.height // 2 + 2,
                         self.width // 2 - len(error_message) // 2,
                         error_message,
                         self.color_pair_red | curses.A_BOLD,
                     )
+                    self.clean_line.clean_line(0, self.height // 2 + 4)
                     self.stdscr.addstr(
-                        self.height // 2 + 2,
+                        self.height // 2 + 4,
                         self.width // 2 - len(exit_message) // 2,
                         exit_message,
                         self.color_pair_red | curses.A_BOLD,
@@ -132,40 +111,23 @@ class PackageManagerApp:
 
     def get_linux_distro(self):
         try:
-            header_message = "Getting Linux Distro:"
-            self.stdscr.addstr(
-                self.height // 2 - 7,
-                self.width // 2 - len(header_message) // 2,
-                header_message,
-                self.color_pair_cyan | curses.A_BOLD | curses.A_UNDERLINE,
-            )
             linux_distribution = self.linux_distro_pretty_name
             linux_distro_id = self.linux_distro_id
 
+            header_message = "Getting Linux Distro:"
             distro_message = "Detected Linux Distro: {}".format(linux_distribution)
             id_message = "Detected Distro ID: {}".format(linux_distro_id)
 
-            self.stdscr.addstr(
-                self.height // 2 - 5,
-                self.width // 2 - len(distro_message) // 2,
-                distro_message,
-                self.color_pair_normal,
-            )
-            self.stdscr.addstr(
-                self.height // 2 - 4,
-                self.width // 2 - len(id_message) // 2,
-                id_message,
-                self.color_pair_normal,
-            )
+            question = "Is that true?"
+            x = self.width // 2 - len(question) // 2
+            y = self.height // 2 - 5
 
-            prompt = "Is that true?"
-            x = self.width // 2 - len(prompt) // 2
-            y = self.height // 2 - 1
             selected_option = self.selections.selections(
-                prompt,
-                x,
-                y,
-                OPTIONS_YES_NO,
+                x=x,
+                y=y,
+                question=question,
+                options=OPTIONS_YES_NO,
+                prompts=[header_message, distro_message, id_message],
             )
 
             warning_line = self.height // 2 - 2
@@ -187,10 +149,10 @@ class PackageManagerApp:
                         linux_distribution
                     )
                     self.stdscr.addstr(
-                        self.height // 2 - 3,
+                        self.height // 2 - 5,
                         self.width // 2 - len(entered_message) // 2,
                         entered_message,
-                        self.color_pair_normal,
+                        self.color_pair_cyan | curses.A_BOLD,
                     )
 
                     for distro, keywords in KNOWN_DISTROS.items():
@@ -227,36 +189,30 @@ class PackageManagerApp:
 
         if linux_distro in instructions_data:
             package_list = instructions_data[linux_distro]
-            relevant_packages = [package.get("name", "") for package in package_list]
-            return relevant_packages
+            return package_list
         else:
             return []
 
-    def main(self):
+    def main(self, log_stream, verbose, dry_run):
         try:
             curses.curs_set(0)
             self.resize_handler.resize_handler()
 
             linux_distribution = self.get_linux_distro()
-            output = self.get_output_choice()
-
-            self.cmd.clear_middle_section()
             action = self.install_or_remove()
 
-            relevant_packages = self.packages(linux_distribution)
+            package_list = self.packages(linux_distribution)
 
             AppSelector(
-                self.stdscr,
-                relevant_packages,
-                self.cmd,
-                self.selections,
-                self.helper_keys
+                self.stdscr, package_list, self.cmd, self.selections, self.helper_keys
             ).select_app(
-                relevant_packages,
-                self.initialize_selected_status(len(relevant_packages)),
+                package_list,
+                self.initialize_selected_status(len(package_list)),
                 action,
                 linux_distribution,
-                output,
+                log_stream,
+                verbose,
+                dry_run,
             )
 
         except curses.error:
@@ -272,7 +228,14 @@ class PackageManagerApp:
             exit(0)
 
 
-def start_terminal_ui(linux_distro_id, linux_distro_pretty_name, instructions_data):
+def start_terminal_ui(
+    linux_distro_id,
+    linux_distro_pretty_name,
+    instructions_data,
+    log_stream,
+    verbose,
+    dry_run,
+):
     try:
         curses.wrapper(
             lambda stdscr: PackageManagerApp(
@@ -280,7 +243,7 @@ def start_terminal_ui(linux_distro_id, linux_distro_pretty_name, instructions_da
                 linux_distro_id=linux_distro_id,
                 linux_distro_pretty_name=linux_distro_pretty_name,
                 instructions_data=instructions_data,
-            ).main()
+            ).main(log_stream, verbose, dry_run)
         )
     except KeyboardInterrupt:
         from TUI.core.static.__data__ import DARK_MODE

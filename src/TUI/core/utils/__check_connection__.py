@@ -29,7 +29,7 @@ class CheckPackageManagerConnection:
         while True:
             prompt_checking = "Checking Package Manager Connection"
             x = width // 2 - len(prompt_checking) // 2 - 4
-            y = height // 2 - 2
+            y = height // 2 + 2
             self.stdscr.addstr(y, x, prompt_checking)
             self.stdscr.refresh()
 
@@ -52,12 +52,14 @@ class CheckPackageManagerConnection:
                 self.stdscr.refresh()
                 prompt = "Retry connection?"
                 retry = selections(
-                    prompt, width // 2, height // 2, OPTIONS_YES_NO
+                    x=width // 2,
+                    y=height // 2 + 2,
+                    question=prompt,
+                    options=OPTIONS_YES_NO,
                 )
                 if retry == "No":
-                    self.clean_line.clean_line(0, height // 2)
                     self.clean_line.clean_line(0, height // 2 + 2)
+                    self.clean_line.clean_line(0, height // 2 + 6)
                     return False
                 else:
                     self.clean_line.clean_line(x, y)
-        

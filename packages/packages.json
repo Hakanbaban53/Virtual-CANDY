@@ -519,7 +519,8 @@
   ],
   "fedora": [
     {
-      "name": "VMware_Worksgdndgtation",
+      "name": "VMware_Workstation",
+      "description": "VMware Workstation is a hosted hypervisor that runs on x64 versions of Windows and Linux operating systems; it enables users to set up virtual machines on a single physical machine and use them simultaneously along with the actual machine.",
       "values": [
         {
           "name": "VMware Workstation Dependencies",
@@ -625,6 +626,7 @@
     },
     {
       "name": "VirtualBox-7.0",
+      "description": "VirtualBox is a powerful x86 and AMD64/Intel64 virtualization product for enterprise as well as home use. Not only is VirtualBox an extremely feature rich, high performance product for enterprise customers, it is also the only professional solution that is freely available as Open Source Software under the terms of the GNU General Public License (GPL) version 2.",
       "values": [
         {
           "name": "DNF repository manager",
@@ -678,6 +680,7 @@
     },
     {
       "name": "Qemu_and_VM_Manager",
+      "description": "QEMU is a generic and open source machine emulator and virtualizer. When used as a machine emulator, QEMU can run OSes and programs made for one machine (e.g. an ARM board) on a different machine (e.g. your own PC). When used as a virtualizer, QEMU achieves near native performance by executing the guest code directly on the host CPU.",
       "values": [
         {
           "name": "Qemu package group",
@@ -700,6 +703,7 @@
     },
     {
       "name": "Docker_CLI_and_Docker_Desktop",
+      "description": "Docker is a set of platform as a service products that use OS-level virtualization to deliver software in packages called containers. Containers are isolated from one another and bundle their own software, libraries and configuration files; they can communicate with each other through well-defined channels.",
       "values": [
         {
           "name": "Docker Repository",
@@ -750,6 +754,7 @@
     },
     {
       "name": "Podman_and_Podman_Desktop",
+      "description": "Podman is a daemon less container engine for developing, managing, and running OCI Containers on your Linux System. Containers can either be run as root or in rootless mode. Simply put: `alias docker=podman`.",
       "values": [
         {
           "name": "Flatpak",
@@ -781,6 +786,7 @@
     },
     {
       "name": "Visual_Studio_Code",
+      "description": "Visual Studio Code is a source-code editor developed by Microsoft for Windows, Linux and macOS. It includes support for debugging, embedded Git control, syntax highlighting, intelligent code completion, snippets, and code refactoring.",
       "values": [
         {
           "name": "Visual Studio Code Repository",
@@ -803,6 +809,7 @@
     },
     {
       "name": "Github_Desktop",
+      "description": "GitHub Desktop is a seamless way to contribute to projects on GitHub and GitHub Enterprise. GitHub Desktop is your springboard for work. You’ll be able to clone repositories, create branches, commit changes, and push code straight from your desktop.",
       "values": [
         {
           "name": "GitHub Desktop Repository",
@@ -827,6 +834,7 @@
     },
     {
       "name": "Steam",
+      "description": "Steam is a video game digital distribution service by Valve. It was launched as a standalone software client in September 2003 as a way for Valve to provide automatic updates for their games, and expanded to include games from third-party publishers.",
       "values": [
         {
           "name": "Steam",
@@ -839,6 +847,7 @@
     },
     {
       "name": "Discord",
+      "description": "Discord is a proprietary freeware VoIP application and digital distribution platform designed for creating communities ranging from gamers to education and businesses.",
       "values": [
         {
           "name": "Discord",
@@ -851,6 +860,7 @@
     },
     {
       "name": "Google_Chrome_Stable",
+      "description": "Google Chrome is a cross-platform web browser developed by Google. It was first released in 2008 for Microsoft Windows, and was later ported to Linux, macOS, iOS, and Android.",
       "values": [
         {
           "name": "Google Chrome Stable",
@@ -863,6 +873,7 @@
     },
     {
       "name": "Tuxedo",
+      "description": "Tuxedo Computers is a German computer manufacturer that specializes in Linux laptops and desktops.",
       "values": [
         {
           "name": "Tuxedo Repository",
@@ -885,6 +896,7 @@
     },
     {
       "name": "Optinal_Extenstions_for_Gnome",
+      "description": "Gnome Shell Extensions are small pieces of code written by third party developers that modify the way the GNOME desktop behaves. They are used to add new functionality or change the behavior of the desktop.",
       "values": [
         {
           "name": "Gnome Extensions",
@@ -934,6 +946,7 @@
     },
     {
       "name": "Cloudflare_WARP",
+      "description": "Cloudflare WARP is a free app that makes your Internet more private. It uses Cloudflare’s global network to secure your device’s Internet connection.",
       "values": [
         {
           "name": "Cloudflare WARP repository",
@@ -955,6 +968,7 @@
     },
     {
       "name": "Oh_My_Posh",
+      "description": "Oh My Posh is a prompt theme engine for any shell. It's highly customizable and extensible.",
       "values": [
         {
           "name": "Oh My Posh",
@@ -1009,6 +1023,7 @@
     },
     {
       "name": "Zsh_and_Oh_My_Zsh",
+      "description": "Zsh is a shell designed for interactive use, although it is also a powerful scripting language. Oh My Zsh is an open-source, community-driven framework for managing your Zsh configuration.",
       "values": [
         {
           "name": "Zsh",
@@ -1031,6 +1046,7 @@
     },
     {
       "name": "Ani_Cli",
+      "description": "Ani Cli is a command line tool to watch anime.",
       "values": [
         {
           "name": "Ani Cli",
@@ -1066,6 +1082,7 @@
     },
     {
       "name": "Gnome Configuration Tools",
+      "description": "Gnome Configuration Tools are a set of tools to configure Gnome Desktop Environment.",
       "values": [
         {
           "name": "Gnome Tweaks",
@@ -1111,6 +1128,7 @@
 
     {
       "name": "Microsoft_Core_TTF_Fonts",
+      "description": "Microsoft Core TTF Fonts are a set of TrueType fonts that were developed by Microsoft. These fonts are used in Microsoft products and are also used in many other applications.",
       "values": [
         {
           "name": "Microsoft Core TTF Fonts",

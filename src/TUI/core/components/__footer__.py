@@ -20,8 +20,6 @@ class Footer:
     def display(self):
         height, width = self.stdscr.getmaxyx()
         self.update_colors()
-        footer_text = " ".join(FOOTER_TEXT)
         self.stdscr.addstr(height - 1, 1, " " * (width - 2), self.color_pair_normal | curses.A_REVERSE)
         self.stdscr.addstr(height - 1, 1, FOOTER_TEXT[0], self.color_pair_red | curses.A_BOLD | curses.A_REVERSE)
-        self.stdscr.addstr(height - 1, width // 2 - len(footer_text) // 2, FOOTER_TEXT[1], self.color_pair_normal | curses.A_REVERSE)
-        self.stdscr.addstr(height - 1, width - len(FOOTER_TEXT[2]) - 1, FOOTER_TEXT[2], self.color_pair_magenta | curses.A_BOLD | curses.A_REVERSE)
+        self.stdscr.addstr(height - 1, width - len(FOOTER_TEXT[1]) - 1, FOOTER_TEXT[1], self.color_pair_magenta | curses.A_BOLD | curses.A_REVERSE)

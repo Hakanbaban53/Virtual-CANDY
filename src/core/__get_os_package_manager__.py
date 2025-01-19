@@ -30,7 +30,7 @@ def identify_distribution():
     else:
         return 'Not running on Linux'
 
-def get_linux_package_manager(linux_distribution, package_name, output, action, dry_run=True):
+def get_linux_package_manager(linux_distribution, package_name, action, verbose, dry_run):
     handler = PackagesJSONHandler()
     packages_data = handler.load_json_data()
 
@@ -49,7 +49,7 @@ def get_linux_package_manager(linux_distribution, package_name, output, action, 
         if package_name.lower() in name:
             values = data.get("values", [])
             logging.info(f"Processing package: {package_name} for {linux_distribution}.")
-            package_manager_func(linux_distribution, values, output, action, dry_run)
+            package_manager_func(linux_distribution, values, action, verbose, dry_run)
             return
 
     logging.warning(f"No matching package found for {package_name} in {linux_distribution}.")

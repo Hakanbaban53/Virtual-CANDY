@@ -19,26 +19,40 @@ class Selections:
         from TUI.core.static.__data__ import DARK_MODE
 
         self.color_pair_normal = color_pair(2 if DARK_MODE else 11)
+        self.color_pair_yellow = color_pair(6 if DARK_MODE else 15)
+
         self.stdscr.bkgd(self.color_pair_normal)
 
         self.stdscr.refresh()
 
-    def selections(self, prompt, x, y, options):
+    def selections(self, x, y, question, options, **kwargs):
         # Handle user selections
         selected_option = 0
         height, width = self.stdscr.getmaxyx()
 
         while True:
+
+            # Handle multiple prompts if provided
+            if 'prompts' in kwargs:
+                prompts = kwargs['prompts']
+                for i, prompt in enumerate(prompts):
+                    prompt_x = width // 2 - len(prompt) // 2
+                    self.stdscr.addstr(
+                        y - len(prompts) + i,
+                        prompt_x,
+                        prompt,
+                        self.color_pair_normal,
+                    )
             # Clear previous prompt
-            self.clean_line.clean_line(x, y)
+            self.clean_line.clean_line(x, y + 1)
 
             # Display prompt centered horizontally
-            prompt_x = width // 2 - len(prompt) // 2
+            prompt_x = width // 2 - len(question) // 2
             self.stdscr.addstr(
-                y,
+                y + 1,
                 prompt_x,
-                prompt,
-                self.color_pair_normal | A_BOLD | A_UNDERLINE,
+                question,
+                self.color_pair_yellow | A_BOLD | A_UNDERLINE,
             )
 
             # Calculate the starting x position to center the options

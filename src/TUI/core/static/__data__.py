@@ -48,8 +48,7 @@ def toggle_dark_mode():
 
 FOOTER_TEXT = [
     "[^C Exit]",
-    "[Arrow keys Navigate] [TAB Select/Unselect]",
-    "[^D Toggle Dark Mode]",
+    "[^H Help]",
 ]
 
 KNOWN_DISTROS = {

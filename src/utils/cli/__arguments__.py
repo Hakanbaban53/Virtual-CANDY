@@ -8,10 +8,6 @@ class ArgumentHandler:
         self.args = self.parse_arguments()
         self.adjust_arguments()
 
-        # Print info if distribution is set and verbose is enabled
-        if self.args.distribution and self.args.verbose:
-            self.print_info()
-
     def parse_arguments(self):
         """Parse command-line arguments."""
         parser = ArgumentParser(description="Linux Package Manager")

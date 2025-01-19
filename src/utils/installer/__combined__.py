@@ -6,8 +6,8 @@ from time import sleep
 
 CACHE_PATH = path.join(path.expanduser("~"), ".cache", "vcandy")
 
-def package_manager(distro, packages, output, action, dry_run):
-    verbose = open(devnull, "w") if not output else None
+def package_manager(distro, packages, action, verbose, dry_run):
+    verbose = PIPE if verbose else open(devnull, "w")
     
     if distro in {"debian", "ubuntu"} and not dry_run:
         run(["sudo", "apt", "update"], stderr=verbose, stdout=verbose)
@@ -65,7 +65,7 @@ def handle_standard_package(distro, package, check_value, action, dry_run, verbo
         check_value (str): The name(s) of the package(s) to check.
         action (str): Action to perform ('install' or 'remove').
         dry_run (bool): If True, only simulate actions.
-        verbose (file-like): If True, suppress output.
+        verbose (file-like): If True, suppress verbose.
     """
     check_values = (
         check_value.split()
@@ -75,18 +75,18 @@ def handle_standard_package(distro, package, check_value, action, dry_run, verbo
 
     for value in check_values:
         if distro == "arch":
-            result = run(["pacman", "-Q", value], stdout=PIPE, stderr=PIPE)
+            result = run(["pacman", "-Q", value], stdout=PIPE, stderr=PIPE, stdin=PIPE)
         elif distro in {"debian", "ubuntu"}:
             result = run(
-                ["apt", "list", "--installed", value], stdout=PIPE, stderr=PIPE
+                ["apt", "list", "--installed", value], stdout=PIPE, stderr=PIPE, stdin=PIPE
             )
         elif distro == "fedora":
             result = run(
-                ["dnf", "list", "--installed", value], stdout=PIPE, stderr=PIPE
+                ["dnf", "list", "--installed", value], stdout=PIPE, stderr=PIPE, stdin=PIPE
             )
 
-        output = result.stdout.decode("utf-8").lower()
-        if value.lower() in output:
+        verbose = result.stdout.decode("utf-8").lower()
+        if value.lower() in verbose:
             installed.append(value)
         else:
             not_installed.append(value)
@@ -113,16 +113,16 @@ def handle_standard_package(distro, package, check_value, action, dry_run, verbo
 
 def handle_removable_package(distro, package, check_value, action, dry_run, verbose):
     if distro == "arch":
-        result = run(["pacman", "-Q"] + check_value.split(), stdout=PIPE, stderr=PIPE)
+        result = run(["pacman", "-Q"] + check_value.split(), stdout=PIPE, stderr=PIPE, stdin=PIPE)
     elif distro in {"debian", "ubuntu"}:
         result = run(
             ["apt", "list", "--installed"] + check_value.split(),
             stdout=PIPE,
-            stderr=PIPE,
+            stderr=PIPE, stdin=PIPE,
         )
     elif distro == "fedora":
         result = run(
-            ["dnf", "list", "installed"] + check_value.split(), stdout=PIPE, stderr=PIPE
+            ["dnf", "list", "installed"] + check_value.split(), stdout=PIPE, stderr=PIPE, stdin=PIPE
         )
 
     if "error" not in result.stderr.decode("utf-8").lower():
@@ -166,7 +166,7 @@ def special_package_installer(package, check_script, action, dry_run, verbose):
         check_script (list): Commands or paths to check the state.
         action (str): Action to perform ('install' or 'remove').
         dry_run (bool): If True, only simulate actions.
-        verbose (file-like): If True, suppress output.
+        verbose (file-like): If True, suppress verbose.
     """
     special_values = package.get("special_values", [])
     install_script = package.get("install_script", [])
@@ -247,7 +247,7 @@ def handle_service_or_group(distro, package, action, dry_run, verbose):
 
 
 def handle_flatpak_package(package, check_value, action, dry_run, verbose):
-    result = run(["flatpak", "list"], stdout=PIPE, stderr=PIPE)
+    result = run(["flatpak", "list"], stdout=PIPE, stderr=PIPE, stdin=PIPE)
 
     if check_value not in result.stdout.decode("utf-8"):
         if action == "install":
