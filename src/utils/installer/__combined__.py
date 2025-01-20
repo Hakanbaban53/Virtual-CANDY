@@ -1,16 +1,25 @@
 import logging
 import os
 from subprocess import run, PIPE, CalledProcessError, check_output
-from os import path, devnull, getenv, chdir, getcwd
+from os import path, getenv, chdir, getcwd
 from time import sleep
 
 CACHE_PATH = path.join(path.expanduser("~"), ".cache", "vcandy")
 
+def run_command(command, verbose):
+    try:
+        completed_process = run([command], capture_output=True, shell=True)
+        if completed_process.stderr and verbose:
+            logging.error(f"An error occurred: {completed_process.stderr.decode()}")
+        elif completed_process.stdout and verbose:
+            logging.info(f"Output: {completed_process.stdout.decode()}")
+    except CalledProcessError as e:
+        logging.error(f"An error occurred: {e}")
+
 def package_manager(distro, packages, action, verbose, dry_run):
-    verbose = PIPE if verbose else open(devnull, "w")
-    
+
     if distro in {"debian", "ubuntu"} and not dry_run:
-        run(["sudo", "apt", "update"], stderr=verbose, stdout=verbose)
+        run(["sudo", "apt", "update"], capture_output=False)
 
     for package in packages:
         name = package.get("name", "")
@@ -203,7 +212,7 @@ def special_package_installer(package, check_script, action, dry_run, verbose):
                 if dry_run:
                     logging.debug(f"Would execute: {command}")
                 else:
-                    run(command, shell=True, stderr=verbose, stdout=verbose)
+                    run_command(command, verbose)
 
             logging.info(f"{app_name} installation completed.")
 
@@ -230,7 +239,7 @@ def special_package_installer(package, check_script, action, dry_run, verbose):
                 if dry_run:
                     logging.debug(f"Would execute: {command}")
                 else:
-                    run(command, shell=True, stderr=verbose, stdout=verbose)
+                    run_command(command, verbose)
 
             logging.info(f"{app_name} removal completed.")
     except Exception as e:
@@ -277,6 +286,17 @@ def handle_error(e, check_value, action, name, dry_run, package, verbose):
     else:
         logging.error(f"An error occurred while handling {name}: {e}")
 
+def service_installer(service, action, verbose):
+    try:
+        if action == "install":
+            run_command(f"sudo systemctl restart {service}", verbose)
+            run_command(f"sudo systemctl enable {service}", verbose)
+        elif action == "remove":
+            run_command(f"sudo systemctl stop {service}", verbose)
+            run_command(f"sudo systemctl disable {service}", verbose)
+    except CalledProcessError as err:
+        logging.error(f"An error occurred: {err}")
+
 
 def package_installer(distro, package, verbose):
     current_user = getenv("USER")
@@ -286,156 +306,68 @@ def package_installer(distro, package, verbose):
     try:
         if distro == "arch":
             if package_type == "package":
-                run(
-                    ["sudo", "pacman", "-S", install_value, "--noconfirm"],
-                    stderr=verbose,
-                    stdout=verbose,
-                )
+                run_command(f"sudo pacman -S {install_value} --noconfirm", verbose)
             elif package_type == "local-package":
                 handle_local_package(install_value, distro, CACHE_PATH, verbose)
             elif package_type == "service":
-                run(
-                    ["sudo", "systemctl", "restart", install_value],
-                    stderr=verbose,
-                    stdout=verbose,
-                )
-                run(
-                    ["sudo", "systemctl", "enable", install_value],
-                    stderr=verbose,
-                    stdout=verbose,
-                )
+                run_command(f"sudo systemctl restart {install_value}", verbose)
+                run_command(f"sudo systemctl enable {install_value}", verbose)
             elif package_type == "group":
-                run(
-                    ["sudo", "usermod", "-aG", install_value, current_user],
-                    stderr=verbose,
-                    stdout=verbose,
-                )
+                run_command(f"sudo usermod -aG {install_value} {current_user}", verbose)
             elif package_type == "repo-flathub":
-                run(
-                    [
-                        "sudo",
-                        "flatpak",
-                        "remote-add",
-                        "--if-not-exists",
-                        "flathub",
-                        install_value,
-                    ],
-                    stderr=verbose,
-                    stdout=verbose,
+                run_command(
+                    f"sudo flatpak remote-add --if-not-exists flathub {install_value}",
+                    verbose,
                 )
             elif package_type == "package-flatpak":
-                run(
-                    ["sudo", "flatpak", "install", "-y", install_value],
-                    stderr=verbose,
-                    stdout=verbose,
-                )
+                run_command(f"sudo flatpak install -y {install_value}", verbose)
             elif package_type == "AUR-package":
                 handle_aur_package(install_value, CACHE_PATH, verbose)
 
         elif distro in {"debian", "ubuntu"}:
             if package_type == "package":
-                run(
-                    ["sudo", "apt", "install", "-y"] + install_value.split(),
-                    stderr=verbose,
-                    stdout=verbose,
-                )
+                run_command(f"sudo apt install -y {install_value}", verbose)
             elif package_type in ["get-keys", "special-package"]:
                 for command in package.get("install_script", []):
-                    run(command, shell=True, stderr=verbose, stdout=verbose)
+                    run_command(command, verbose)
             elif package_type == "local-package":
                 handle_local_package(install_value, distro, CACHE_PATH, verbose)
             elif package_type == "service":
-                run(
-                    ["sudo", "systemctl", "restart", install_value],
-                    stderr=verbose,
-                    stdout=verbose,
-                )
-                run(
-                    ["sudo", "systemctl", "enable", install_value],
-                    stderr=verbose,
-                    stdout=verbose,
-                )
+                run_command(f"sudo systemctl restart {install_value}", verbose)
+                run_command(f"sudo systemctl enable {install_value}", verbose)
             elif package_type == "group":
-                run(
-                    ["sudo", "usermod", "-aG", install_value, current_user],
-                    stderr=verbose,
-                    stdout=verbose,
-                )
+                run_command(f"sudo usermod -aG {install_value} {current_user}", verbose)
             elif package_type == "repo-flathub":
-                run(
-                    [
-                        "sudo",
-                        "flatpak",
-                        "remote-add",
-                        "--if-not-exists",
-                        "flathub",
-                        install_value,
-                    ],
-                    stderr=verbose,
-                    stdout=verbose,
+                run_command(
+                    f"sudo flatpak remote-add --if-not-exists flathub {install_value}",
+                    verbose,
                 )
             elif package_type == "package-flatpak":
-                run(
-                    ["sudo", "flatpak", "install", "-y", install_value],
-                    stderr=verbose,
-                    stdout=verbose,
-                )
+                run_command(f"sudo flatpak install -y {install_value}", verbose)
 
         elif distro == "fedora":
             if package_type == "package":
-                run(
-                    ["sudo", "dnf", "install", "-y"] + install_value.split(),
-                    stderr=verbose,
-                    stdout=verbose,
-                )
+                run_command(f"sudo dnf install -y {install_value}", verbose)
             elif package_type in ["get-keys", "special-package"]:
                 for command in package.get("install_script", []):
-                    run(command, shell=True, stderr=verbose, stdout=verbose)
+                    run_command(command, verbose)
             elif package_type == "url-package":
                 install_value = replace_fedora_version(install_value)
-                run(
-                    ["sudo", "dnf", "install", "-y", install_value],
-                    stderr=verbose,
-                    stdout=verbose,
-                )
+                run_command(f"sudo dnf install -y {install_value}", verbose)
             elif package_type == "local-package":
                 handle_local_package(install_value, distro, CACHE_PATH, verbose)
             elif package_type == "service":
-                run(
-                    ["sudo", "systemctl", "restart", install_value],
-                    stderr=verbose,
-                    stdout=verbose,
-                )
-                run(
-                    ["sudo", "systemctl", "enable", install_value],
-                    stderr=verbose,
-                    stdout=verbose,
-                )
+                run_command(f"sudo systemctl restart {install_value}", verbose)
+                run_command(f"sudo systemctl enable {install_value}", verbose)
             elif package_type == "group":
-                run(
-                    ["sudo", "usermod", "-aG", install_value, current_user],
-                    stderr=verbose,
-                    stdout=verbose,
-                )
+                run_command(f"sudo usermod -aG {install_value} {current_user}", verbose)
             elif package_type == "repo-flathub":
-                run(
-                    [
-                        "sudo",
-                        "flatpak",
-                        "remote-add",
-                        "--if-not-exists",
-                        "flathub",
-                        install_value,
-                    ],
-                    stderr=verbose,
-                    stdout=verbose,
+                run_command(
+                    f"sudo flatpak remote-add --if-not-exists flathub {install_value}",
+                    verbose,
                 )
             elif package_type == "package-flatpak":
-                run(
-                    ["sudo", "flatpak", "install", "-y", install_value],
-                    stderr=verbose,
-                    stdout=verbose,
-                )
+                run_command(f"sudo flatpak install -y {install_value}", verbose)
 
     except CalledProcessError as err:
         logging.error(f"An error occurred: {err}")
@@ -448,17 +380,9 @@ def package_remover(distro, package, verbose):
     try:
         if distro == "arch":
             if package_type in {"package", "AUR-package", "local-package"}:
-                run(
-                    ["sudo", "pacman", "-R", remove_value, "--noconfirm"],
-                    stderr=verbose,
-                    stdout=verbose,
-                )
+                run_command(f"sudo pacman -R {remove_value} --noconfirm", verbose)
             elif package_type == "package-flatpak":
-                run(
-                    ["sudo", "flatpak", "remove", "-y", remove_value],
-                    stderr=verbose,
-                    stdout=verbose,
-                )
+                run_command(f"sudo flatpak remove -y {remove_value}", verbose)
 
         elif distro in {"debian", "ubuntu"}:
             if package_type in {
@@ -467,20 +391,12 @@ def package_remover(distro, package, verbose):
                 "local-package",
                 "remove-package",
             }:
-                run(
-                    ["sudo", "apt", "remove", "-y"] + remove_value.split(),
-                    stderr=verbose,
-                    stdout=verbose,
-                )
+                run_command(f"sudo apt remove -y {remove_value}", verbose)
             elif package_type == "package-flatpak":
-                run(
-                    ["sudo", "flatpak", "remove", "-y", remove_value],
-                    stderr=verbose,
-                    stdout=verbose,
-                )
+                run_command(f"sudo flatpak remove -y {remove_value}", verbose)
             elif package_type in ["get-keys", "special-package"]:
                 for command in package.get("remove_script", []):
-                    run(command, shell=True, stderr=verbose, stdout=verbose)
+                    run_command(command, verbose)
 
         elif distro == "fedora":
             if package_type in {
@@ -489,20 +405,12 @@ def package_remover(distro, package, verbose):
                 "local-package",
                 "remove-package",
             }:
-                run(
-                    ["sudo", "dnf", "remove", "-y"] + remove_value.split(),
-                    stderr=verbose,
-                    stdout=verbose,
-                )
+                run_command(f"sudo dnf remove -y {remove_value}", verbose)
             elif package_type == "package-flatpak":
-                run(
-                    ["sudo", "flatpak", "remove", "-y", remove_value],
-                    stderr=verbose,
-                    stdout=verbose,
-                )
+                run_command(f"sudo flatpak remove -y {remove_value}", verbose)
             elif package_type in ["get-keys", "special-package"]:
                 for command in package.get("remove_script", []):
-                    run(command, shell=True, stderr=verbose, stdout=verbose)
+                    run_command(command, verbose)
 
     except CalledProcessError as err:
         logging.error(f"An error occurred: {err}")

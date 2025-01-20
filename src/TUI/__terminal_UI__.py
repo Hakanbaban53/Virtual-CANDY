@@ -204,7 +204,7 @@ class PackageManagerApp:
             package_list = self.packages(linux_distribution)
 
             AppSelector(
-                self.stdscr, package_list, self.cmd, self.selections, self.helper_keys
+                self.stdscr, package_list, self.cmd, self.selections, self.helper_keys, self.header
             ).select_app(
                 package_list,
                 self.initialize_selected_status(len(package_list)),
