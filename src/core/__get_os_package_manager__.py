@@ -1,6 +1,6 @@
 import logging
-from utils.installer.__combined__ import package_manager
 from core.__get_packages_data__ import PackagesJSONHandler
+from core.__combined__ import package_manager
 
 def get_linux_pretty_name():
     try:
