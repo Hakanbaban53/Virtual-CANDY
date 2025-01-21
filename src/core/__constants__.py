@@ -1,7 +1,7 @@
 from os import getenv, path
 from pathlib import Path
 
-CACHE_PATH = Path(path.expanduser("~")) / ".cache" / "vcandy" / "data"
+CACHE_PATH = Path(path.expanduser("~")) / ".cache" / "vcandy"
 CURRENT_USER = getenv("USER")
 
 

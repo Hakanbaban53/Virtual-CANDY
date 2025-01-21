@@ -320,9 +320,9 @@
             "sudo $CACHE_PATH/$app_name/VMware-Workstation-17.6.2-24409262.x86_64.bundle --console --required --eulas-agreed --install-component=$CACHE_PATH/$app_name/vmware-tools-windows-12.4.5-23787635.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-windows-x86-12.4.5-23787635.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-winPreVista-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-linux-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-linuxPreGlibc25-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-netware-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-solaris-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-winPre2k-12.4.0-23259341.x86_64.component",
             "sudo systemctl unmask vmware.service"
           ],
-          "check_script": ["/usr/bin/vmware-installer --version"],
+          "check_script": ["/usr/bin/vmware-installer"],
           "remove_script": [
-            "sudo sytemctl stop vmware; sudo systemctl disable vmware;echo \"yes\" | sudo /usr/bin/vmware-installer --uninstall-product vmware-workstation"
+            "sudo systemctl stop vmware; sudo systemctl disable vmware;echo \"yes\" | sudo /usr/bin/vmware-installer --uninstall-product vmware-workstation"
           ]
         },
         {
@@ -613,7 +613,7 @@
   ],
   "fedora": [
     {
-      "name": "VMware_Workstation",
+      "name": "VMware_Workstrrtjsation",
       "description": "VMware Workstation is a hosted hypervisor that runs on x64 versions of Windows and Linux operating systems; it enables users to set up virtual machines on a single physical machine and use them simultaneously along with the actual machine.",
       "values": [
         {
@@ -656,9 +656,9 @@
             "sudo $CACHE_PATH/$app_name/VMware-Workstation-17.6.2-24409262.x86_64.bundle --console --required --eulas-agreed --install-component=$CACHE_PATH/$app_name/vmware-tools-windows-12.4.5-23787635.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-windows-x86-12.4.5-23787635.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-winPreVista-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-linux-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-linuxPreGlibc25-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-netware-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-solaris-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-winPre2k-12.4.0-23259341.x86_64.component",
             "sudo systemctl unmask vmware.service"
           ],
-          "check_script": ["/usr/bin/vmware-installer --version"],
+          "check_script": ["/usr/bin/vmware-installer"],
           "remove_script": [
-            "sudo sytemctl stop vmware; sudo systemctl disable vmware;echo \"yes\" | sudo /usr/bin/vmware-installer --uninstall-product vmware-workstation"
+            "sudo systemctl stop vmware; sudo systemctl disable vmware;echo \"yes\" | sudo /usr/bin/vmware-installer --uninstall-product vmware-workstation"
           ]
         },
         {
@@ -1304,9 +1304,9 @@
             "sudo $CACHE_PATH/$app_name/VMware-Workstation-17.6.2-24409262.x86_64.bundle --console --required --eulas-agreed --install-component=$CACHE_PATH/$app_name/vmware-tools-windows-12.4.5-23787635.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-windows-x86-12.4.5-23787635.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-winPreVista-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-linux-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-linuxPreGlibc25-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-netware-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-solaris-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-winPre2k-12.4.0-23259341.x86_64.component",
             "sudo systemctl unmask vmware.service"
           ],
-          "check_script": ["/usr/bin/vmware-installer --version"],
+          "check_script": ["/usr/bin/vmware-installer"],
           "remove_script": [
-            "sudo sytemctl stop vmware; sudo systemctl disable vmware;echo \"yes\" | sudo /usr/bin/vmware-installer --uninstall-product vmware-workstation"
+            "sudo systemctl stop vmware; sudo systemctl disable vmware;echo \"yes\" | sudo /usr/bin/vmware-installer --uninstall-product vmware-workstation"
           ]
         },
         {

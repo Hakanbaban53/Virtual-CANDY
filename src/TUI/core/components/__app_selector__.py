@@ -7,7 +7,7 @@ import threading
 from TUI.core.components.__modal_win__ import ModalWindow
 from TUI.core.components.__print_apps__ import PrintApps
 from TUI.core.static.__data__ import OPTIONS_YES_NO
-from core.__get_os_package_manager__ import get_linux_package_manager
+from core.__combined__ import package_manager
 
 
 class AppSelector:
@@ -222,14 +222,22 @@ class AppSelector:
                         )
 
                     # Use a separate thread to process packages one by one
+                    curses.reset_shell_mode()
                     def process_packages():
                         for entity in selected_entities:
                             action_message = f"{entity} {action}ing...\n"
                             log_queue.put(("action", action_message))
 
                             # Call the installation function
-                            get_linux_package_manager(
-                                linux_distribution, entity, action, verbose, dry_run
+                            package = next(
+                                item for item in package_list if item["name"] == entity
+                            )
+                            package_manager(
+                                linux_distribution,
+                                package.get("values", []),
+                                action,
+                                verbose,
+                                dry_run,
                             )
 
                             log_stream.seek(0)
@@ -278,6 +286,7 @@ class AppSelector:
 
                     # Wait for the processing thread to finish
                     processing_thread.join()
+                    curses.reset_prog_mode()
 
                     # Notify the user that processing is complete
                     finished_message = "Processing completed. Press 'Enter' to exit."

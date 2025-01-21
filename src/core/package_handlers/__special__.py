@@ -1,6 +1,6 @@
 from genericpath import exists
 from logging import debug, error, info
-from posixpath import dirname
+from subprocess import CalledProcessError, run
 
 from core.__command_handler__ import run_command
 from core.__constants__ import CACHE_PATH
@@ -23,10 +23,29 @@ def special_package_installer(package, check_script, action, dry_run, verbose):
     remove_script = package.get("remove_script", [])
     app_name = package.get("name", "unknown")
     script_executed = False
+
+    # Check if the package is already installed
+    for special_value in special_values:
+        for key, value in special_value.items():
+            check_script = [
+                cmd.replace(f"${key}", value) for cmd in check_script
+                ]
     for script in check_script:
-        if (exists(script) or dirname(script)) and script != "":
-            script_executed = True
-            break
+        try:
+            if script.strip().startswith("/") and exists(script):
+                script_executed = True
+                break
+            elif "|" in script or "$" in script:  # Assume it's a shell command
+                result = run(script, shell=True, capture_output=True).stdout
+                debug(f"Command: {script}, Output: {result}")
+                if result:  # If the command produces output, assume installed
+                    script_executed = True
+                    break
+        except CalledProcessError as e:
+            debug(f"Command failed: {script}, Error: {e}")
+        except Exception as e:
+            error(f"An error occurred while checking script: {e}")
+
 
     try:
         if action == "install":

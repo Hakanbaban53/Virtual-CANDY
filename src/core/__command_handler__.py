@@ -15,8 +15,8 @@ def run_command(command, verbose=None, cwd=None):
     try:
         completed_process = run([command], capture_output=True, shell=True, cwd=cwd)
         if completed_process.stderr and verbose:
-            error(f"An error occurred: {completed_process.stderr.decode()}")
+            error(f"An error occurred: {completed_process.stderr.decode(errors='replace')}")
         elif completed_process.stdout and verbose:
-            info(f"Output: {completed_process.stdout.decode()}")
+            info(f"Output: {completed_process.stdout.decode(errors='replace')}")
     except CalledProcessError as e:
         error(f"An error occurred: {e}")

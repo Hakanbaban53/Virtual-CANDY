@@ -1,9 +1,9 @@
 import io
 import logging
+from core.__combined__ import package_manager
 from core.__logging_manager__ import LoggingManager
 from core.__check_repository_connection__ import check_linux_package_manager_connection
 from core.__get_os_package_manager__ import (
-    get_linux_package_manager,
     identify_distribution,
     get_linux_pretty_name,
 )
@@ -20,8 +20,7 @@ class PackageManagerApp:
 
         self.args = ArgumentHandler(self.linux_distro_id)
         self.get_args = self.args.get_args()
-        self.log_stream = io.StringIO()
-        LoggingManager(self.get_args.verbose, self.get_args.dry_run, self.log_stream)
+
 
         self.json_handler = PackagesJSONHandler(
             json_file_path=self.get_args.json, json_file_url=self.get_args.url
@@ -30,11 +29,13 @@ class PackageManagerApp:
             refresh=self.get_args.refresh
         )
 
+        self.linux_distro_packages = self.packages_data[self.linux_distro_id]
+
     def packages(self, linux_distro):
         """Get relevant packages for the given Linux distribution."""
         if linux_distro in self.packages_data:
             return [
-                package.get("name", "") for package in self.packages_data[linux_distro]
+                package.get("name", "") for package in self.linux_distro_packages
             ]
         return []
 
@@ -43,6 +44,10 @@ class PackageManagerApp:
         try:
             # Handle package actions (install/remove)
             if self.get_args.packages or self.get_args.list or self.get_args.all:
+
+                # Initialize logging
+                LoggingManager(self.get_args.verbose, self.get_args.dry_run)
+
                 relevant_packages = self.packages(self.get_args.distribution)
                 if self.get_args.distribution and self.get_args.verbose:
                     self.args.print_info()
@@ -78,11 +83,15 @@ class PackageManagerApp:
                         print(f"Processing package: {package}")
                         print("========================================\n")
 
-                        get_linux_package_manager(
-                            linux_distribution=self.get_args.distribution,
-                            package_name=package,
-                            output=self.get_args.verbose,
+                        package_values = next(
+                                item for item in self.linux_distro_packages if item["name"] == package
+                            )
+
+                        package_manager(
+                            distro=self.get_args.distribution,
+                            packages=package_values.get("values", []),
                             action=self.get_args.action,
+                            verbose=self.get_args.verbose,
                             dry_run=self.get_args.dry_run,
                         )
                 else:
@@ -90,11 +99,14 @@ class PackageManagerApp:
                         "No valid packages found for the specified distribution."
                     )
             else:
+                log_stream = io.StringIO()
+                LoggingManager(self.get_args.verbose, self.get_args.dry_run, log_stream)
+
                 start_terminal_ui(
                     self.get_args.distribution,
                     self.linux_pretty_name,
                     self.packages_data,
-                    self.log_stream,
+                    log_stream,
                     self.get_args.verbose,
                     self.get_args.dry_run,
                 )
