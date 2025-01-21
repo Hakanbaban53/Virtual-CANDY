@@ -37,15 +37,15 @@ def handle_standard_package(distro, package, package_type, check_value, action, 
         info(f"Installing {' '.join(not_installed)}...")
         if not dry_run:
             if package_type in ["package", "url-package"]:
-                command = f"{PACKAGE_MANAGER_INSTALL[distro]} {package.get("install_value", "")}"
+                command = f"{PACKAGE_MANAGER_INSTALL[distro]} {package.get('install_value', '')}"
                 run_command(command, verbose)
             elif package_type == "local-package":
                 handle_local_package(distro, package.get("install_value", ""), verbose)
             elif package_type == "AUR-package":
                 handle_aur_package(not_installed, verbose)
     elif action == "remove" and package.get("remove_value", "") != "":
-        info(f"Removing {package.get("remove_value", "")}...")
+        info(f"Removing {package.get('remove_value', '')}...")
         if not dry_run:
-            command = f"{PACKAGE_MANAGER_REMOVE[distro]} {package.get("remove_value", "")}"
+            command = f"{PACKAGE_MANAGER_REMOVE[distro]} {package.get('remove_value', '')}"
             run_command(command, verbose)
 

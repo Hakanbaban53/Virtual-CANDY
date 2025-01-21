@@ -17,7 +17,7 @@ from core.package_handlers.__special__ import special_package_installer
 def package_manager(distro, packages, action, verbose, dry_run):
 
     if os.path.exists("/etc/debian_version") and not dry_run:
-        run(["sudo", "apt", "update"], capture_output=False)
+        run_command("sudo apt-get update", verbose)
 
     for package in packages:
         name = package.get("name", "")

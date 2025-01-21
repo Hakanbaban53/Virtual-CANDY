@@ -297,6 +297,7 @@
             }
           ],
           "install_script": [
+            "mkdir -p $CACHE_PATH/$app_name",
             "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.6.2/24409262/linux/core/VMware-Workstation-17.6.2-24409262.x86_64.bundle.tar -O $CACHE_PATH/$app_name/VMware-Workstation-17.6.2-24409262.x86_64.bundle.tar",
             "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.6.2/24409262/linux/packages/vmware-tools-windows-12.4.5-23787635.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-windows-12.4.5-23787635.x86_64.component.tar",
             "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.6.2/24409262/linux/packages/vmware-tools-windows-x86-12.4.5-23787635.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-windows-x86-12.4.5-23787635.x86_64.component.tar",
@@ -624,7 +625,7 @@
           "remove_value": ""
         },
         {
-          "name": "VMware Workstation",
+          "name": "VMware_Workstation",
           "type": "special-package",
           "special_values": [
             {
@@ -633,6 +634,7 @@
             }
           ],
           "install_script": [
+            "mkdir -p $CACHE_PATH/$app_name",
             "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.6.2/24409262/linux/core/VMware-Workstation-17.6.2-24409262.x86_64.bundle.tar -O $CACHE_PATH/$app_name/VMware-Workstation-17.6.2-24409262.x86_64.bundle.tar",
             "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.6.2/24409262/linux/packages/vmware-tools-windows-12.4.5-23787635.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-windows-12.4.5-23787635.x86_64.component.tar",
             "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.6.2/24409262/linux/packages/vmware-tools-windows-x86-12.4.5-23787635.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-windows-x86-12.4.5-23787635.x86_64.component.tar",
@@ -1281,6 +1283,7 @@
             }
           ],
           "install_script": [
+            "mkdir -p $CACHE_PATH/$app_name",
             "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.6.2/24409262/linux/core/VMware-Workstation-17.6.2-24409262.x86_64.bundle.tar -O $CACHE_PATH/$app_name/VMware-Workstation-17.6.2-24409262.x86_64.bundle.tar",
             "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.6.2/24409262/linux/packages/vmware-tools-windows-12.4.5-23787635.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-windows-12.4.5-23787635.x86_64.component.tar",
             "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.6.2/24409262/linux/packages/vmware-tools-windows-x86-12.4.5-23787635.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-windows-x86-12.4.5-23787635.x86_64.component.tar",
