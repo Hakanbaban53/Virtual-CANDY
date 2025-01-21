@@ -2,12 +2,13 @@ from logging import error
 from os import path
 from posixpath import join
 from subprocess import CalledProcessError
-from core.__constants__ import PACKAGE_TYPES
+from core.__constants__ import CACHE_PATH, PACKAGE_TYPES
 from core.__command_handler__ import run_command
 
 
-def handle_local_package(install_value, distro, CACHE_PATH, verbose):
+def handle_local_package(distro, package, verbose):
 
+    install_value = package
     if distro not in PACKAGE_TYPES:
         raise ValueError(f"Unsupported distribution: {distro}")
 

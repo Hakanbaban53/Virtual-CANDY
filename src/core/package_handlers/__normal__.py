@@ -2,8 +2,10 @@ from logging import info, debug
 from subprocess import PIPE, run
 from core.__command_handler__ import run_command
 from core.__constants__ import PACKAGE_MANAGER_INSTALL, PACKAGE_MANAGER_REMOVE, PACKAGE_MANAGER_CHECK
+from core.package_handlers.__aur__ import handle_aur_package
+from core.package_handlers.__local__ import handle_local_package
 
-def handle_standard_package(distro, package, check_value, action, dry_run, verbose):
+def handle_standard_package(distro, package, package_type, check_value, action, dry_run, verbose):
     """
     Handles installation or removal of standard packages.
 
@@ -32,12 +34,18 @@ def handle_standard_package(distro, package, check_value, action, dry_run, verbo
     debug(f"Installed: {installed}, Not installed: {not_installed}")
 
     if action == "install" and not_installed:
-        info(f"Installing {package['name']}...")
+        info(f"Installing {' '.join(not_installed)}...")
         if not dry_run:
-            command = f"{PACKAGE_MANAGER_INSTALL[distro]} {' '.join(not_installed)}"
-            run_command(command, verbose)
+            if package_type in ["package", "url-package"]:
+                command = PACKAGE_MANAGER_INSTALL[distro].format(package.get("install_value", ""))
+                run_command(command, verbose)
+            elif package_type == "local-package":
+                handle_local_package(distro, {package.get("install_value", "")}, verbose)
+            elif package_type == "AUR-package":
+                handle_aur_package(not_installed, verbose)
     elif action == "remove" and installed:
-        info(f"Removing {package['name']}...")
+        info(f"Removing {' '.join(installed)}...")
         if not dry_run:
-            command = f"{PACKAGE_MANAGER_REMOVE[distro]} {' '.join(installed)}"
+            command = PACKAGE_MANAGER_REMOVE[distro].format({' '.join(installed)})
             run_command(command, verbose)
+

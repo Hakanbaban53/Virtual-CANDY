@@ -33,7 +33,7 @@ def package_manager(distro, packages, action, verbose, dry_run):
                 "AUR-package",
             }:
                 handle_standard_package(
-                    distro, package, check_value, action, dry_run, verbose
+                    distro, package, package_type, check_value, action, dry_run, verbose
                 )
             elif package_type == "special-package":
                 special_package_installer(
