@@ -101,7 +101,7 @@ class PackageManagerApp:
                         self.color_pair_red | curses.A_BOLD,
                     )
                     self.stdscr.refresh()
-                    curses.napms(1500)
+                    curses.napms(1000)
                     exit(0)
             elif actions == "remove":
                 return "remove"
@@ -249,8 +249,6 @@ def start_terminal_ui(
         from TUI.core.static.__data__ import DARK_MODE
 
         stdscr = curses.initscr()
-        curses.start_color()
-        curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
         stdscr.clear()
         stdscr.addstr(
             curses.LINES // 2 - 2,
@@ -259,6 +257,7 @@ def start_terminal_ui(
             curses.color_pair(3 if DARK_MODE else 12) | curses.A_BOLD,
         )
         stdscr.addstr(curses.LINES // 2, curses.COLS // 2 - 3, "Bye 👋")
-        Header(stdscr).stop()
+        stdscr.refresh()
+        curses.napms(1000)
         curses.endwin()
         exit(0)

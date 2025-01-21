@@ -1,14 +1,15 @@
 import datetime
 import json
 import logging
-import os
 from pathlib import Path
 import requests
 import time
 
+from core.__constants__ import CACHE_PATH, PACKAGES_JSON_URL
+
 class PackagesJSONHandler:
     def __init__(self, json_file_url=None, json_file_name="packages.json", json_file_path=None):
-        self.json_file_url = json_file_url or "https://raw.githubusercontent.com/Hakanbaban53/Container-and-Virtualization-Installer/main/packages/packages.json"
+        self.json_file_url = json_file_url or PACKAGES_JSON_URL
         
         if json_file_path is not None:
             # Use the custom path without downloading JSON
@@ -21,9 +22,8 @@ class PackagesJSONHandler:
 
     def get_cache_file_path(self, json_file_name):
         """Get the path to the cache directory for the JSON file."""
-        cache_dir = Path(os.path.expanduser("~")) / ".cache" / "vcandy" / "data"
-        cache_dir.mkdir(parents=True, exist_ok=True)
-        return cache_dir / json_file_name
+        CACHE_PATH.mkdir(parents=True, exist_ok=True)
+        return CACHE_PATH / json_file_name
 
     def download_json_file(self, url, file_path, max_retries=3, retry_delay=1):
         """Download the JSON file from the specified URL."""

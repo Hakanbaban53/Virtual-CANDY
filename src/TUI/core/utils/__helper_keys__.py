@@ -1,6 +1,6 @@
 from curses import KEY_RESIZE, color_pair
 
-from TUI.core.components.__modal__ import Modal
+from TUI.core.components.__modal_win__ import ModalWindow
 from TUI.core.static.__data__ import APP_NAME, APP_VERSION, DEVELOPER_NAME, GITHUB_URL, toggle_dark_mode
 
 
@@ -10,7 +10,7 @@ class HelperKeys:
         self.resize_handler = resize_handler
         self.header = header
         self.footer = footer
-        self.modal = Modal(self.stdscr)
+        self.modalwindow = ModalWindow(self.stdscr)
         self.update_colors()
         self.modal_showing = False
 
@@ -18,7 +18,7 @@ class HelperKeys:
         from TUI.core.static.__data__ import DARK_MODE
 
         self.color_pair_normal = color_pair(2 if DARK_MODE else 11)
-        self.modal.update_colors()
+        self.modalwindow.update_colors()
         self.stdscr.bkgd(self.color_pair_normal)
         self.stdscr.refresh()
 

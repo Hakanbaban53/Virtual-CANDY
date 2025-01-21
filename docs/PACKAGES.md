@@ -11,6 +11,7 @@ Each distribution has an array of objects. Each object represents a package grou
 ```json
 {
   "name": "Package_Group_Name",
+  "description": "Description of the package group",
   "values": [
     {
       "name": "Readable Package Name",
@@ -28,6 +29,7 @@ Each distribution has an array of objects. Each object represents a package grou
 
 **Fields:**
 - **`name`**: Display name of the package or group.
+- **`description`**: Description of the package or group.
 - **`type`**: Type of the package (`package`, `AUR-package`, `get-keys`, `service`, `group`, etc.).
 - **`install_value`**: Command or identifier for installing the package.
 - **`check_value`**: Command or identifier to check if the package is installed.
@@ -56,6 +58,7 @@ Here’s how to add a new package called `MyApp` for the `arch` distribution:
 ```json
 {
   "name": "MyApp",
+  "description": "MyApp is a CLI and GUI application.",
   "values": [
     {
       "name": "My App CLI",
@@ -82,6 +85,7 @@ For complex setups requiring custom scripts, use `install_script`, `check_script
 ```json
 {
   "name": "SpecialApp",
+  "description": "SpecialApp is a special application.",
   "values": [
     {
       "name": "Special App",
@@ -109,6 +113,7 @@ Here’s how to add a **special-package** entry with a `special_values` field in
 ```json
 {
   "name": "Special_Package_Example",
+  "description": "Special Package Example",
   "values": [
     {
       "name": "Special App",

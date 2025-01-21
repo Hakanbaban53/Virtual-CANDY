@@ -43,7 +43,7 @@
         },
         {
           "name": "Virtual Box Extensions",
-          "type": "get-keys",
+          "type": "run-command",
           "install_script": [
             "wget https://download.virtualbox.org/virtualbox/7.0.14/Oracle_VM_VirtualBox_Extension_Pack-7.0.14.vbox-extpack",
             "echo 'y' | sudo vboxmanage extpack install Oracle_VM_VirtualBox_Extension_Pack-7.0.14.vbox-extpack"
@@ -293,7 +293,7 @@
       "values": [
         {
           "name": "VirtualBox Repository",
-          "type": "get-keys",
+          "type": "run-command",
           "install_script": [
             "sudo apt-get update",
             "sudo apt install wget gnupg2 lsb-release -y",
@@ -328,7 +328,7 @@
         },
         {
           "name": "Virtual Box Extensions",
-          "type": "get-keys",
+          "type": "run-command",
           "install_script": [
             "wget https://download.virtualbox.org/virtualbox/7.0.14/Oracle_VM_VirtualBox_Extension_Pack-7.0.14.vbox-extpack",
             "echo 'y' | sudo vboxmanage extpack install Oracle_VM_VirtualBox_Extension_Pack-7.0.14.vbox-extpack"
@@ -372,7 +372,7 @@
       "values": [
         {
           "name": "Docker Repository",
-          "type": "get-keys",
+          "type": "run-command",
           "install_script": [
             "sudo apt-get update",
             "sudo apt-get install ca-certificates curl -y",
@@ -465,7 +465,7 @@
       "values": [
         {
           "name": "Visual Studio Code Repository",
-          "type": "get-keys",
+          "type": "run-command",
           "install_script": [
             "sudo apt-get update",
             "sudo apt-get install wget gpg -y",
@@ -492,7 +492,7 @@
       "values": [
         {
           "name": "GitHub Desktop Repository",
-          "type": "get-keys",
+          "type": "run-command",
           "install_script": [
             "sudo apt-get update",
             "sudo apt install wget software-properties-common -y",
@@ -603,7 +603,7 @@
         },
         {
           "name": "VMware Workstation Service Files",
-          "type": "get-keys",
+          "type": "run-command",
           "install_script": [
             "sudo wget https://aur.archlinux.org/cgit/aur.git/plain/vmware-networks-configuration.service?h=vmware-workstation -O /etc/systemd/system/vmware-networks-configuration.service",
             "sudo wget https://aur.archlinux.org/cgit/aur.git/plain/vmware-networks.path?h=vmware-workstation -O /etc/systemd/system/vmware-networks.path",
@@ -668,7 +668,7 @@
         },
         {
           "name": "Virtual Box Extensions",
-          "type": "get-keys",
+          "type": "run-command",
           "install_script": [
             "wget https://download.virtualbox.org/virtualbox/7.0.14/Oracle_VM_VirtualBox_Extension_Pack-7.0.14.vbox-extpack",
             "echo 'y' | sudo vboxmanage extpack install Oracle_VM_VirtualBox_Extension_Pack-7.0.14.vbox-extpack"
@@ -707,7 +707,7 @@
       "values": [
         {
           "name": "Docker Repository",
-          "type": "get-keys",
+          "type": "run-command",
           "install_script": [
             "sudo wget https://download.docker.com/linux/fedora/docker-ce.repo -P /etc/yum.repos.d/"
           ],
@@ -790,7 +790,7 @@
       "values": [
         {
           "name": "Visual Studio Code Repository",
-          "type": "get-keys",
+          "type": "run-command",
           "install_script": [
             "sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc",
             "echo -e \"[code]\\nname=Visual Studio Code\\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\\nenabled=1\\ngpgcheck=1\\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc\" | sudo tee /etc/yum.repos.d/vscode.repo > /dev/null"
@@ -813,7 +813,7 @@
       "values": [
         {
           "name": "GitHub Desktop Repository",
-          "type": "get-keys",
+          "type": "run-command",
           "install_script": [
             "sudo rpm --import https://rpm.packages.shiftkey.dev/gpg.key",
             "sudo sh -c 'echo -e \"[shiftkey-packages]\\nname=GitHub Desktop\\nbaseurl=https://rpm.packages.shiftkey.dev/rpm/\\nenabled=1\\ngpgcheck=1\\nrepo_gpgcheck=1\\ngpgkey=https://rpm.packages.shiftkey.dev/gpg.key\" > /etc/yum.repos.d/shiftkey-packages.repo'"
@@ -877,7 +877,7 @@
       "values": [
         {
           "name": "Tuxedo Repository",
-          "type": "get-keys",
+          "type": "run-command",
           "install_script": [
             "sudo rpm --import https://rpm.tuxedocomputers.com/fedora/41/0x54840598.pub.asc",
             "echo -e '[tuxedo]\\nname=tuxedo\\nbaseurl=https://rpm.tuxedocomputers.com/fedora/41/x86_64/base\\nenabled=1\\ngpgcheck=1\\ngpgkey=https://rpm.tuxedocomputers.com/fedora/40/0x54840598.pub.asc\\nskip_if_unavailable=False' | sudo tee /etc/yum.repos.d/tuxedo.repo"
@@ -950,7 +950,7 @@
       "values": [
         {
           "name": "Cloudflare WARP repository",
-          "type": "get-keys",
+          "type": "run-command",
           "install_script": [
             "echo -e '[cloudflare-warp-stable]\\nname=cloudflare-warp-stable\\nbaseurl=https://pkg.cloudflareclient.com/rpm\\nenabled=1\\ntype=rpm\\ngpgcheck=1\\ngpgkey=https://pkg.cloudflareclient.com/pubkey.gpg' | sudo tee /etc/yum.repos.d/cloudflare-warp.repo"
           ],
@@ -993,7 +993,7 @@
         },
         {
           "name": "Oh My Meslo Nerd Font",
-          "type": "get-keys",
+          "type": "run-command",
           "install_script": ["oh-my-posh font install meslo"],
           "check_script": [""],
           "remove_script": [""]
@@ -1034,7 +1034,7 @@
         },
         {
           "name": "Oh My Zsh",
-          "type": "get-keys",
+          "type": "run-command",
           "install_script": [
             "sh -c \"$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)\"",
             "chsh -s $(which zsh)"
@@ -1183,7 +1183,7 @@
       "values": [
         {
           "name": "VirtualBox Repository",
-          "type": "get-keys",
+          "type": "run-command",
           "install_script": [
             "sudo apt-get update",
             "sudo apt install wget gnupg2 lsb-release -y",
@@ -1218,7 +1218,7 @@
         },
         {
           "name": "Virtual Box Extensions",
-          "type": "get-keys",
+          "type": "run-command",
           "install_script": [
             "wget https://download.virtualbox.org/virtualbox/7.0.14/Oracle_VM_VirtualBox_Extension_Pack-7.0.14.vbox-extpack",
             "echo 'y' | sudo vboxmanage extpack install Oracle_VM_VirtualBox_Extension_Pack-7.0.14.vbox-extpack"
@@ -1267,7 +1267,7 @@
       "values": [
         {
           "name": "Docker Repository",
-          "type": "get-keys",
+          "type": "run-command",
           "install_script": [
             "sudo apt-get install ca-certificates curl -y",
             "sudo install -d -m 0755 /etc/apt/keyrings",
@@ -1359,7 +1359,7 @@
       "values": [
         {
           "name": "Visual Studio Code Repository",
-          "type": "get-keys",
+          "type": "run-command",
           "install_script": [
             "sudo apt-get update",
             "sudo apt-get install wget gpg -y",
@@ -1386,7 +1386,7 @@
       "values": [
         {
           "name": "GitHub Desktop Repository",
-          "type": "get-keys",
+          "type": "run-command",
           "install_script": [
             "sudo apt-get update",
             "sudo apt install wget software-properties-common -y",

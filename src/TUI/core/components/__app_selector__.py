@@ -1,9 +1,10 @@
 import curses
 import json
 from queue import Queue
+import textwrap
 import threading
 
-from TUI.core.components.__modal__ import Modal
+from TUI.core.components.__modal_win__ import ModalWindow
 from TUI.core.components.__print_apps__ import PrintApps
 from TUI.core.static.__data__ import OPTIONS_YES_NO
 from core.__get_os_package_manager__ import get_linux_package_manager
@@ -18,7 +19,7 @@ class AppSelector:
         self.helper_keys = helper_keys
         self.header = header
         self.selected_app = None
-        self.modal = Modal(self.stdscr)
+        self.modalwindow = ModalWindow(self.stdscr)
         self.update_colors()
 
     def show_package_info(self, package):
@@ -29,43 +30,58 @@ class AppSelector:
         package_values = package.get("values", [])
 
 
-        # Prepare the content for the modal
+        # Prepare the content for the modalwindow
         content = [f"Package Name: {package_name}"]
         long_content = []
         for idx, value in enumerate(package_values):
             formatted_value = json.dumps(value, indent=2)  # Format JSON with indentation
             long_content.append(f"Value {idx + 1}:")
             long_content.extend(formatted_value.split("\n"))  # Split into lines for curses
-            
-        self.modal.draw_modal("Package Information", content, long_content=long_content)
+        
+        # Calculate the maximum width for the description
+        max_width = self.stdscr.getmaxyx()[1] // 2 - 4
 
-        pad_left = 0
+        # Wrap the package description to the calculated width
+        if len(package_description) > max_width:
+            # Split the description into lines while preserving word boundaries
+            wrapped_description = textwrap.wrap(package_description, width=max_width)
+            
+            # Add the label "Description:" at the start
+            long_content.insert(0, "Description:")
+            long_content[1:1] = wrapped_description  # Insert the wrapped lines
+        else:
+            # If it fits within max_width, keep it as a single line
+            long_content.insert(0, f"Description: {package_description}")
+
+            
+        self.modalwindow.draw_modal("Package Information", content, long_content=long_content)
+
         while True:
-            # Refresh pad display inside the modal
-            self.modal.modal_pad.refresh(
-                self.modal.pad_top,  # Start row in the pad
-                pad_left,  # Start column in the pad
-                self.modal.modal_y + len(content) + 3,  # Top of visible pad area
-                self.modal.modal_x + 1,  # Left of visible pad area
-                self.modal.modal_y + self.modal.modal_height - 3,  # Bottom of visible pad area
-                self.modal.modal_x + self.modal.modal_width - 2,  # Right of visible pad area
+            # Refresh pad display inside the modalwindow
+            self.modalwindow.modal_pad.refresh(
+                self.modalwindow.pad_top,  # Start row in the pad
+                self.modalwindow.pad_left,  # Start column in the pad
+                self.modalwindow.modal_y + len(content) + 3,  # Top of visible pad area
+                self.modalwindow.modal_x + 1,  # Left of visible pad area
+                self.modalwindow.modal_y + self.modalwindow.modal_height - 3,  # Bottom of visible pad area
+                self.modalwindow.modal_x + self.modalwindow.modal_width - 2,  # Right of visible pad area
             )
 
             # Handle user input for scrolling or exiting
             key = self.stdscr.getch()
-            if key == curses.KEY_UP and self.modal.pad_top > 0:
-                self.modal.pad_top -= 1  # Scroll up
-            elif key == curses.KEY_DOWN and self.modal.pad_top < len(long_content) - self.modal.pad_height:
-                self.modal.pad_top += 1  # Scroll down
-            elif key == curses.KEY_LEFT and pad_left > 0:
-                pad_left -= 1  # Scroll left
+            if key == curses.KEY_UP and self.modalwindow.pad_top > 0:
+                self.modalwindow.pad_top -= 1  # Scroll up
+            elif key == curses.KEY_DOWN and self.modalwindow.pad_top < len(long_content) - self.modalwindow.pad_height:
+                self.modalwindow.pad_top += 1  # Scroll down
+            elif key == curses.KEY_LEFT and self.modalwindow.pad_left > 0:
+                self.modalwindow.pad_left -= 1  # Scroll left
             elif key == curses.KEY_RIGHT:
                 # Ensure we don't scroll past the longest line
                 max_line_length = max(len(line) for line in long_content)
-                if pad_left < max_line_length - (self.modal.modal_width - 2):
-                    pad_left += 1  # Scroll right
+                if self.modalwindow.pad_left < max_line_length - (self.modalwindow.modal_width - 2):
+                    self.modalwindow.pad_left += 1  # Scroll right
             elif key == 27:  # ESC key
-                self.modal.close()
+                self.modalwindow.close()
                 break
 
 
@@ -179,8 +195,6 @@ class AppSelector:
                 )
 
                 if selection == "Yes":
-                    self.header.stop_clock(text="Process ", blink=True)
-
                     pad_height = (
                         len(selected_entities) * 100
                     )  # Dynamic height based on the number of selected entities
@@ -264,7 +278,6 @@ class AppSelector:
 
                     # Wait for the processing thread to finish
                     processing_thread.join()
-                    self.header.start_clock()
 
                     # Notify the user that processing is complete
                     finished_message = "Processing completed. Press 'Enter' to exit."

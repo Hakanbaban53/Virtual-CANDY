@@ -1,7 +1,7 @@
 import curses
 
 
-class Modal:
+class ModalWindow:
     def __init__(self, stdscr):
         self.stdscr = stdscr
         self.modal_win = None  # Current modal window
@@ -22,7 +22,7 @@ class Modal:
         height, width = self.stdscr.getmaxyx()
 
         # Modal dimensions
-        self.modal_width = max(len(title), max(len(line) for line in content)) + 4
+        self.modal_width = max(width // 2, max(len(line) for line in content)) + 4
         self.modal_height = len(content) + 5
         if long_content:
             self.modal_height += min(len(long_content), 10)  # Display up to 10 lines of long content in the modal
@@ -49,11 +49,11 @@ class Modal:
         if long_content:
             self.pad_height = min(len(long_content), 10)  # Visible lines in the modal for the pad
             self.modal_pad = curses.newpad(len(long_content), max(len(line) for line in long_content) + 2)
-            self.modal_pad.bkgd(self.color_pair_normal)
+            self.modal_pad.bkgd(self.color_pair_normal | curses.A_REVERSE)
 
             # Add long content to the pad
             for idx, line in enumerate(long_content):
-                self.modal_pad.addstr(idx, 0, line)
+                self.modal_pad.addstr(idx, 1, line)
 
             # Initialize scrolling variables
             self.pad_top = 0
