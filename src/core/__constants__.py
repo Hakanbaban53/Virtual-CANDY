@@ -19,8 +19,15 @@ PACKAGE_MANAGER_INSTALL = {
     "fedora": "sudo dnf install -y",
 }
 
+PACKAGE_MANAGER_INSTALL_LOCAL = {
+    "arch": "sudo pacman -U --noconfirm",
+    "debian": "sudo dpkg -i",
+    "ubuntu": "sudo dpkg -i",
+    "fedora": "sudo dnf install -y",
+}
+
 PACKAGE_MANAGER_REMOVE = {
-    "arch": "sudo pacman -R --noconfirm",
+    "arch": "sudo pacman -Rsc --noconfirm",
     "debian": "sudo apt-get remove -y",
     "ubuntu": "sudo apt-get remove -y",
     "fedora": "sudo dnf remove -y",

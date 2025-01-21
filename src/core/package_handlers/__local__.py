@@ -1,52 +1,51 @@
-from logging import error
-from os import path
-from posixpath import join
+from logging import info, error
+import os
 from subprocess import CalledProcessError
-from core.__constants__ import CACHE_PATH, PACKAGE_TYPES
+from core.__constants__ import CACHE_PATH, PACKAGE_MANAGER_INSTALL_LOCAL, PACKAGE_TYPES
 from core.__command_handler__ import run_command
 
 
-def handle_local_package(distro, package, verbose):
+def handle_local_package(distro, install_value, verbose):
+    """
+    Handles downloading and installing local packages.
 
-    install_value = package
-    if distro not in PACKAGE_TYPES:
+    Args:
+        distro (str): Target Linux distribution.
+        install_value (str): URL or file path for the package.
+        verbose (file-like): Verbose output.
+    """
+    if distro not in PACKAGE_MANAGER_INSTALL_LOCAL:
         raise ValueError(f"Unsupported distribution: {distro}")
 
-    package_type = PACKAGE_TYPES[distro]
-    local_path = join(CACHE_PATH, f"local.package.{package_type}")
+    CACHE_PATH.mkdir(parents=True, exist_ok=True)  # Ensure the cache directory exists
+    package_ext = PACKAGE_TYPES[distro]
+    local_path = CACHE_PATH / f"local.package.{package_ext}"
 
     try:
+        # Download the package
         run_command(
             f"wget --progress=bar:force -O {local_path} {install_value}",
-            cwd=CACHE_PATH,
+            cwd=str(CACHE_PATH),
             verbose=verbose,
         )
 
-        if distro == "arch":
-            run_command(
-                f"sudo pacman -U {local_path} --noconfirm",
-                verbose=verbose,
-                cwd=local_path,
-            )
-        elif distro in {"debian", "ubuntu"}:
-            run_command(
-                f"sudo dpkg -i {local_path}",
-                verbose=verbose,
-                cwd=local_path,
-            )
-            run_command(
-                f"sudo apt-get install -f -y",
-                verbose=verbose,
-                cwd=local_path,
-            )
-        elif distro == "fedora":
-            run_command(
-                f"sudo dnf install {local_path} -y",
-                verbose=verbose,
-                cwd=local_path,
-            )
+        # Install the package
+        run_command(
+            f"{PACKAGE_MANAGER_INSTALL_LOCAL[distro]} {local_path}",
+            verbose=verbose,
+        )
+
+        # Handle additional steps for certain distros
+        if os.path.exists("/etc/debian_version"):
+            run_command("sudo apt-get install -f -y", verbose=verbose)
+
+        info(f"Successfully installed local package from {install_value}.")
+
     except CalledProcessError as err:
         error(f"An error occurred: {err}")
+
     finally:
-        if path.exists(local_path):
-            run_command(f"rm -rf {local_path}", verbose=verbose)
+        # Cleanup the downloaded package
+        if local_path.exists():
+            local_path.unlink()
+            info(f"Cleaned up temporary package file: {local_path}")

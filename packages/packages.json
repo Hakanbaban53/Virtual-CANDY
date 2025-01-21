@@ -278,13 +278,107 @@
   "debian": [
     {
       "name": "VMware_Workstation",
+      "description": "VMware Workstation is a hosted hypervisor that runs on x64 versions of Windows and Linux operating systems; it enables users to set up virtual machines on a single physical machine and use them simultaneously along with the actual machine.",
       "values": [
+        {
+          "name": "VMware Workstation Dependencies",
+          "type": "package",
+          "install_value": "linux-headers-$(uname -r) build-essential gcc make dkms git wget patch net-tools",
+          "check_value": "linux-headers-$(uname -r) build-essential gcc make dkms git wget patch net-tools",
+          "remove_value": ""
+        },
         {
           "name": "VMware Workstation",
           "type": "special-package",
-          "install_value": "vmware-workstation",
-          "check_value": "vmware-workstation",
-          "remove_value": "vmware-workstation"
+          "special_values": [
+            {
+              "app_name": "VMware",
+              "version": "17.6.2"
+            }
+          ],
+          "install_script": [
+            "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.6.2/24409262/linux/core/VMware-Workstation-17.6.2-24409262.x86_64.bundle.tar -O $CACHE_PATH/$app_name/VMware-Workstation-17.6.2-24409262.x86_64.bundle.tar",
+            "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.6.2/24409262/linux/packages/vmware-tools-windows-12.4.5-23787635.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-windows-12.4.5-23787635.x86_64.component.tar",
+            "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.6.2/24409262/linux/packages/vmware-tools-windows-x86-12.4.5-23787635.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-windows-x86-12.4.5-23787635.x86_64.component.tar",
+            "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-winPreVista-12.4.0-23259341.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-winPreVista-12.4.0-23259341.x86_64.component.tar",
+            "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-linux-12.4.0-23259341.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-linux-12.4.0-23259341.x86_64.component.tar",
+            "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-linuxPreGlibc25-12.4.0-23259341.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-linuxPreGlibc25-12.4.0-23259341.x86_64.component.tar",
+            "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-netware-12.4.0-23259341.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-netware-12.4.0-23259341.x86_64.component.tar",
+            "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-solaris-12.4.0-23259341.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-solaris-12.4.0-23259341.x86_64.component.tar",
+            "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-winPre2k-12.4.0-23259341.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-winPre2k-12.4.0-23259341.x86_64.component.tar",
+            "tar -xf $CACHE_PATH/$app_name/VMware-Workstation-17.6.2-24409262.x86_64.bundle.tar -C $CACHE_PATH/$app_name",
+            "tar -xf $CACHE_PATH/$app_name/vmware-tools-windows-12.4.5-23787635.x86_64.component.tar -C $CACHE_PATH/$app_name",
+            "tar -xf $CACHE_PATH/$app_name/vmware-tools-windows-x86-12.4.5-23787635.x86_64.component.tar -C $CACHE_PATH/$app_name",
+            "tar -xf $CACHE_PATH/$app_name/vmware-tools-winPreVista-12.4.0-23259341.x86_64.component.tar -C $CACHE_PATH/$app_name",
+            "tar -xf $CACHE_PATH/$app_name/vmware-tools-linux-12.4.0-23259341.x86_64.component.tar -C $CACHE_PATH/$app_name",
+            "tar -xf $CACHE_PATH/$app_name/vmware-tools-linuxPreGlibc25-12.4.0-23259341.x86_64.component.tar -C $CACHE_PATH/$app_name",
+            "tar -xf $CACHE_PATH/$app_name/vmware-tools-netware-12.4.0-23259341.x86_64.component.tar -C $CACHE_PATH/$app_name",
+            "tar -xf $CACHE_PATH/$app_name/vmware-tools-solaris-12.4.0-23259341.x86_64.component.tar -C $CACHE_PATH/$app_name",
+            "tar -xf $CACHE_PATH/$app_name/vmware-tools-winPre2k-12.4.0-23259341.x86_64.component.tar -C $CACHE_PATH/$app_name",
+            "sudo systemctl mask vmware.service",
+            "sudo chmod +x $CACHE_PATH/$app_name/VMware-Workstation-17.6.2-24409262.x86_64.bundle",
+            "sudo $CACHE_PATH/$app_name/VMware-Workstation-17.6.2-24409262.x86_64.bundle --console --required --eulas-agreed --install-component=$CACHE_PATH/$app_name/vmware-tools-windows-12.4.5-23787635.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-windows-x86-12.4.5-23787635.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-winPreVista-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-linux-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-linuxPreGlibc25-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-netware-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-solaris-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-winPre2k-12.4.0-23259341.x86_64.component",
+            "sudo systemctl unmask vmware.service"
+          ],
+          "check_script": ["/usr/bin/vmware-installer --version"],
+          "remove_script": [
+            "sudo sytemctl stop vmware; sudo systemctl disable vmware;echo \"yes\" | sudo /usr/bin/vmware-installer --uninstall-product vmware-workstation"
+          ]
+        },
+        {
+          "name": "VMware Workstation DKMS Modules",
+          "type": "special-package",
+          "special_values": [
+            {
+              "app_name": "VMware",
+              "version": "17.6.2",
+              "dkms_name": "VMware-Host-Modules"
+            }
+          ],
+          "install_script": [
+            "sudo mkdir -p /usr/src/$dkms_name-$version",
+            "sudo tar -xf /usr/lib/vmware/modules/source/vmmon.tar -C /usr/src/$dkms_name-$version",
+            "sudo tar -xf /usr/lib/vmware/modules/source/vmnet.tar -C /usr/src/$dkms_name-$version",
+            "sudo wget https://aur.archlinux.org/cgit/aur.git/plain/Makefile?h=vmware-workstation -O /usr/src/$dkms_name-$version/Makefile",
+            "sudo wget https://aur.archlinux.org/cgit/aur.git/plain/dkms.conf.in?h=vmware-workstation -O /usr/src/$dkms_name-$version/dkms.conf",
+            "sudo sed -i 's/@PKGNAME@/$dkms_name/' /usr/src/$dkms_name-$version/dkms.conf",
+            "sudo sed -i 's/@PKGVER@/$version/' /usr/src/$dkms_name-$version/dkms.conf",
+            "wget https://aur.archlinux.org/cgit/aur.git/plain/vmmon.patch?h=vmware-workstation -O $CACHE_PATH/$app_name/vmmon.patch",
+            "wget https://aur.archlinux.org/cgit/aur.git/plain/vmnet.patch?h=vmware-workstation -O $CACHE_PATH/$app_name/vmnet.patch",
+            "sudo patch -N -p2 -d /usr/src/$dkms_name-$version/vmmon-only < $CACHE_PATH/$app_name/vmmon.patch",
+            "sudo patch -N -p2 -d /usr/src/$dkms_name-$version/vmnet-only < $CACHE_PATH/$app_name/vmnet.patch",
+            "sudo dkms add --force -m $dkms_name -v $version",
+            "sudo dkms build --force -m $dkms_name -v $version",
+            "sudo dkms install --force -m $dkms_name -v $version",
+            "sudo vmware-modconfig --console --install-all"
+          ],
+          "check_script": ["dkms status | grep $dkms_name"],
+          "remove_script": [
+            "sudo dkms remove -m $dkms_name -v $version --all",
+            "sudo rm -rf /usr/src/$dkms_name-$version",
+            "sudo rm -rf /var/lib/dkms/$dkms_name"
+          ]
+        },
+        {
+          "name": "VMware Workstation Service Files",
+          "type": "run-command",
+          "install_script": [
+            "sudo wget https://aur.archlinux.org/cgit/aur.git/plain/vmware-networks-configuration.service?h=vmware-workstation -O /etc/systemd/system/vmware-networks-configuration.service",
+            "sudo wget https://aur.archlinux.org/cgit/aur.git/plain/vmware-networks.path?h=vmware-workstation -O /etc/systemd/system/vmware-networks.path",
+            "sudo wget https://aur.archlinux.org/cgit/aur.git/plain/vmware-usbarbitrator.path?h=vmware-workstation -O /etc/systemd/system/vmware-usbarbitrator.path",
+            "sudo systemctl enable vmware",
+            "sudo systemctl enable vmware-networks-configuration"
+          ],
+          "check_script": [
+            "/etc/systemd/system/vmware-networks-configuration.service",
+            "/etc/systemd/system/vmware-networks.path",
+            "/etc/systemd/system/vmware-usbarbitrator.path"
+          ],
+          "remove_script": [
+            "sudo rm -rf /etc/systemd/system/vmware-networks-configuration.service",
+            "sudo rm -rf /etc/systemd/system/vmware-networks.path",
+            "sudo rm -rf /etc/systemd/system/vmware-usbarbitrator.path"
+          ]
         }
       ]
     },
@@ -1168,13 +1262,107 @@
   "ubuntu": [
     {
       "name": "VMware_Workstation",
+      "description": "VMware Workstation is a hosted hypervisor that runs on x64 versions of Windows and Linux operating systems; it enables users to set up virtual machines on a single physical machine and use them simultaneously along with the actual machine.",
       "values": [
+        {
+          "name": "VMware Workstation Dependencies",
+          "type": "package",
+          "install_value": "linux-headers-$(uname -r) build-essential gcc make dkms git wget patch net-tools",
+          "check_value": "linux-headers-$(uname -r) build-essential gcc make dkms git wget patch net-tools",
+          "remove_value": ""
+        },
         {
           "name": "VMware Workstation",
           "type": "special-package",
-          "install_value": "vmware-workstation",
-          "check_value": "vmware-workstation",
-          "remove_value": "vmware-workstation"
+          "special_values": [
+            {
+              "app_name": "VMware",
+              "version": "17.6.2"
+            }
+          ],
+          "install_script": [
+            "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.6.2/24409262/linux/core/VMware-Workstation-17.6.2-24409262.x86_64.bundle.tar -O $CACHE_PATH/$app_name/VMware-Workstation-17.6.2-24409262.x86_64.bundle.tar",
+            "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.6.2/24409262/linux/packages/vmware-tools-windows-12.4.5-23787635.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-windows-12.4.5-23787635.x86_64.component.tar",
+            "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.6.2/24409262/linux/packages/vmware-tools-windows-x86-12.4.5-23787635.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-windows-x86-12.4.5-23787635.x86_64.component.tar",
+            "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-winPreVista-12.4.0-23259341.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-winPreVista-12.4.0-23259341.x86_64.component.tar",
+            "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-linux-12.4.0-23259341.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-linux-12.4.0-23259341.x86_64.component.tar",
+            "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-linuxPreGlibc25-12.4.0-23259341.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-linuxPreGlibc25-12.4.0-23259341.x86_64.component.tar",
+            "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-netware-12.4.0-23259341.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-netware-12.4.0-23259341.x86_64.component.tar",
+            "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-solaris-12.4.0-23259341.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-solaris-12.4.0-23259341.x86_64.component.tar",
+            "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-winPre2k-12.4.0-23259341.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-winPre2k-12.4.0-23259341.x86_64.component.tar",
+            "tar -xf $CACHE_PATH/$app_name/VMware-Workstation-17.6.2-24409262.x86_64.bundle.tar -C $CACHE_PATH/$app_name",
+            "tar -xf $CACHE_PATH/$app_name/vmware-tools-windows-12.4.5-23787635.x86_64.component.tar -C $CACHE_PATH/$app_name",
+            "tar -xf $CACHE_PATH/$app_name/vmware-tools-windows-x86-12.4.5-23787635.x86_64.component.tar -C $CACHE_PATH/$app_name",
+            "tar -xf $CACHE_PATH/$app_name/vmware-tools-winPreVista-12.4.0-23259341.x86_64.component.tar -C $CACHE_PATH/$app_name",
+            "tar -xf $CACHE_PATH/$app_name/vmware-tools-linux-12.4.0-23259341.x86_64.component.tar -C $CACHE_PATH/$app_name",
+            "tar -xf $CACHE_PATH/$app_name/vmware-tools-linuxPreGlibc25-12.4.0-23259341.x86_64.component.tar -C $CACHE_PATH/$app_name",
+            "tar -xf $CACHE_PATH/$app_name/vmware-tools-netware-12.4.0-23259341.x86_64.component.tar -C $CACHE_PATH/$app_name",
+            "tar -xf $CACHE_PATH/$app_name/vmware-tools-solaris-12.4.0-23259341.x86_64.component.tar -C $CACHE_PATH/$app_name",
+            "tar -xf $CACHE_PATH/$app_name/vmware-tools-winPre2k-12.4.0-23259341.x86_64.component.tar -C $CACHE_PATH/$app_name",
+            "sudo systemctl mask vmware.service",
+            "sudo chmod +x $CACHE_PATH/$app_name/VMware-Workstation-17.6.2-24409262.x86_64.bundle",
+            "sudo $CACHE_PATH/$app_name/VMware-Workstation-17.6.2-24409262.x86_64.bundle --console --required --eulas-agreed --install-component=$CACHE_PATH/$app_name/vmware-tools-windows-12.4.5-23787635.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-windows-x86-12.4.5-23787635.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-winPreVista-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-linux-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-linuxPreGlibc25-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-netware-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-solaris-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-winPre2k-12.4.0-23259341.x86_64.component",
+            "sudo systemctl unmask vmware.service"
+          ],
+          "check_script": ["/usr/bin/vmware-installer --version"],
+          "remove_script": [
+            "sudo sytemctl stop vmware; sudo systemctl disable vmware;echo \"yes\" | sudo /usr/bin/vmware-installer --uninstall-product vmware-workstation"
+          ]
+        },
+        {
+          "name": "VMware Workstation DKMS Modules",
+          "type": "special-package",
+          "special_values": [
+            {
+              "app_name": "VMware",
+              "version": "17.6.2",
+              "dkms_name": "VMware-Host-Modules"
+            }
+          ],
+          "install_script": [
+            "sudo mkdir -p /usr/src/$dkms_name-$version",
+            "sudo tar -xf /usr/lib/vmware/modules/source/vmmon.tar -C /usr/src/$dkms_name-$version",
+            "sudo tar -xf /usr/lib/vmware/modules/source/vmnet.tar -C /usr/src/$dkms_name-$version",
+            "sudo wget https://aur.archlinux.org/cgit/aur.git/plain/Makefile?h=vmware-workstation -O /usr/src/$dkms_name-$version/Makefile",
+            "sudo wget https://aur.archlinux.org/cgit/aur.git/plain/dkms.conf.in?h=vmware-workstation -O /usr/src/$dkms_name-$version/dkms.conf",
+            "sudo sed -i 's/@PKGNAME@/$dkms_name/' /usr/src/$dkms_name-$version/dkms.conf",
+            "sudo sed -i 's/@PKGVER@/$version/' /usr/src/$dkms_name-$version/dkms.conf",
+            "wget https://aur.archlinux.org/cgit/aur.git/plain/vmmon.patch?h=vmware-workstation -O $CACHE_PATH/$app_name/vmmon.patch",
+            "wget https://aur.archlinux.org/cgit/aur.git/plain/vmnet.patch?h=vmware-workstation -O $CACHE_PATH/$app_name/vmnet.patch",
+            "sudo patch -N -p2 -d /usr/src/$dkms_name-$version/vmmon-only < $CACHE_PATH/$app_name/vmmon.patch",
+            "sudo patch -N -p2 -d /usr/src/$dkms_name-$version/vmnet-only < $CACHE_PATH/$app_name/vmnet.patch",
+            "sudo dkms add --force -m $dkms_name -v $version",
+            "sudo dkms build --force -m $dkms_name -v $version",
+            "sudo dkms install --force -m $dkms_name -v $version",
+            "sudo vmware-modconfig --console --install-all"
+          ],
+          "check_script": ["dkms status | grep $dkms_name"],
+          "remove_script": [
+            "sudo dkms remove -m $dkms_name -v $version --all",
+            "sudo rm -rf /usr/src/$dkms_name-$version",
+            "sudo rm -rf /var/lib/dkms/$dkms_name"
+          ]
+        },
+        {
+          "name": "VMware Workstation Service Files",
+          "type": "run-command",
+          "install_script": [
+            "sudo wget https://aur.archlinux.org/cgit/aur.git/plain/vmware-networks-configuration.service?h=vmware-workstation -O /etc/systemd/system/vmware-networks-configuration.service",
+            "sudo wget https://aur.archlinux.org/cgit/aur.git/plain/vmware-networks.path?h=vmware-workstation -O /etc/systemd/system/vmware-networks.path",
+            "sudo wget https://aur.archlinux.org/cgit/aur.git/plain/vmware-usbarbitrator.path?h=vmware-workstation -O /etc/systemd/system/vmware-usbarbitrator.path",
+            "sudo systemctl enable vmware",
+            "sudo systemctl enable vmware-networks-configuration"
+          ],
+          "check_script": [
+            "/etc/systemd/system/vmware-networks-configuration.service",
+            "/etc/systemd/system/vmware-networks.path",
+            "/etc/systemd/system/vmware-usbarbitrator.path"
+          ],
+          "remove_script": [
+            "sudo rm -rf /etc/systemd/system/vmware-networks-configuration.service",
+            "sudo rm -rf /etc/systemd/system/vmware-networks.path",
+            "sudo rm -rf /etc/systemd/system/vmware-usbarbitrator.path"
+          ]
         }
       ]
     },
