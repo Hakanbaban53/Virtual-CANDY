@@ -1,8 +1,8 @@
 import curses
-import json
+from json import dumps
 from queue import Queue
-import textwrap
-import threading
+from textwrap import wrap
+from threading import Thread
 
 from core.__pack_type_handler__ import package_manager
 from TUI.core.components.__modal_win__ import ModalWindow
@@ -33,7 +33,7 @@ class AppSelector:
         content = [f"Package Name: {package_name}"]
         long_content = []
         for idx, value in enumerate(package_values):
-            formatted_value = json.dumps(value, indent=2)  # Format JSON with indentation
+            formatted_value = dumps(value, indent=2)  # Format JSON with indentation
             long_content.append(f"Value {idx + 1}:")
             long_content.extend(formatted_value.split("\n"))  # Split into lines for curses
         
@@ -43,7 +43,7 @@ class AppSelector:
         # Wrap the package description to the calculated width
         if len(package_description) > max_width:
             # Split the description into lines while preserving word boundaries
-            wrapped_description = textwrap.wrap(package_description, width=max_width)
+            wrapped_description = wrap(package_description, width=max_width)
             
             # Add the label "Description:" at the start
             long_content.insert(0, "Description:")
@@ -251,7 +251,7 @@ class AppSelector:
                     log_queue = Queue()
 
                     # Start the processing in a thread
-                    processing_thread = threading.Thread(target=process_packages)
+                    processing_thread = Thread(target=process_packages)
                     processing_thread.start()
 
                     # Main loop to dynamically render log output

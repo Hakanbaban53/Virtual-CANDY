@@ -1,9 +1,11 @@
-import datetime
-import json
-import logging
+from asyncio import sleep
+from datetime import datetime, timedelta
+from json import JSONDecodeError, dump, load
+from logging import debug
 from pathlib import Path
-import requests
-import time
+
+from requests import RequestException, get
+
 
 from core.__constants__ import CACHE_PATH, PACKAGES_JSON_URL
 
@@ -30,18 +32,18 @@ class PackagesJSONHandler:
         retries = 0
         while retries < max_retries:
             try:
-                response = requests.get(url)
+                response = get(url)
                 response.raise_for_status()
                 with open(file_path, "w") as file:
-                    json.dump(response.json(), file)
-                logging.debug(f"JSON file downloaded successfully: {file_path}")
+                    dump(response.json(), file)
+                debug(f"JSON file downloaded successfully: {file_path}")
                 return True
-            except requests.exceptions.RequestException as e:
+            except RequestException as e:
                 retries += 1
-                logging.debug(f"Failed to download JSON file from {url} (Attempt {retries}/{max_retries}): {e}")
+                debug(f"Failed to download JSON file from {url} (Attempt {retries}/{max_retries}): {e}")
                 if retries < max_retries:
-                    logging.debug(f"Retrying in {retry_delay} seconds...")
-                    time.sleep(retry_delay)
+                    debug(f"Retrying in {retry_delay} seconds...")
+                    sleep(retry_delay)
         return False
 
     def load_json_data(self, refresh=False):
@@ -49,24 +51,24 @@ class PackagesJSONHandler:
         try:
             if not self.json_file_path.exists():
                 if self.json_file_url:
-                    logging.debug(f"JSON file not found. Downloading from {self.json_file_url}...")
+                    debug(f"JSON file not found. Downloading from {self.json_file_url}...")
                     if not self.download_json_file(self.json_file_url, self.json_file_path):
                         raise RuntimeError(f"Failed to download JSON file from {self.json_file_url}.")
                 else:
                     raise FileNotFoundError(f"JSON file path does not exist: {self.json_file_path}")
 
             # Check file age if refresh is needed
-            file_age = datetime.datetime.now() - datetime.datetime.fromtimestamp(self.json_file_path.stat().st_mtime)
-            if file_age > datetime.timedelta(days=1) or refresh:
-                logging.debug(f"Refreshing JSON file from {self.json_file_url}...")
+            file_age = datetime.now() - datetime.fromtimestamp(self.json_file_path.stat().st_mtime)
+            if file_age > timedelta(days=1) or refresh:
+                debug(f"Refreshing JSON file from {self.json_file_url}...")
                 if not self.download_json_file(self.json_file_url, self.json_file_path):
                     raise RuntimeError(f"Failed to refresh JSON file from {self.json_file_url}.")
 
             # Load and return JSON data
             with open(self.json_file_path, "r") as file:
-                logging.debug(f"Loading JSON data from {self.json_file_path}...")
-                return json.load(file)
-        except json.JSONDecodeError as e:
+                debug(f"Loading JSON data from {self.json_file_path}...")
+                return load(file)
+        except JSONDecodeError as e:
             raise RuntimeError(f"Error decoding JSON file: {e}")
         except Exception as e:
             raise RuntimeError(f"An error occurred: {e}")

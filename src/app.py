@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-import io
-import logging
+from curses import error
+from io import StringIO
+from logging import info, warning
 from TUI.__terminal_UI__ import start_terminal_ui
 from core.__pack_type_handler__ import package_manager
 from core.__logging_manager__ import LoggingManager
@@ -68,12 +69,12 @@ class PackageManagerApp:
                 self.args.print_verbose_package_info(relevant_packages, valid_packages)
 
                 if self.get_args.action == "install" and not self.get_args.dry_run:
-                    logging.info("Checking package manager connection...")
+                    info("Checking package manager connection...")
                     status = check_linux_package_manager_connection(
                         self.get_args.distribution
                     )
                     if not status:
-                        logging.error(
+                        error(
                             "Failed to connect to package manager repository. Exiting..."
                         )
                         return
@@ -96,11 +97,11 @@ class PackageManagerApp:
                             dry_run=self.get_args.dry_run,
                         )
                 else:
-                    logging.warning(
+                    warning(
                         "No valid packages found for the specified distribution."
                     )
             else:
-                log_stream = io.StringIO()
+                log_stream = StringIO()
                 LoggingManager(self.get_args.verbose, self.get_args.dry_run, log_stream)
 
                 start_terminal_ui(
@@ -116,9 +117,9 @@ class PackageManagerApp:
             print("\nCtrl + C pressed. Exiting...")
             print("Goodbye 👋")
         except RuntimeError as re:
-            logging.error(f"Runtime error: {re}")
+            error(f"Runtime error: {re}")
         except Exception as e:
-            logging.error(f"An unexpected error occurred: {e}")
+            error(f"An unexpected error occurred: {e}")
 
 
 if __name__ == "__main__":

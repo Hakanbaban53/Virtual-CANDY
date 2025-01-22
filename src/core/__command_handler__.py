@@ -1,5 +1,6 @@
+from logging import debug, error
 from subprocess import PIPE, CalledProcessError, Popen
-import logging
+
 
 def run_command(command, verbose=False, cwd=None):
     """
@@ -16,7 +17,7 @@ def run_command(command, verbose=False, cwd=None):
     Raises:
         CalledProcessError: If the command fails (non-zero exit code).
     """
-    logging.debug(f"Running command: {command}")
+    debug(f"Running command: {command}")
     try:
         completed_process = Popen(
             command, shell=True, cwd=cwd, stdout=PIPE, stderr=PIPE, text=True
@@ -25,15 +26,15 @@ def run_command(command, verbose=False, cwd=None):
         
         if completed_process.returncode != 0:
             if verbose:
-                logging.error(f"Error output: {stderr.strip()}")
+                error(f"Error output: {stderr.strip()}")
                         
         if verbose:
             if stdout.strip():
-                logging.debug(f"Progress/Info: {stdout.strip()}")
+                debug(f"Progress/Info: {stdout.strip()}")
             if stderr.strip():  # Log diagnostic/progress info if needed
-                logging.debug(f"Progress/Info: {stderr.strip()}")
+                debug(f"Progress/Info: {stderr.strip()}")
         
         return stdout
     except CalledProcessError as e:
-        logging.error(f"An error occurred: {e.stderr.strip()}")
+        error(f"An error occurred: {e.stderr.strip()}")
         raise

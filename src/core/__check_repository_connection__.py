@@ -1,4 +1,4 @@
-import logging
+from logging import error
 from time import sleep
 from requests import get, ConnectionError, Timeout
 
@@ -23,6 +23,6 @@ def check_linux_package_manager_connection(distribution):
         except ConnectionError:
             return False
     else:
-        logging.error(f"Unsupported distribution: {distribution}")
+        error(f"Unsupported distribution: {distribution}")
         sleep(5)
         exit(1)

@@ -1,5 +1,6 @@
 from genericpath import exists
 from logging import debug, error, info
+from posixpath import expanduser
 from subprocess import CalledProcessError, run
 
 from core.__command_handler__ import run_command
@@ -32,7 +33,7 @@ def special_package_installer(package, check_script, action, dry_run, verbose):
                 ]
     for script in check_script:
         try:
-            if script.strip().startswith(("/", "~", ".")) and exists(script):
+            if script.strip().startswith(("/", "~", ".")) and exists(expanduser(script)):
                 script_executed = True
                 break
             

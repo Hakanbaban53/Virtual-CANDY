@@ -1,5 +1,5 @@
+from genericpath import exists
 from logging import info, error
-import os
 from subprocess import CalledProcessError
 from core.__constants__ import CACHE_PATH, PACKAGE_MANAGER_INSTALL_LOCAL, PACKAGE_TYPES
 from core.__command_handler__ import run_command
@@ -36,7 +36,7 @@ def handle_local_package(distro, install_value, verbose):
         )
 
         # Handle additional steps for certain distros
-        if os.path.exists("/etc/debian_version"):
+        if exists("/etc/debian_version"):
             run_command("sudo apt-get install -f -y", verbose=verbose)
 
     except CalledProcessError as err:
