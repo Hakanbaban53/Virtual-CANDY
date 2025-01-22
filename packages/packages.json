@@ -134,7 +134,7 @@
           "remove_value": ""
         },
         {
-          "name": "Flathub",
+          "name": "flathub",
           "type": "repo-flathub",
           "install_value": "https://dl.flathub.org/repo/flathub.flatpakrepo"
         },
@@ -535,7 +535,7 @@
           "remove_value": ""
         },
         {
-          "name": "Flathub",
+          "name": "flathub",
           "type": "repo-flathub",
           "install_value": "https://dl.flathub.org/repo/flathub.flatpakrepo"
         },
@@ -860,7 +860,7 @@
           "remove_value": ""
         },
         {
-          "name": "Flathub",
+          "name": "flathub",
           "type": "repo-flathub",
           "install_value": "https://dl.flathub.org/repo/flathub.flatpakrepo"
         },
@@ -1525,7 +1525,7 @@
           "remove_value": ""
         },
         {
-          "name": "Flathub",
+          "name": "flathub",
           "type": "repo-flathub",
           "install_value": "https://dl.flathub.org/repo/flathub.flatpakrepo"
         },
