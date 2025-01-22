@@ -1,6 +1,8 @@
+#!/usr/bin/env python3
 import io
 import logging
-from core.__combined__ import package_manager
+from TUI.__terminal_UI__ import start_terminal_ui
+from core.__pack_type_handler__ import package_manager
 from core.__logging_manager__ import LoggingManager
 from core.__check_repository_connection__ import check_linux_package_manager_connection
 from core.__get_os_package_manager__ import (
@@ -8,7 +10,6 @@ from core.__get_os_package_manager__ import (
     get_linux_pretty_name,
 )
 from core.__get_packages_data__ import PackagesJSONHandler
-from TUI.__terminal_UI__ import start_terminal_ui
 from utils.cli.__arguments__ import ArgumentHandler
 
 

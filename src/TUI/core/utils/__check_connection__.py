@@ -3,7 +3,6 @@ from curses import napms, color_pair, A_BOLD
 from TUI.core.static.__data__ import OPTIONS_YES_NO
 from core.__check_repository_connection__ import check_linux_package_manager_connection
 
-
 class CheckPackageManagerConnection:
     def __init__(self, stdscr, linux_distro_id, clean_line):
         """

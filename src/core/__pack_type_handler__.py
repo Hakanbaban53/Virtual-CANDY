@@ -1,6 +1,6 @@
 import logging
 import os
-from subprocess import run, CalledProcessError
+from subprocess import CalledProcessError
 from os import path, chdir, getcwd
 
 from core.__command_handler__ import run_command
@@ -76,7 +76,7 @@ def run_basic_command(package, check_script, action, dry_run, verbose):
     for script in check_script:
         if not script:
             logging.warning("No script provided for checking. Skipping...")
-            continue
+            pass
 
         if path.exists(script):
             if action == "install":

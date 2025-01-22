@@ -16,23 +16,20 @@ def run_command(command, verbose=False, cwd=None):
     Raises:
         CalledProcessError: If the command fails (non-zero exit code).
     """
+    logging.debug(f"Running command: {command}")
     try:
         completed_process = Popen(
             command, shell=True, cwd=cwd, stdout=PIPE, stderr=PIPE, text=True
         )
         stdout, stderr = completed_process.communicate()
         
-        # Check exit code
         if completed_process.returncode != 0:
             if verbose:
-                logging.error(f"Command failed: {command}")
                 logging.error(f"Error output: {stderr.strip()}")
                         
-        # Log output
         if verbose:
-            logging.info(f"Command succeeded: {command}")
             if stdout.strip():
-                logging.debug(f"Output: {stdout.strip()}")
+                logging.debug(f"Progress/Info: {stdout.strip()}")
             if stderr.strip():  # Log diagnostic/progress info if needed
                 logging.debug(f"Progress/Info: {stderr.strip()}")
         

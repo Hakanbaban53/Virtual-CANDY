@@ -4,12 +4,9 @@ from sys import exit
 from TUI.core.components.__app_selector__ import AppSelector
 from TUI.core.components.__footer__ import Footer
 from TUI.core.components.__header__ import Header
+from TUI.core.components.__selections__ import Selections
 from TUI.core.static.__color_init__ import ColorInit
-from TUI.core.static.__data__ import (
-    KNOWN_DISTROS,
-    OPTIONS_INSTALL_REMOVE,
-    OPTIONS_YES_NO,
-)
+from TUI.core.static.__data__ import KNOWN_DISTROS, OPTIONS_INSTALL_REMOVE, OPTIONS_YES_NO
 from TUI.core.utils.__check_connection__ import CheckPackageManagerConnection
 from TUI.core.utils.__clean_line__ import CleanLine
 from TUI.core.utils.__clear_midde_section__ import ClearMiddleSection
@@ -17,8 +14,6 @@ from TUI.core.utils.__errors_ import Errors
 from TUI.core.utils.__helper_keys__ import HelperKeys
 from TUI.core.utils.__input__ import Input
 from TUI.core.utils.__resize_handler__ import ResizeHandler
-from TUI.core.components.__selections__ import Selections
-
 
 class PackageManagerApp:
     def __init__(
@@ -53,7 +48,7 @@ class PackageManagerApp:
         self.selections = Selections(self.stdscr, self.clean_line, self.helper_keys)
 
     def update_colors(self):
-        from TUI.core.static.__data__ import DARK_MODE
+        from TUI.core.static.__data__ import DARK_MODE # type: ignore
 
         self.color_pair_normal = curses.color_pair(2 if DARK_MODE else 11)
         self.color_pair_red = curses.color_pair(3 if DARK_MODE else 12)
@@ -246,7 +241,7 @@ def start_terminal_ui(
             ).main(log_stream, verbose, dry_run)
         )
     except KeyboardInterrupt:
-        from TUI.core.static.__data__ import DARK_MODE
+        from TUI.core.static.__data__ import DARK_MODE # type: ignore
 
         stdscr = curses.initscr()
         stdscr.clear()

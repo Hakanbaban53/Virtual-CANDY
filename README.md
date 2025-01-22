@@ -94,18 +94,19 @@ dnf install git && git clone https://github.com/Hakanbaban53/Virtual-CANDY.git &
 
 #### Arguments
 
-| Option         | Description                                                                                                               |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| `-a`, `--action` | Specifies the action to perform. Choices are `'install'` or `'remove'`. Default is `'install'`.                         |
-| `-j`, `--json`   | Specifies the JSON file to use for package information. Defaults to predefined.                                    |
-| `-u`, `--url`    | Specifies the URL to use for package information. Overrides the JSON file. Its need the use with `-r` or `--refresh`. |
-| `-r`, `--refresh` | Refreshes the JSON data regardless of its file age. Useful to get the latest package information.                        |
-| `-v`, `--verbose` | Enables verbose output for detailed information during execution. Helps with debugging or understanding process details. |
-| `-d`, `--dry-run` | Performs a dry run of the command without making any changes. Useful for testing what would be done.                   |
-| `-l`, `--list` | Lists available packages for the specified distribution. Useful for checking what packages are available.               |
-| `--distribution` | Specifies the Linux distribution to use. Defaults to auto-detecting the distribution.                                   |
-| `--all`        | Installs or removes all available packages for the specified distribution.                                              |
-| `packages`     | List of packages to install or remove.            |
+| Argument         | Description                                                                                                              | CLI  | TUI |
+|------------------|--------------------------------------------------------------------------------------------------------------------------|------|-----|
+| `-a`, `--action` | Specifies the action to perform. Choices are `'install'` or `'remove'`. Default is `'install'`.                         | ✅   | ❌  |
+| `-j`, `--json`   | Specifies the JSON file to use for package information. Defaults to predefined.                                         | ✅   | ✅  |
+| `-u`, `--url`    | Specifies the URL to use for package information. Overrides the JSON file. Its need the use with `-r` or `--refresh`.   | ✅   | ✅  |
+| `-r`, `--refresh`| Refreshes the JSON data regardless of its file age. Useful to get the latest package information.                        | ✅   | ✅  |
+| `-v`, `--verbose`| Enables verbose output for detailed information during execution. Helps with debugging or understanding process details. | ✅   | ✅  |
+| `-d`, `--dry-run`| Performs a dry run of the command without making any changes. Useful for testing what would be done.                     | ✅   | ✅  |
+| `-l`, `--list`   | Lists available packages for the specified distribution. Useful for checking what packages are available.               | ✅   | ❌  |
+| `--distribution` | Specifies the Linux distribution to use. Defaults to auto-detecting the distribution.                                   | ✅   | ✅  |
+| `--all`          | Installs or removes all available packages for the specified distribution.                                              | ✅   | ❌  |
+| `packages`       | List of packages to install or remove.                                                                                   | ✅   | ❌  |
+
 
 - **Install specific packages**:
   ```bash
@@ -169,43 +170,63 @@ And one more thing. Arguments are case-sensitive. You need to give the package n
 ## 📂 Folder structure
 
 ```css
-🗃 .
-├── 🖿 assets
-│  └── 🖻 preview images
-├── 🖿 functions
-│  ├── 🗎 __check_repository_connection__.py
-│  ├── 🗎 __cli_dependencies_install__.py
-│  ├── 🗎 __get_os_package_manager__.py
-│  ├── 🗎 __get_packages_data__.py
-│  ├── 🗎 __special_install_selector__.py
-│  └── 🗎 __vmware_workstation__.py
-├── 🖿 linux_distros
-│  ├── 🗎 __arch__.py
-│  ├── 🗎 __debian__.py
-│  ├── 🗎 __fedora__.py
-│  └── 🗎 __ubuntu__.py
-├── 🖿 packages
-│  └── 🗎 packages.json
-├── 🖿 scripts
-│  ├── 🗎 __arguments__.py
-│  └── 🗎 __terminal_UI__.py
-├── 🖿 vmware_files
-│   ├── 🖿 DKMS_files
-│   │   ├── 🗎 dkms.conf
-│   │   ├── 🗎 Makefile
-│   │   ├── 🗎 vmmon.patch
-│   │   └── 🗎 vmnet.patch
-│   └── 🖿 services
-│       ├── 🗎 vmware-networks-configuration.service
-│       ├── 🗎 vmware-networks.path
-│       ├── 🗎 vmware-networks.service
-│       ├── 🗎 vmware-usbarbitrator.path
-│       └── 🗎 vmware-usbarbitrator.service
+🗃
 ├── 🗎 README.md
-├── 🗎 build_deb_package.sh
-├── 🗎 build_rpm_package.sh
-├── 🗎 PKGBUILD
-└── 🗎 app.py
+├── 🗎 LICENSE
+├── 🖿 assets
+│   └── 🖻 preview images
+├── 🖿 docs
+│   ├── 🗎 PACKAGES.md
+│   └── 🗎 TEST.md
+├── 🖿 packages
+│   └── 🗎 packages.json
+├── 🖿 src
+│   ├── app.py
+│   ├── 🖿 core
+│   │   ├── 🗎 __check_repository_connection__.py
+│   │   ├── 🗎 __command_handler__.py
+│   │   ├── 🗎 __constants__.py
+│   │   ├── 🗎 __get_os_package_manager__.py
+│   │   ├── 🗎 __get_packages_data__.py
+│   │   ├── 🗎 __linux_system__.py
+│   │   ├── 🗎 __logging_manager__.py
+│   │   ├── 🖿 package_handlers
+│   │   │   ├── 🗎 __aur__.py
+│   │   │   ├── 🗎 __flatpak__.py
+│   │   │   ├── 🗎 __local__.py
+│   │   │   ├── 🗎 __normal__.py
+│   │   │   └── 🗎 __special__.py
+│   │   └── 🗎 __pack_type_handler__.py
+│   └── 🖿 utils
+│       ├── 🖿 cli
+│       │   └── 🗎 __arguments__.py
+│       └── 🖿 TUI
+│           ├── 🖿 core
+│           │   ├── 🖿 components
+│           │   │   ├── 🗎 __app_selector__.py
+│           │   │   ├── 🗎 __footer__.py
+│           │   │   ├── 🗎 __header__.py
+│           │   │   ├── 🗎 __modal_win__.py
+│           │   │   ├── 🗎 __print_apps__.py
+│           │   │   └── 🗎 __selections__.py
+│           │   ├── 🖿 static
+│           │   │   ├── 🗎 __color_init__.py
+│           │   │   └── 🗎 __data__.py
+│           │   └── 🖿 utils
+│           │       ├── 🗎 __check_connection__.py
+│           │       ├── 🗎 __clean_line__.py
+│           │       ├── 🗎 __clear_midde_section__.py
+│           │       ├── 🗎 __errors_.py
+│           │       ├── 🗎 __helper_keys__.py
+│           │       ├── 🗎 __input__.py
+│           │       └── 🗎 __resize_handler__.py
+│           └── 🗎 __terminal_UI__.py
+└── 🖿 test
+    ├── 🖿 scripts
+    │   ├── 🗎 build_deb_package.sh
+    │   ├── 🗎 build_rpm_package.sh
+    │   └── 🗎 PKGBUILD
+    └── 🗎 test_app.py
 
 ```
 

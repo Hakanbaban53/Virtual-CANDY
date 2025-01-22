@@ -3,7 +3,6 @@ from curses import KEY_RESIZE, color_pair
 from TUI.core.components.__modal_win__ import ModalWindow
 from TUI.core.static.__data__ import APP_NAME, APP_VERSION, DEVELOPER_NAME, GITHUB_URL, toggle_dark_mode
 
-
 class HelperKeys:
     def __init__(self, stdscr, resize_handler, header, footer):
         self.stdscr = stdscr
@@ -52,12 +51,12 @@ class HelperKeys:
             "Enter: Install/Remove Selected Packages",
             "Ctrl + C: Exit",
         ]
-        self.modal.draw_modal("Help Menu", content)
+        self.modalwindow.draw_modal("Help Menu", content)
         
         while True:
             key = self.stdscr.getch()
             if key == 27:  # ESC for Back
-                self.modal.close()
+                self.modalwindow.close()
                 self.modal_showing = False
                 break
             else:
@@ -71,12 +70,12 @@ class HelperKeys:
             f"Developer: {DEVELOPER_NAME}",
             f"Project URL: {GITHUB_URL}",
         ]
-        self.modal.draw_modal("About This App", content)
+        self.modalwindow.draw_modal("About This App", content)
 
         while True:        
             key = self.stdscr.getch()
             if key == 27:  # ESC for Back
-                self.modal.close()
+                self.modalwindow.close()
                 self.modal_showing = False
                 break
             else:

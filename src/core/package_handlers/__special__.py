@@ -32,9 +32,10 @@ def special_package_installer(package, check_script, action, dry_run, verbose):
                 ]
     for script in check_script:
         try:
-            if script.strip().startswith("/") and exists(script):
+            if script.strip().startswith(("/", "~", ".")) and exists(script):
                 script_executed = True
                 break
+            
             elif "|" in script or "$" in script:  # Assume it's a shell command
                 result = run(script, shell=True, capture_output=True).stdout
                 debug(f"Command: {script}, Output: {result}")

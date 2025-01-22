@@ -614,6 +614,19 @@
   ],
   "fedora": [
     {
+      "name": "Test inputs",
+      "description": "This is a test input",
+      "values": [
+        {
+          "name": "Test Package",
+          "type": "run-command",
+          "install_script": ["sudo dnf update"],
+          "check_script": [""],
+          "remove_script": [""]
+        }
+      ]
+    },
+    {
       "name": "VMware_Workstation",
       "description": "VMware Workstation is a hosted hypervisor that runs on x64 versions of Windows and Linux operating systems; it enables users to set up virtual machines on a single physical machine and use them simultaneously along with the actual machine.",
       "values": [
@@ -1099,7 +1112,7 @@
           "type": "special-package",
           "special_values": [
             {
-              "theme_location": "~/Documents/hakanbaban53zav.json"
+              "theme_location": "~/Documents/hakanbaban53.json"
             }
           ],
           "install_script": [
@@ -1107,8 +1120,8 @@
             "if [ -f /etc/zshrc ]; then echo 'eval \"$(oh-my-posh --init --shell zsh --config $theme_location)\"' | sudo tee -a /etc/zshrc; fi"
           ],
           "check_script": [
-            "if [ -f /etc/bashrc ]; then grep 'oh-my-posh' /etc/bashrc; fi",
-            "if [ -f /etc/zshrc ]; then grep 'oh-my-posh' /etc/zshrc; fi"
+            "cat /etc/bashrc | grep 'oh-my-posh'",
+            "cat /etc/zshrc | grep 'oh-my-posh'"
           ],
           "remove_script": [
             "if [ -f /etc/bashrc ]; then sudo sed -i '/oh-my-posh/d' /etc/bashrc; fi",
@@ -1132,8 +1145,7 @@
           "name": "Oh My Zsh",
           "type": "run-command",
           "install_script": [
-            "sh -c \"$(wget -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)\"",
-            "chsh -s $(which zsh)"
+            "sh -c \"$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)\""
           ],
           "check_script": ["~/.oh-my-zsh"],
           "remove_script": ["rm -rf ~/.oh-my-zsh"]
@@ -1159,9 +1171,7 @@
             "sudo mv $CACHE_PATH/$install_dir/ani-cli /usr/local/bin/ani-cli",
             "sudo chmod +x /usr/local/bin/ani-cli"
           ],
-          "check_script": [
-            "/usr/local/bin/ani-cli"
-          ],
+          "check_script": ["/usr/local/bin/ani-cli"],
           "remove_script": [
             "sudo rm -rf /usr/local/bin/ani-cli",
             "sudo rm -rf $CACHE_PATH/$install_dir"

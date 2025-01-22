@@ -39,8 +39,6 @@ def handle_local_package(distro, install_value, verbose):
         if os.path.exists("/etc/debian_version"):
             run_command("sudo apt-get install -f -y", verbose=verbose)
 
-        info(f"Successfully installed local package from {install_value}.")
-
     except CalledProcessError as err:
         error(f"An error occurred: {err}")
 

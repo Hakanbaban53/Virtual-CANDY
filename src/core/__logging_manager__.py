@@ -1,6 +1,4 @@
 import logging
-import threading
-
 class LoggingManager:
     """Logging manager for the application."""
     def __init__(self, verbose, dry_run, log_stream=None):
@@ -16,7 +14,3 @@ class LoggingManager:
         handler.setFormatter(formatter)
         self.logger.addHandler(handler)
         self.logger.setLevel(logging.DEBUG if verbose else logging.INFO)
-
-    def get_thread(self, target, args):
-        """Get a thread with the given target and arguments."""
-        return threading.Thread(target=target, args=args)

@@ -4,11 +4,10 @@ from queue import Queue
 import textwrap
 import threading
 
+from core.__pack_type_handler__ import package_manager
 from TUI.core.components.__modal_win__ import ModalWindow
 from TUI.core.components.__print_apps__ import PrintApps
 from TUI.core.static.__data__ import OPTIONS_YES_NO
-from core.__combined__ import package_manager
-
 
 class AppSelector:
     def __init__(self, stdscr, app_list, cmd, selections, helper_keys, header):
@@ -195,6 +194,8 @@ class AppSelector:
                 )
 
                 if selection == "Yes":
+                    curses.curs_set(0)  # Hide cursor
+                    curses.reset_shell_mode()  # Reset terminal mode
                     pad_height = (
                         len(selected_entities) * 500
                     )  # Dynamic height based on the number of selected entities
@@ -209,7 +210,6 @@ class AppSelector:
                     max_lines = (
                         curses.LINES - 6
                     )  # Number of visible lines in the window
-                    self.stdscr.nodelay(True)
 
                     def render_output():
                         output_pad.refresh(
@@ -296,7 +296,8 @@ class AppSelector:
                     )
                     render_output()
 
-                    self.stdscr.nodelay(False)
+                    curses.reset_prog_mode()  # Reset terminal mode
+
                     # Wait for user input to exit
                     while True:
                         key = self.stdscr.getch()
@@ -330,8 +331,7 @@ class AppSelector:
                         elif key in [10, curses.KEY_ENTER]:  # Optionally handle 'Enter'
                             break
                         else:
-                            # Ignore other keys
-                            continue
+                            self.helper_keys.keys(key, update_colors=self.update_colors)
 
                     render_output()
 

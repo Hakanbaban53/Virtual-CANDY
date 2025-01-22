@@ -1,6 +1,5 @@
 import curses
 
-
 class ModalWindow:
     def __init__(self, stdscr):
         self.stdscr = stdscr

@@ -1,6 +1,5 @@
 from curses import color_pair, A_BOLD, noecho, error, echo, newwin
 
-
 class Input:
     def __init__(self, stdscr):
         self.stdscr = stdscr
