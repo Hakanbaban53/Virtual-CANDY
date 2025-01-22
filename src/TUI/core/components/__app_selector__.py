@@ -196,7 +196,7 @@ class AppSelector:
 
                 if selection == "Yes":
                     pad_height = (
-                        len(selected_entities) * 100
+                        len(selected_entities) * 500
                     )  # Dynamic height based on the number of selected entities
                     pad_width = (
                         curses.COLS * 2

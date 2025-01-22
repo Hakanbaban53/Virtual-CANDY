@@ -1,23 +1,42 @@
-from logging import error, info
 from subprocess import PIPE, CalledProcessError, Popen
+import logging
 
-def run_command(command, verbose=None, cwd=None):
+def run_command(command, verbose=False, cwd=None):
     """
     Executes a system command with error handling.
 
     Args:
         command (str): Command to execute.
-        verbose (file-like): Output stream for verbose logs.
+        verbose (bool): Whether to log the output and errors.
+        cwd (str): Working directory to run the command.
 
     Returns:
-        str: Command output.
+        str: Standard output of the command.
+
+    Raises:
+        CalledProcessError: If the command fails (non-zero exit code).
     """
     try:
-        completed_process = Popen([command], shell=True, cwd=cwd, stdout=PIPE, stderr=PIPE)
+        completed_process = Popen(
+            command, shell=True, cwd=cwd, stdout=PIPE, stderr=PIPE, text=True
+        )
         stdout, stderr = completed_process.communicate()
-        if stderr and verbose:
-            error(f"An error occurred: {stderr.decode('utf-8')}")
-        elif stdout and verbose:
-            info(f"Output: {stdout.decode('utf-8')}")
+        
+        # Check exit code
+        if completed_process.returncode != 0:
+            if verbose:
+                logging.error(f"Command failed: {command}")
+                logging.error(f"Error output: {stderr.strip()}")
+                        
+        # Log output
+        if verbose:
+            logging.info(f"Command succeeded: {command}")
+            if stdout.strip():
+                logging.debug(f"Output: {stdout.strip()}")
+            if stderr.strip():  # Log diagnostic/progress info if needed
+                logging.debug(f"Progress/Info: {stderr.strip()}")
+        
+        return stdout
     except CalledProcessError as e:
-        error(f"An error occurred: {e}")
+        logging.error(f"An error occurred: {e.stderr.strip()}")
+        raise
