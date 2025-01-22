@@ -59,7 +59,7 @@ class PrintApps:
             )
         if end_idx < len(relevant_packages):
             self.stdscr.addstr(
-                table_start_y + len(relevant_packages) - 2,
+                table_start_y + len(relevant_packages) - 3,
                 table_start_x + 22,
                 "\\/",
                 self.color_pair_yellow | curses.A_BOLD,

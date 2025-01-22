@@ -1,5 +1,5 @@
 from logging import error, info
-from subprocess import CalledProcessError, run
+from subprocess import PIPE, CalledProcessError, Popen
 
 def run_command(command, verbose=None, cwd=None):
     """
@@ -13,10 +13,11 @@ def run_command(command, verbose=None, cwd=None):
         str: Command output.
     """
     try:
-        completed_process = run([command], capture_output=True, shell=True, cwd=cwd)
-        if completed_process.stderr and verbose:
-            error(f"An error occurred: {completed_process.stderr.decode(errors='replace')}")
-        elif completed_process.stdout and verbose:
-            info(f"Output: {completed_process.stdout.decode(errors='replace')}")
+        completed_process = Popen([command], shell=True, cwd=cwd, stdout=PIPE, stderr=PIPE)
+        stdout, stderr = completed_process.communicate()
+        if stderr and verbose:
+            error(f"An error occurred: {stderr.decode('utf-8')}")
+        elif stdout and verbose:
+            info(f"Output: {stdout.decode('utf-8')}")
     except CalledProcessError as e:
         error(f"An error occurred: {e}")

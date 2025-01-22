@@ -222,7 +222,6 @@ class AppSelector:
                         )
 
                     # Use a separate thread to process packages one by one
-                    curses.reset_shell_mode()
                     def process_packages():
                         for entity in selected_entities:
                             action_message = f"{entity} {action}ing...\n"
@@ -282,11 +281,9 @@ class AppSelector:
                                 len(output_lines) - 1, 0, line, self.color_pair_normal
                             )
                         render_output()
-                        curses.reset_prog_mode()
 
                     # Wait for the processing thread to finish
                     processing_thread.join()
-                    curses.reset_prog_mode()
 
                     # Notify the user that processing is complete
                     finished_message = "Processing completed. Press 'Enter' to exit."
