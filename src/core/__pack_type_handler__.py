@@ -6,13 +6,13 @@ from os import makedirs, path, chdir, getcwd
 
 from core.__command_handler__ import run_command
 from core.__constants__ import CACHE_PATH
-from core.__linux_system__ import systemd_service_installer, usermod_group_installer
+from core.__linux_system__ import systemd_service, usermod_group
 from core.package_handlers.__flatpak__ import (
     handle_flatpak_package,
     handle_flatpak_repo,
 )
 from core.package_handlers.__normal__ import handle_standard_package
-from core.package_handlers.__special__ import special_package_installer
+from core.package_handlers.__special__ import special_package
 
 
 def package_manager(distro, packages, action, verbose, dry_run):
@@ -41,7 +41,7 @@ def package_manager(distro, packages, action, verbose, dry_run):
                     distro, package, package_type, check_value, action, dry_run, verbose
                 )
             elif package_type == "special-package":
-                special_package_installer(
+                special_package(
                     package, check_script, action, dry_run, verbose
                 )
             elif package_type == "remove-package":
@@ -55,13 +55,13 @@ def package_manager(distro, packages, action, verbose, dry_run):
                     verbose=verbose,
                 )
             elif package_type in ["run-command"]:
-                special_package_installer(package, check_script, action, dry_run, verbose)
+                special_package(package, check_script, action, dry_run, verbose)
             elif package_type in {"service"}:
                 install_value = package.get("install_value", "")
-                systemd_service_installer(install_value, action, dry_run, verbose)
+                systemd_service(install_value, action, dry_run, verbose)
             elif package_type in {"group"}:
                 install_value = package.get("install_value", "")
-                usermod_group_installer(install_value, action, dry_run, verbose)
+                usermod_group(install_value, action, dry_run, verbose)
             elif package_type == "repo-flathub":
                 handle_flatpak_repo(package, dry_run, verbose)
             elif package_type == "package-flatpak":

@@ -2,16 +2,12 @@ from logging import error
 from time import sleep
 from requests import get, ConnectionError, Timeout
 
-def check_linux_package_manager_connection(distribution):
-    package_manager_urls = {
-        "ubuntu": "https://packages.ubuntu.com/",
-        "fedora": "https://apps.fedoraproject.org/packages/",
-        "debian": "https://packages.debian.org/",
-        "arch": "https://archlinux.org/packages/",
-    }
+from core.__constants__ import REPOSITORY_URLS
 
-    if distribution in package_manager_urls:
-        url = package_manager_urls[distribution]
+def check_linux_package_manager_connection(distribution):
+
+    if distribution in REPOSITORY_URLS:
+        url = REPOSITORY_URLS[distribution]
         try:
             response = get(url, timeout=5)
             if response.status_code == 200:

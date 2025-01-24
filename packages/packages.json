@@ -783,7 +783,7 @@
           "type": "package",
           "install_value": "@virtualization",
           "check_value": "virt-manager qemu-common libvirt",
-          "remove_value": "@virtualization"
+          "remove_value":  "virt-manager qemu-common libvirt"
         },
         {
           "name": "libvirtd.service for qemu",

@@ -24,7 +24,7 @@ Before running the tests, ensure you have the following installed:
 
     ```sh
     python3 -m venv venv
-    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+    source venv/bin/activate
     ```
 
 3. **Install Dependencies:**

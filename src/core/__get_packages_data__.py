@@ -57,12 +57,12 @@ class PackagesJSONHandler:
                 else:
                     raise FileNotFoundError(f"JSON file path does not exist: {self.json_file_path}")
 
-            # Check file age if refresh is needed
-            file_age = datetime.now() - datetime.fromtimestamp(self.json_file_path.stat().st_mtime)
-            if file_age > timedelta(days=1) or refresh:
-                debug(f"Refreshing JSON file from {self.json_file_url}...")
-                if not self.download_json_file(self.json_file_url, self.json_file_path):
-                    raise RuntimeError(f"Failed to refresh JSON file from {self.json_file_url}.")
+            # # Check file age if refresh is needed
+            # file_age = datetime.now() - datetime.fromtimestamp(self.json_file_path.stat().st_mtime)
+            # if file_age > timedelta(days=1) or refresh:
+            #     debug(f"Refreshing JSON file from {self.json_file_url}...")
+            #     if not self.download_json_file(self.json_file_url, self.json_file_path):
+            #         raise RuntimeError(f"Failed to refresh JSON file from {self.json_file_url}.")
 
             # Load and return JSON data
             with open(self.json_file_path, "r") as file:

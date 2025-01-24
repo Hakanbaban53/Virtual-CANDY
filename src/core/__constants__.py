@@ -4,6 +4,13 @@ from pathlib import Path
 CACHE_PATH = Path(path.expanduser("~")) / ".cache" / "vcandy"
 CURRENT_USER = getenv("USER")
 
+REPOSITORY_URLS = {
+    "arch": "https://archlinux.org/packages/",
+    "debian": "https://packages.debian.org/",
+    "fedora": "https://apps.fedoraproject.org/packages/",
+    "ubuntu": "https://packages.ubuntu.com/",
+}
+
 
 PACKAGE_TYPES = {
     "arch": "tar.gz",

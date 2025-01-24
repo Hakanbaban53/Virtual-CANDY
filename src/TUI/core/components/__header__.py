@@ -16,23 +16,13 @@ class Header:
         self.stdscr.bkgd(self.color_pair_normal)
         self.stdscr.refresh()
 
-
     def display(self):
         height, width = self.stdscr.getmaxyx()
         self.update_colors()
         # Clear the header line
         self.stdscr.addstr(0, 0, " " * width, self.color_pair_blue)
-
         # Display version
         self.stdscr.addstr(0, 1, APP_VERSION, self.color_pair_blue | curses.A_BOLD)
-
-        text = "TEST"
-        self.stdscr.addstr(
-            0,
-            (width) - len(text) - 1,
-            text,
-            self.color_pair_blue | curses.A_BOLD,
-        )
 
         # Display app name centered
         self.stdscr.addstr(

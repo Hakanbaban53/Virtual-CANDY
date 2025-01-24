@@ -1,6 +1,6 @@
 ### How to Add a Package Entry to `packages.json`
 
-The `packages.json` file defines the package installation metadata for different Linux distributions. Each distribution (e.g., `arch`, `debian`, `fedora`) contains a list of packages and their installation details.
+The `packages.json` file defines the package installation metadata for different Linux distributions. Each distribution (e.g., `arch`, `debian`, `fedora`) contains a list of packages and their installation details. This guide explains how to make a new package entry in the JSON file. After adding the package, you can test it using the VCANDY application.
 
 ---
 

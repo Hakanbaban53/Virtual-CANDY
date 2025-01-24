@@ -7,7 +7,7 @@ from core.__command_handler__ import run_command
 from core.__constants__ import CACHE_PATH
 
 
-def special_package_installer(package, check_script, action, dry_run, verbose):
+def special_package(package, check_script, action, dry_run, verbose):
     """
     Handles special-package installation logic.
 

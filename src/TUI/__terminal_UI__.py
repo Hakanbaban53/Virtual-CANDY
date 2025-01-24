@@ -6,7 +6,11 @@ from TUI.core.components.__footer__ import Footer
 from TUI.core.components.__header__ import Header
 from TUI.core.components.__selections__ import Selections
 from TUI.core.static.__color_init__ import ColorInit
-from TUI.core.static.__data__ import KNOWN_DISTROS, OPTIONS_INSTALL_REMOVE, OPTIONS_YES_NO
+from TUI.core.static.__data__ import (
+    KNOWN_DISTROS,
+    OPTIONS_INSTALL_REMOVE,
+    OPTIONS_YES_NO,
+)
 from TUI.core.utils.__check_connection__ import CheckPackageManagerConnection
 from TUI.core.utils.__clean_line__ import CleanLine
 from TUI.core.utils.__clear_midde_section__ import ClearMiddleSection
@@ -14,6 +18,7 @@ from TUI.core.utils.__errors_ import Errors
 from TUI.core.utils.__helper_keys__ import HelperKeys
 from TUI.core.utils.__input__ import Input
 from TUI.core.utils.__resize_handler__ import ResizeHandler
+
 
 class PackageManagerApp:
     def __init__(
@@ -48,7 +53,7 @@ class PackageManagerApp:
         self.selections = Selections(self.stdscr, self.clean_line, self.helper_keys)
 
     def update_colors(self):
-        from TUI.core.static.__data__ import DARK_MODE # type: ignore
+        from TUI.core.static.__data__ import DARK_MODE  # type: ignore
 
         self.color_pair_normal = curses.color_pair(2 if DARK_MODE else 11)
         self.color_pair_red = curses.color_pair(3 if DARK_MODE else 12)
@@ -125,8 +130,6 @@ class PackageManagerApp:
                 prompts=[header_message, distro_message, id_message],
             )
 
-            warning_line = self.height // 2 - 2
-
             if selected_option == "Yes":
                 return linux_distro_id
 
@@ -134,43 +137,41 @@ class PackageManagerApp:
                 while True:
                     input_prompt = "Please enter the distro: "
                     linux_distribution = self.user_input.get_user_input_string(
-                        input_prompt
+                        input_prompt, self.height // 2 - 4
                     )
                     linux_distribution_lower = linux_distribution.lower()
 
-                    self.clean_line.clean_line(0, self.height // 2 - 3)
-
-                    entered_message = "Entered Linux Distro: {}".format(
-                        linux_distribution
-                    )
-                    self.stdscr.addstr(
+                    self.clean_line.clean_line(
+                        0,
                         self.height // 2 - 5,
-                        self.width // 2 - len(entered_message) // 2,
-                        entered_message,
-                        self.color_pair_cyan | curses.A_BOLD,
                     )
 
-                    for distro, keywords in KNOWN_DISTROS.items():
-                        if any(
-                            keyword in linux_distribution_lower for keyword in keywords
-                        ):
-                            self.clean_line.clean_line(
-                                0,
-                                warning_line,
+                    if linux_distribution_lower in KNOWN_DISTROS:
+                        entered_message = "Entered Linux Distro: {}".format(
+                            linux_distribution
+                        )
+                        self.stdscr.addstr(
+                            self.height // 2 - 5,
+                            self.width // 2 - len(entered_message) // 2,
+                            entered_message,
+                            self.color_pair_cyan | curses.A_BOLD,
+                        )
+
+                        return linux_distribution_lower
+
+                    else:
+                        warning_message = (
+                            "{} distro not found. Please try again.".format(
+                                linux_distribution
                             )
-                            return distro
-
-                    warning_message = "{} distro not found. Please try again.".format(
-                        linux_distribution
-                    )
-                    self.clean_line.clean_line(0, warning_line)
-                    self.stdscr.addstr(
-                        warning_line,
-                        self.width // 2 - len(warning_message) // 2,
-                        warning_message,
-                        self.color_pair_red | curses.A_BOLD,
-                    )
-                    self.clean_line.clean_line(0, self.height // 2 + 3)
+                        )
+                        self.stdscr.addstr(
+                            self.height // 2 - 5,
+                            self.width // 2 - len(warning_message) // 2,
+                            warning_message,
+                            self.color_pair_red | curses.A_BOLD,
+                        )
+                        self.stdscr.refresh()
 
         except curses.error:
             self.errors.terminal_size_error()
@@ -199,7 +200,12 @@ class PackageManagerApp:
             package_list = self.packages(linux_distribution)
 
             AppSelector(
-                self.stdscr, package_list, self.cmd, self.selections, self.helper_keys, self.header
+                self.stdscr,
+                package_list,
+                self.cmd,
+                self.selections,
+                self.helper_keys,
+                self.header,
             ).select_app(
                 package_list,
                 self.initialize_selected_status(len(package_list)),
@@ -241,7 +247,7 @@ def start_terminal_ui(
             ).main(log_stream, verbose, dry_run)
         )
     except KeyboardInterrupt:
-        from TUI.core.static.__data__ import DARK_MODE # type: ignore
+        from TUI.core.static.__data__ import DARK_MODE  # type: ignore
 
         stdscr = curses.initscr()
         stdscr.clear()

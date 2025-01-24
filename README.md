@@ -9,7 +9,7 @@
 
 ## 📦 Pre Builded Packages
 This Packages building with github action. 
-You can download it from [here](https://github.com/Hakanbaban53/Virtual-CANDY/releases) (Not yet available for Arch Linux. Please build from Github repository)
+You can download it from [here](https://github.com/Hakanbaban53/Virtual-CANDY/releases)
 
 ## 🏗️ Build From Github Repository and Testing
 
@@ -21,14 +21,14 @@ building with makepkg:
 ```sh
 pacman -S --needed git
 git clone https://github.com/Hakanbaban53/Virtual-CANDY.git
-cd Virtual-CANDY
+cd Virtual-CANDY/test/scripts
 makepkg -si
 ```
 
 If you want to do all of this at once, we can chain the commands like so:
 
 ```sh
-pacman -S --needed git && git clone https://github.com/Hakanbaban53/Virtual-CANDY.git && cd Virtual-CANDY && makepkg -si
+pacman -S --needed git && git clone https://github.com/Hakanbaban53/Virtual-CANDY.git && cd cd Virtual-CANDY/test/scripts && makepkg -si
 ```
 
 </details>
@@ -106,6 +106,8 @@ dnf install git && git clone https://github.com/Hakanbaban53/Virtual-CANDY.git &
 | `--distribution` | Specifies the Linux distribution to use. Defaults to auto-detecting the distribution.                                   | ✅   | ✅  |
 | `--all`          | Installs or removes all available packages for the specified distribution.                                              | ✅   | ❌  |
 | `packages`       | List of packages to install or remove.                                                                                   | ✅   | ❌  |
+| `-v`, `--version`| Displays the version of VCANDY.                                                                                          | ✅   | ✅  |
+| `-h`, `--help`   | Displays the help message with a list of available arguments.                                                            | ✅   | ✅  |
 
 
 - **Install specific packages**:
@@ -157,15 +159,32 @@ And one more thing. Arguments are case-sensitive. You need to give the package n
 <p align="left">If you install the in your pc you can use in the terminal vcandy or you can use "python app.py". Terminal UI start with default. Basic terminal UI for installer. </p>
 <p align="left">Use Left/Right arrow key select "yes" or "no". Press "Enter" key for confirm..</p>
 <p align="left">Use Up/Down arrow key move each other packager. Use "Tab" key Select/Unselect packages. Press Enter key the confirm packages.</p>
+<p align="left">Use "Ctrl + H" key for help. </p>
 
 </details>
 
 ## 📦 Package Managing
 - If you want to make own package `json` file for your purposes, you can check the [PACKAGES.md](./docs/PACKAGES.md) file for more information.
 
-## ⁉️ IMPORTANT
+## 🚀 Issues
 
-- Reboot for the installed Apps to appear in the App menu and work properly!
+If you encounter any issues or have suggestions for improvements, please feel free to open an issue on our [GitHub Issues page](https://github.com/Hakanbaban53/Virtual-CANDY/issues). We welcome contributions and feedback from the community to make VCANDY better.
+
+### ❓ How to Report an Issue
+
+1. **Search Existing Issues**: Before opening a new issue, please check if the issue has already been reported.
+2. **Create a New Issue**: If your issue is not listed, create a new issue and provide detailed information.
+  - **Title**: A clear and descriptive title.
+  - **Description**: A detailed description of the issue, including steps to reproduce, expected behavior, and actual behavior.
+  - **Screenshots**: If applicable, include screenshots to help illustrate the issue.
+  - **Environment**: Specify the environment in which the issue occurs (e.g., Distribution, VCANDY version).
+
+### 🌟 Feature Requests
+
+We also welcome feature requests! If you have an idea for a new feature or an improvement, please open an issue and label it as a feature request. Provide as much detail as possible to help us understand your suggestion.
+
+Thank you for helping us improve VCANDY!
+
 
 ## 📂 Folder structure
 
@@ -182,6 +201,27 @@ And one more thing. Arguments are case-sensitive. You need to give the package n
 │   └── 🗎 packages.json
 ├── 🖿 src
 │   ├── app.py
+│   ├── 🖿 TUI
+│   │   ├── 🖿 core
+│   │   │   ├── 🖿 components
+│   │   │   │   ├── 🗎 __app_selector__.py
+│   │   │   │   ├── 🗎 __footer__.py
+│   │   │   │   ├── 🗎 __header__.py
+│   │   │   │   ├── 🗎 __modal_win__.py
+│   │   │   │   ├── 🗎 __print_apps__.py
+│   │   │   │   └── 🗎 __selections__.py
+│   │   │   ├── 🖿 static
+│   │   │   │   ├── 🗎 __color_init__.py
+│   │   │   │   └── 🗎 __data__.py
+│   │   │   └── 🖿 utils
+│   │   │       ├── 🗎 __check_connection__.py
+│   │   │       ├── 🗎 __clean_line__.py
+│   │   │       ├── 🗎 __clear_midde_section__.py
+│   │   │       ├── 🗎 __errors_.py
+│   │   │       ├── 🗎 __helper_keys__.py
+│   │   │       ├── 🗎 __input__.py
+│   │   │       └── 🗎 __resize_handler__.py
+│   │   └── 🗎 __terminal_UI__.py
 │   ├── 🖿 core
 │   │   ├── 🗎 __check_repository_connection__.py
 │   │   ├── 🗎 __command_handler__.py
@@ -198,29 +238,8 @@ And one more thing. Arguments are case-sensitive. You need to give the package n
 │   │   │   └── 🗎 __special__.py
 │   │   └── 🗎 __pack_type_handler__.py
 │   └── 🖿 utils
-│       ├── 🖿 cli
-│       │   └── 🗎 __arguments__.py
-│       └── 🖿 TUI
-│           ├── 🖿 core
-│           │   ├── 🖿 components
-│           │   │   ├── 🗎 __app_selector__.py
-│           │   │   ├── 🗎 __footer__.py
-│           │   │   ├── 🗎 __header__.py
-│           │   │   ├── 🗎 __modal_win__.py
-│           │   │   ├── 🗎 __print_apps__.py
-│           │   │   └── 🗎 __selections__.py
-│           │   ├── 🖿 static
-│           │   │   ├── 🗎 __color_init__.py
-│           │   │   └── 🗎 __data__.py
-│           │   └── 🖿 utils
-│           │       ├── 🗎 __check_connection__.py
-│           │       ├── 🗎 __clean_line__.py
-│           │       ├── 🗎 __clear_midde_section__.py
-│           │       ├── 🗎 __errors_.py
-│           │       ├── 🗎 __helper_keys__.py
-│           │       ├── 🗎 __input__.py
-│           │       └── 🗎 __resize_handler__.py
-│           └── 🗎 __terminal_UI__.py
+│       └── 🖿 cli
+│           └── 🗎 __arguments__.py
 └── 🖿 test
     ├── 🖿 scripts
     │   ├── 🗎 build_deb_package.sh

@@ -69,16 +69,16 @@ class AppSelector:
             # Handle user input for scrolling or exiting
             key = self.stdscr.getch()
             if key == curses.KEY_UP and self.modalwindow.pad_top > 0:
-                self.modalwindow.pad_top -= 1  # Scroll up
+                self.modalwindow.pad_top -= 2
             elif key == curses.KEY_DOWN and self.modalwindow.pad_top < len(long_content) - self.modalwindow.pad_height:
-                self.modalwindow.pad_top += 1  # Scroll down
+                self.modalwindow.pad_top += 2
             elif key == curses.KEY_LEFT and self.modalwindow.pad_left > 0:
-                self.modalwindow.pad_left -= 1  # Scroll left
+                self.modalwindow.pad_left -= 2
             elif key == curses.KEY_RIGHT:
                 # Ensure we don't scroll past the longest line
                 max_line_length = max(len(line) for line in long_content)
                 if self.modalwindow.pad_left < max_line_length - (self.modalwindow.modal_width - 2):
-                    self.modalwindow.pad_left += 1  # Scroll right
+                    self.modalwindow.pad_left += 2
             elif key == 27:  # ESC key
                 self.modalwindow.close()
                 break
@@ -194,7 +194,6 @@ class AppSelector:
                 )
 
                 if selection == "Yes":
-                    curses.curs_set(0)  # Hide cursor
                     curses.reset_shell_mode()  # Reset terminal mode
                     pad_height = (
                         len(selected_entities) * 500
@@ -294,46 +293,37 @@ class AppSelector:
                         finished_message,
                         self.color_pair_magenta | curses.A_BOLD | curses.A_REVERSE,
                     )
-                    render_output()
-
                     curses.reset_prog_mode()  # Reset terminal mode
 
                     # Wait for user input to exit
                     while True:
+                        render_output()
                         key = self.stdscr.getch()
                         if (
                             key == curses.KEY_DOWN
                             and scroll_offset_vertical + max_lines < len(output_lines)
                         ):
-                            scroll_offset_vertical += 1
-                            render_output()
+                            scroll_offset_vertical += 2
                         elif key == curses.KEY_UP and scroll_offset_vertical > 0:
-                            scroll_offset_vertical -= 1
-                            render_output()
+                            scroll_offset_vertical -= 2
                         elif (
                             key == curses.KEY_NPAGE
                             and scroll_offset_vertical + max_lines < len(output_lines)
                         ):
                             scroll_offset_vertical += max_lines
-                            render_output()
                         elif key == curses.KEY_PPAGE and scroll_offset_vertical > 0:
                             scroll_offset_vertical -= max_lines
-                            render_output()
                         elif key == curses.KEY_LEFT and scroll_offset_horizontal > 0:
-                            scroll_offset_horizontal -= 1
-                            render_output()
+                            scroll_offset_horizontal -= 2
                         elif (
                             key == curses.KEY_RIGHT
                             and scroll_offset_horizontal < pad_width - curses.COLS
                         ):
-                            scroll_offset_horizontal += 1
-                            render_output()
+                            scroll_offset_horizontal += 2
                         elif key in [10, curses.KEY_ENTER]:  # Optionally handle 'Enter'
                             break
                         else:
                             self.helper_keys.keys(key, update_colors=self.update_colors)
-
-                    render_output()
 
                     self.cmd.clear_middle_section()
                     success_message = "The selected options have been implemented!"

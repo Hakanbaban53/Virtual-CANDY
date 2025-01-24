@@ -13,12 +13,12 @@ class Input:
         self.stdscr.bkgd(self.color_pair_normal)
         self.stdscr.refresh()
 
-    def get_user_input_string(self, prompt):
+    def get_user_input_string(self, prompt, y):
         # Modal dimensions
         height, width = 3, len(prompt) + 20
 
         # Center modal on screen
-        y = (self.stdscr.getmaxyx()[0] - height) // 2
+        y = y
         x = (self.stdscr.getmaxyx()[1] - width) // 2
 
         # Create modal input box
