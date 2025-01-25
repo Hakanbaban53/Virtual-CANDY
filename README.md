@@ -1,6 +1,6 @@
 <h1 align="center"> Virtual CANDY "VCANDY" 🖥️<h1>
 
-<h4 align="center">An application that installs certain virtualization applications (Docker/Docker Desktop, VirtManager/QEMU, VMware Workstation (With DKMS host modules), VirtualBox and Podman/Podman Desktop) on Linux via argument or command line user interface.</h4>
+<h4 align="center">It's a package manager for Linux distributions. Handles the installation and removal of packages with a simple command-line interface or terminal UI. Also includes a JSON file for package information and a script for building packages for different distributions.</h4>
 
 <div align="center">
   <img src="./assets/arguments.gif" style="width: 500px; height: auto;">
@@ -9,9 +9,9 @@
 
 ## 📦 Pre Builded Packages
 This Packages building with github action. 
-You can download it from [here](https://github.com/Hakanbaban53/Virtual-CANDY/releases) (Not yet available for Arch Linux. Please build from Github repository)
+You can download it from [here](https://github.com/Hakanbaban53/Virtual-CANDY/releases)
 
-## 🏗️ Build From Github Repository
+## 🏗️ Build From Github Repository and Testing
 
 <details><summary>Arch</summary>
 
@@ -20,15 +20,15 @@ building with makepkg:
 
 ```sh
 pacman -S --needed git
-git clone https://github.com/Hakanbaban53/Container-and-Virtualization-Installer.git
-cd Container-and-Virtualization-Installer
+git clone https://github.com/Hakanbaban53/Virtual-CANDY.git
+cd Virtual-CANDY/test/scripts
 makepkg -si
 ```
 
 If you want to do all of this at once, we can chain the commands like so:
 
 ```sh
-pacman -S --needed git && git clone https://github.com/Hakanbaban53/Container-and-Virtualization-Installer.git && cd Container-and-Virtualization-Installer && makepkg -si
+pacman -S --needed git && git clone https://github.com/Hakanbaban53/Virtual-CANDY.git && cd cd Virtual-CANDY/test/scripts && makepkg -si
 ```
 
 </details>
@@ -40,8 +40,8 @@ It will automatically create and install the debian package:
 
 ```sh
 apt install git
-git clone https://github.com/Hakanbaban53/Container-and-Virtualization-Installer.git
-cd Container-and-Virtualization-Installer
+git clone https://github.com/Hakanbaban53/Virtual-CANDY.git
+cd Virtual-CANDY/test/scripts
 chmod +x ./build_deb_package.sh
 ./build_deb_package.sh
 ```
@@ -49,7 +49,7 @@ chmod +x ./build_deb_package.sh
 If you want to do all of this at once, we can chain the commands like so:
 
 ```sh
-apt install git && git clone https://github.com/Hakanbaban53/Container-and-Virtualization-Installer.git && cd Container-and-Virtualization-Installer && chmod +x ./build_deb_package.sh && ./build_deb_package.sh
+apt install git && git clone https://github.com/Hakanbaban53/Virtual-CANDY.git && cd Virtual-CANDY/test/scripts && chmod +x ./build_deb_package.sh && ./build_deb_package.sh
 ```
 
 </details>
@@ -61,8 +61,8 @@ It will automatically create and install the rpm package:
 
 ```sh
 dnf install git
-git clone https://github.com/Hakanbaban53/Container-and-Virtualization-Installer.git
-cd Container-and-Virtualization-Installer
+git clone https://github.com/Hakanbaban53/Virtual-CANDY.git
+cd Virtual-CANDY/test/scripts
 chmod +x ./build_rpm_package.sh
 ./build_rpm_package.sh
 ```
@@ -70,7 +70,7 @@ chmod +x ./build_rpm_package.sh
 If you want to do all of this at once, we can chain the commands like so:
 
 ```sh
-dnf install git && git clone https://github.com/Hakanbaban53/Container-and-Virtualization-Installer.git && cd Container-and-Virtualization-Installer && chmod +x ./build_rpm_package.sh && ./build_rpm_package.sh
+dnf install git && git clone https://github.com/Hakanbaban53/Virtual-CANDY.git && cd Virtual-CANDY/test/scripts && chmod +x ./build_rpm_package.sh && ./build_rpm_package.sh
 ```
 
 </details>
@@ -85,6 +85,8 @@ dnf install git && git clone https://github.com/Hakanbaban53/Container-and-Virtu
     # Fedora
     dnf remove vcany
 
+- Also you can check the [TEST.md](./docs/TEST.md) file for more information.
+
 ## ⚙️ Usage
 
 <details><summary><strong><em>With Arguments</em></strong></summary>
@@ -92,18 +94,21 @@ dnf install git && git clone https://github.com/Hakanbaban53/Container-and-Virtu
 
 #### Arguments
 
-| Option         | Description                                                                                                               |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| `-a`, `--action` | Specifies the action to perform. Choices are `'install'` or `'remove'`. Default is `'install'`.                         |
-| `-j`, `--json`   | Specifies the JSON file to use for package information. Defaults to predefined.                                    |
-| `-u`, `--url`    | Specifies the URL to use for package information. Overrides the JSON file. Its need the use with `-r` or `--refresh`. |
-| `-r`, `--refresh` | Refreshes the JSON data regardless of its file age. Useful to get the latest package information.                        |
-| `-v`, `--verbose` | Enables verbose output for detailed information during execution. Helps with debugging or understanding process details. |
-| `-d`, `--dry-run` | Performs a dry run of the command without making any changes. Useful for testing what would be done.                   |
-| `-l`, `--list` | Lists available packages for the specified distribution. Useful for checking what packages are available.               |
-| `--distribution` | Specifies the Linux distribution to use. Defaults to auto-detecting the distribution.                                   |
-| `--all`        | Installs or removes all available packages for the specified distribution.                                              |
-| `packages`     | List of packages to install or remove.            |
+| Argument         | Description                                                                                                              | CLI  | TUI |
+|------------------|--------------------------------------------------------------------------------------------------------------------------|------|-----|
+| `-a`, `--action` | Specifies the action to perform. Choices are `'install'` or `'remove'`. Default is `'install'`.                         | ✅   | ❌  |
+| `-j`, `--json`   | Specifies the JSON file to use for package information. Defaults to predefined.                                         | ✅   | ✅  |
+| `-u`, `--url`    | Specifies the URL to use for package information. Overrides the JSON file. Its need the use with `-r` or `--refresh`.   | ✅   | ✅  |
+| `-r`, `--refresh`| Refreshes the JSON data regardless of its file age. Useful to get the latest package information.                        | ✅   | ✅  |
+| `-v`, `--verbose`| Enables verbose output for detailed information during execution. Helps with debugging or understanding process details. | ✅   | ✅  |
+| `-d`, `--dry-run`| Performs a dry run of the command without making any changes. Useful for testing what would be done.                     | ✅   | ✅  |
+| `-l`, `--list`   | Lists available packages for the specified distribution. Useful for checking what packages are available.               | ✅   | ❌  |
+| `--distribution` | Specifies the Linux distribution to use. Defaults to auto-detecting the distribution.                                   | ✅   | ✅  |
+| `--all`          | Installs or removes all available packages for the specified distribution.                                              | ✅   | ❌  |
+| `packages`       | List of packages to install or remove.                                                                                   | ✅   | ❌  |
+| `-v`, `--version`| Displays the version of VCANDY.                                                                                          | ✅   | ✅  |
+| `-h`, `--help`   | Displays the help message with a list of available arguments.                                                            | ✅   | ✅  |
+
 
 - **Install specific packages**:
   ```bash
@@ -154,85 +159,93 @@ And one more thing. Arguments are case-sensitive. You need to give the package n
 <p align="left">If you install the in your pc you can use in the terminal vcandy or you can use "python app.py". Terminal UI start with default. Basic terminal UI for installer. </p>
 <p align="left">Use Left/Right arrow key select "yes" or "no". Press "Enter" key for confirm..</p>
 <p align="left">Use Up/Down arrow key move each other packager. Use "Tab" key Select/Unselect packages. Press Enter key the confirm packages.</p>
+<p align="left">Use "Ctrl + H" key for help. </p>
 
 </details>
 
-## 📦 Packages
+## 📦 Package Managing
+- If you want to make own package `json` file for your purposes, you can check the [PACKAGES.md](./docs/PACKAGES.md) file for more information.
 
-<details><summary>Package Names</summary>
+## 🚀 Issues
 
-- Package names in the packages.json.
+If you encounter any issues or have suggestions for improvements, please feel free to open an issue on our [GitHub Issues page](https://github.com/Hakanbaban53/Virtual-CANDY/issues). We welcome contributions and feedback from the community to make VCANDY better.
 
-```css
-🗃 .
-├── 📦 VMware_Workstation-17.5.2
-│  ├── 🗋 VMware Workstation-17.5.2
-│  └── 🗋 VMware Host Modules DKMS (Dynamic Kernel Modules)
-├── 📦 VirtualBox-7.0
-│  ├── 🗋 VirtualBox-7.0
-│  └── 🗋 Virtual Box Extensions
-├── 📦 Qemu_and_VM_Manager
-│  ├── 🗋 QEMU
-│  └── 🗋 Virtual Machine Manager
-├── 📦 Docker_CLI_and_Docker_Desktop
-│  ├── 🗋 Docker CLI
-│  └── 🗋 Docker Desktop
-├── 📦 Podman_and_Podman_Desktop
-│  ├── 🗋 Podman CLI
-│  └── 🗋 Podman Desktop
-└── 📦 Useful apps I used
-   ├── 🗋 Visual_Studio_Code
-   ├── 🗋 Github_Desktop
-   └── 🗐 And more...
-```
+### ❓ How to Report an Issue
 
-</details>
+1. **Search Existing Issues**: Before opening a new issue, please check if the issue has already been reported.
+2. **Create a New Issue**: If your issue is not listed, create a new issue and provide detailed information.
+  - **Title**: A clear and descriptive title.
+  - **Description**: A detailed description of the issue, including steps to reproduce, expected behavior, and actual behavior.
+  - **Screenshots**: If applicable, include screenshots to help illustrate the issue.
+  - **Environment**: Specify the environment in which the issue occurs (e.g., Distribution, VCANDY version).
 
+### 🌟 Feature Requests
 
-## ⁉️ IMPORTANT
+We also welcome feature requests! If you have an idea for a new feature or an improvement, please open an issue and label it as a feature request. Provide as much detail as possible to help us understand your suggestion.
 
-- Reboot for the installed Apps to appear in the App menu and work properly!
+Thank you for helping us improve VCANDY!
+
 
 ## 📂 Folder structure
 
 ```css
-🗃 .
-├── 🖿 assets
-│  └── 🖻 preview images
-├── 🖿 functions
-│  ├── 🗎 __check_repository_connection__.py
-│  ├── 🗎 __cli_dependencies_install__.py
-│  ├── 🗎 __get_os_package_manager__.py
-│  ├── 🗎 __get_packages_data__.py
-│  ├── 🗎 __special_install_selector__.py
-│  └── 🗎 __vmware_workstation__.py
-├── 🖿 linux_distros
-│  ├── 🗎 __arch__.py
-│  ├── 🗎 __debian__.py
-│  ├── 🗎 __fedora__.py
-│  └── 🗎 __ubuntu__.py
-├── 🖿 packages
-│  └── 🗎 packages.json
-├── 🖿 scripts
-│  ├── 🗎 __arguments__.py
-│  └── 🗎 __terminal_UI__.py
-├── 🖿 vmware_files
-│   ├── 🖿 DKMS_files
-│   │   ├── 🗎 dkms.conf
-│   │   ├── 🗎 Makefile
-│   │   ├── 🗎 vmmon.patch
-│   │   └── 🗎 vmnet.patch
-│   └── 🖿 services
-│       ├── 🗎 vmware-networks-configuration.service
-│       ├── 🗎 vmware-networks.path
-│       ├── 🗎 vmware-networks.service
-│       ├── 🗎 vmware-usbarbitrator.path
-│       └── 🗎 vmware-usbarbitrator.service
+🗃
 ├── 🗎 README.md
-├── 🗎 build_deb_package.sh
-├── 🗎 build_rpm_package.sh
-├── 🗎 PKGBUILD
-└── 🗎 app.py
+├── 🗎 LICENSE
+├── 🖿 assets
+│   └── 🖻 preview images
+├── 🖿 docs
+│   ├── 🗎 PACKAGES.md
+│   └── 🗎 TEST.md
+├── 🖿 packages
+│   └── 🗎 packages.json
+├── 🖿 src
+│   ├── app.py
+│   ├── 🖿 TUI
+│   │   ├── 🖿 core
+│   │   │   ├── 🖿 components
+│   │   │   │   ├── 🗎 __app_selector__.py
+│   │   │   │   ├── 🗎 __footer__.py
+│   │   │   │   ├── 🗎 __header__.py
+│   │   │   │   ├── 🗎 __modal_win__.py
+│   │   │   │   ├── 🗎 __print_apps__.py
+│   │   │   │   └── 🗎 __selections__.py
+│   │   │   ├── 🖿 static
+│   │   │   │   ├── 🗎 __color_init__.py
+│   │   │   │   └── 🗎 __data__.py
+│   │   │   └── 🖿 utils
+│   │   │       ├── 🗎 __check_connection__.py
+│   │   │       ├── 🗎 __clean_line__.py
+│   │   │       ├── 🗎 __clear_midde_section__.py
+│   │   │       ├── 🗎 __errors_.py
+│   │   │       ├── 🗎 __helper_keys__.py
+│   │   │       ├── 🗎 __input__.py
+│   │   │       └── 🗎 __resize_handler__.py
+│   │   └── 🗎 __terminal_UI__.py
+│   ├── 🖿 core
+│   │   ├── 🗎 __check_repository_connection__.py
+│   │   ├── 🗎 __command_handler__.py
+│   │   ├── 🗎 __constants__.py
+│   │   ├── 🗎 __get_os_package_manager__.py
+│   │   ├── 🗎 __get_packages_data__.py
+│   │   ├── 🗎 __linux_system__.py
+│   │   ├── 🗎 __logging_manager__.py
+│   │   ├── 🖿 package_handlers
+│   │   │   ├── 🗎 __aur__.py
+│   │   │   ├── 🗎 __flatpak__.py
+│   │   │   ├── 🗎 __local__.py
+│   │   │   ├── 🗎 __normal__.py
+│   │   │   └── 🗎 __special__.py
+│   │   └── 🗎 __pack_type_handler__.py
+│   └── 🖿 utils
+│       └── 🖿 cli
+│           └── 🗎 __arguments__.py
+└── 🖿 test
+    ├── 🖿 scripts
+    │   ├── 🗎 build_deb_package.sh
+    │   ├── 🗎 build_rpm_package.sh
+    │   └── 🗎 PKGBUILD
+    └── 🗎 test_app.py
 
 ```
 

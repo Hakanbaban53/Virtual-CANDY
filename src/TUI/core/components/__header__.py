@@ -1,20 +1,34 @@
 import curses
+from TUI.core.static.__data__ import APP_NAME, APP_VERSION
 
 class Header:
-    def __init__(self, stdscr, default_header, version):
+    def __init__(self, stdscr: curses.window):
         self.stdscr = stdscr
-        self.default_header = default_header
-        self.version = version
+        self.update_colors()
+        
+    def update_colors(self):
+        from TUI.core.static.__data__ import DARK_MODE
 
-    def display(self, use_dark_mode):
+        self.color_pair_normal = curses.color_pair(2 if DARK_MODE else 11)
+        self.color_pair_red = curses.color_pair(3 if DARK_MODE else 12)
+        self.color_pair_yellow = curses.color_pair(6 if DARK_MODE else 15)
+        self.color_pair_blue = curses.color_pair(8 if DARK_MODE else 17)
+        self.stdscr.bkgd(self.color_pair_normal)
+        self.stdscr.refresh()
+
+    def display(self):
         height, width = self.stdscr.getmaxyx()
-        color_pair = curses.color_pair(8 if use_dark_mode else 17)
+        self.update_colors()
+        # Clear the header line
+        self.stdscr.addstr(0, 0, " " * width, self.color_pair_blue)
+        # Display version
+        self.stdscr.addstr(0, 1, APP_VERSION, self.color_pair_blue | curses.A_BOLD)
 
-        self.stdscr.addstr(0, 0, " " * width, color_pair)
-        self.stdscr.addstr(0, 1, self.version, color_pair | curses.A_BOLD)
+        # Display app name centered
         self.stdscr.addstr(
             0,
-            width // 2 - len(self.default_header) // 2,
-            self.default_header,
-            color_pair | curses.A_BOLD | curses.A_UNDERLINE,
+            (width // 2) - (len(APP_NAME) // 2),
+            APP_NAME,
+            self.color_pair_blue | curses.A_BOLD,
         )
+        self.stdscr.refresh()

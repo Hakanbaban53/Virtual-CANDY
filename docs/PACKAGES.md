@@ -1,6 +1,6 @@
 ### How to Add a Package Entry to `packages.json`
 
-The `packages.json` file defines the package installation metadata for different Linux distributions. Each distribution (e.g., `arch`, `debian`, `fedora`) contains a list of packages and their installation details.
+The `packages.json` file defines the package installation metadata for different Linux distributions. Each distribution (e.g., `arch`, `debian`, `fedora`) contains a list of packages and their installation details. This guide explains how to make a new package entry in the JSON file. After adding the package, you can test it using the VCANDY application.
 
 ---
 
@@ -11,6 +11,7 @@ Each distribution has an array of objects. Each object represents a package grou
 ```json
 {
   "name": "Package_Group_Name",
+  "description": "Description of the package group",
   "values": [
     {
       "name": "Readable Package Name",
@@ -28,6 +29,7 @@ Each distribution has an array of objects. Each object represents a package grou
 
 **Fields:**
 - **`name`**: Display name of the package or group.
+- **`description`**: Description of the package or group.
 - **`type`**: Type of the package (`package`, `AUR-package`, `get-keys`, `service`, `group`, etc.).
 - **`install_value`**: Command or identifier for installing the package.
 - **`check_value`**: Command or identifier to check if the package is installed.
@@ -56,6 +58,7 @@ Here’s how to add a new package called `MyApp` for the `arch` distribution:
 ```json
 {
   "name": "MyApp",
+  "description": "MyApp is a CLI and GUI application.",
   "values": [
     {
       "name": "My App CLI",
@@ -75,17 +78,18 @@ Here’s how to add a new package called `MyApp` for the `arch` distribution:
 }
 ```
 
-**Special Case Example:**
+**Command Run Example:**
 
-For complex setups requiring custom scripts, use `install_script`, `check_script`, or `remove_script`:
+Here’s how to add a **command-run** entry in the `packages.json`. Below is an example:
 
 ```json
 {
-  "name": "SpecialApp",
+  "name": "Command Run",
+  "description": "Command Run is a special application.",
   "values": [
     {
       "name": "Special App",
-      "type": "get-keys",
+      "type": "run_command",
       "install_script": [
         "wget -O- https://example.com/key.asc | sudo apt-key add -",
         "sudo add-apt-repository 'deb https://example.com/repo stable main'"
@@ -100,15 +104,14 @@ For complex setups requiring custom scripts, use `install_script`, `check_script
 }
 ```
 
-Here’s how to add a **special-package** entry with a `special_values` field in the `packages.json`. Below is an example:
-
----
-
 ### Example: Adding a Special Package with `special_values`
+
+Here’s how to add a **special-package** entry with a `special_values` field in the `packages.json`. Below is an example:
 
 ```json
 {
   "name": "Special_Package_Example",
+  "description": "Special Package Example",
   "values": [
     {
       "name": "Special App",

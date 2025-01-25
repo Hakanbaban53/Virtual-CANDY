@@ -1,6 +1,13 @@
 name: ⭐ Feature Request
 description: Submit a feature request
 body:
+  - type: checkboxes
+    attributes:
+      label: Is there an existing feature request for this?
+      description: Please search to see if a feature request already exists for the feature you are requesting.
+      options:
+      - label: I searched the existing feature requests and did not find anything similar.
+        required: true
   - type: markdown
     attributes:
       value: |

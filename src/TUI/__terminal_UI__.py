@@ -1,145 +1,134 @@
 import curses
-import sys
+from sys import exit
 
 from TUI.core.components.__app_selector__ import AppSelector
 from TUI.core.components.__footer__ import Footer
 from TUI.core.components.__header__ import Header
+from TUI.core.components.__selections__ import Selections
+from TUI.core.static.__color_init__ import ColorInit
+from TUI.core.static.__data__ import (
+    KNOWN_DISTROS,
+    OPTIONS_INSTALL_REMOVE,
+    OPTIONS_YES_NO,
+)
 from TUI.core.utils.__check_connection__ import CheckPackageManagerConnection
 from TUI.core.utils.__clean_line__ import CleanLine
 from TUI.core.utils.__clear_midde_section__ import ClearMiddleSection
-from TUI.core.utils.__color_manager__ import ColorManager
 from TUI.core.utils.__errors_ import Errors
+from TUI.core.utils.__helper_keys__ import HelperKeys
 from TUI.core.utils.__input__ import Input
 from TUI.core.utils.__resize_handler__ import ResizeHandler
-from TUI.core.utils.__selections__ import Selections
-from core.__get_os_package_manager__ import get_linux_distribution, identify_distribution
-from core.__get_packages_data__ import PackagesJSONHandler
-
-OPTIONS_YES_NO = ["Yes", "No"]
-OPTIONS_INSTALL_REMOVE = ["install", "remove"]
-
-MIN_LINES = 20
-MIN_COLS = 80
-MAX_DISPLAYED_PACKAGES = 15
 
 
 class PackageManagerApp:
-    def __init__(self, stdscr):
-
+    def __init__(
+        self, stdscr, linux_distro_id, linux_distro_pretty_name, instructions_data
+    ):
         self.stdscr = stdscr
+        self.linux_distro_id = linux_distro_id
+        self.linux_distro_pretty_name = linux_distro_pretty_name
+        self.instructions_data = instructions_data
+
         self.height, self.width = self.stdscr.getmaxyx()
-        self.cmd = ClearMiddleSection(self.stdscr, self.width, self.height)
+
+        self.init_components()
+
+    def init_components(self):
+        ColorInit(self.stdscr).init_colors()
+        self.update_colors()
+
+        self.cmd = ClearMiddleSection(self.stdscr)
         self.clean_line = CleanLine(self.stdscr)
         self.user_input = Input(self.stdscr)
 
-        self.selected_status_array = []
-        self.use_dark_mode = True
-        self.known_distros = {
-            "arch": ["arch"],
-            "debian": ["debian"],
-            "fedora": ["fedora"],
-            "ubuntu": ["ubuntu"],
-        }
-        self.header = Header(self.stdscr, "VCANDY", "V2.2.8")
+        self.header = Header(self.stdscr)
         self.footer = Footer(self.stdscr)
-        self.errors = Errors(self.stdscr, self.width, self.height)
-        self.resize_handler = ResizeHandler(self.stdscr, self.clean_line, self.header, self.footer, self.errors)
-        self.selections = Selections(self.stdscr, self.resize_handler, self.clean_line, self.footer, self.header)
+        self.errors = Errors(self.stdscr)
+        self.resize_handler = ResizeHandler(
+            self.stdscr, self.clean_line, self.header, self.footer, self.errors
+        )
+        self.helper_keys = HelperKeys(
+            self.stdscr, self.resize_handler, self.header, self.footer
+        )
+        self.selections = Selections(self.stdscr, self.clean_line, self.helper_keys)
 
-        ColorManager(self.stdscr).init_colors()
+    def update_colors(self):
+        from TUI.core.static.__data__ import DARK_MODE  # type: ignore
 
-    def get_output_choice(self):
-        try:
-            prompt = "Do you want to hide complex outputs?"
-            x = curses.COLS // 2 - len(prompt) // 2
-            y = curses.LINES // 2 + 3
-            selection = self.selections.selections(self.use_dark_mode, prompt, x, y, self.height, self.width, OPTIONS_YES_NO, MIN_COLS, MIN_LINES)
-
-            if selection == "Yes":
-                return False
-            else:
-                return True
-
-        except curses.error:
-            self.errors.terminal_size_error(MIN_LINES, MIN_COLS)
+        self.color_pair_normal = curses.color_pair(2 if DARK_MODE else 11)
+        self.color_pair_red = curses.color_pair(3 if DARK_MODE else 12)
+        self.color_pair_cyan = curses.color_pair(4 if DARK_MODE else 13)
+        self.color_pair_yellow = curses.color_pair(6 if DARK_MODE else 15)
+        self.color_pair_magenta = curses.color_pair(7 if DARK_MODE else 16)
+        self.color_pair_blue = curses.color_pair(8 if DARK_MODE else 17)
+        self.stdscr.bkgd(self.color_pair_normal)
+        self.stdscr.refresh()
 
     def install_or_remove(self):
         try:
             prompt = "Please select the action:"
             x = self.width // 2 - len(prompt) // 2
-            y = self.height // 2 - 6
-            actions = self.selections.selections(self.use_dark_mode, prompt, x, y, self.height, self.width, OPTIONS_INSTALL_REMOVE, MIN_COLS, MIN_LINES)
+            y = self.height // 2 - 2
+            actions = self.selections.selections(
+                x=x,
+                y=y,
+                question=prompt,
+                options=OPTIONS_INSTALL_REMOVE,
+            )
 
             if actions == "install":
-                linux_distro_id = identify_distribution()
 
                 if CheckPackageManagerConnection(
                     self.stdscr,
-                    self.width,
-                    self.height,
-                    linux_distro_id,
-                    OPTIONS_YES_NO,
+                    self.linux_distro_id,
                     self.clean_line,
-                ).package_manager_connection(linux_distro_id):
+                ).package_manager_connection(self.selections.selections):
                     return "install"
                 else:
                     error_message = "Package Manager not connected."
                     exit_message = "Exiting..."
                     self.stdscr.addstr(
-                        self.height // 2,
+                        self.height // 2 + 2,
                         self.width // 2 - len(error_message) // 2,
                         error_message,
-                        curses.color_pair(3) | curses.A_BOLD,
+                        self.color_pair_red | curses.A_BOLD,
                     )
+                    self.clean_line.clean_line(0, self.height // 2 + 4)
                     self.stdscr.addstr(
-                        self.height // 2 + 2,
+                        self.height // 2 + 4,
                         self.width // 2 - len(exit_message) // 2,
                         exit_message,
-                        curses.color_pair(3) | curses.A_BOLD,
+                        self.color_pair_red | curses.A_BOLD,
                     )
                     self.stdscr.refresh()
-                    curses.napms(1500)
-                    sys.exit(0)
+                    curses.napms(1000)
+                    exit(0)
             elif actions == "remove":
                 return "remove"
 
         except curses.error:
-            self.errors.terminal_size_error(MIN_LINES, MIN_COLS)
+            self.errors.terminal_size_error()
 
     def get_linux_distro(self):
         try:
-            header_message = "Getting Linux Distro:"
-            self.stdscr.addstr(
-                self.height // 2 - 7,
-                self.width // 2 - len(header_message) // 2,
-                header_message,
-                curses.color_pair(4) | curses.A_BOLD | curses.A_UNDERLINE,
-            )
-            linux_distribution = get_linux_distribution()
-            linux_distro_id = identify_distribution()
+            linux_distribution = self.linux_distro_pretty_name
+            linux_distro_id = self.linux_distro_id
 
+            header_message = "Getting Linux Distro:"
             distro_message = "Detected Linux Distro: {}".format(linux_distribution)
             id_message = "Detected Distro ID: {}".format(linux_distro_id)
 
-            self.stdscr.addstr(
-                self.height // 2 - 5,
-                self.width // 2 - len(distro_message) // 2,
-                distro_message,
-                curses.color_pair(2),
-            )
-            self.stdscr.addstr(
-                self.height // 2 - 4,
-                self.width // 2 - len(id_message) // 2,
-                id_message,
-                curses.color_pair(2),
-            )
+            question = "Is that true?"
+            x = self.width // 2 - len(question) // 2
+            y = self.height // 2 - 5
 
-            prompt = "Is that true?"
-            x = self.width // 2 - len(prompt) // 2
-            y = self.height // 2 - 1
-            selected_option = self.selections.selections(self.use_dark_mode, prompt, x, y, self.height, self.width, OPTIONS_YES_NO, MIN_COLS, MIN_LINES)
-
-            warning_line = self.height // 2 - 2
+            selected_option = self.selections.selections(
+                x=x,
+                y=y,
+                question=question,
+                options=OPTIONS_YES_NO,
+                prompts=[header_message, distro_message, id_message],
+            )
 
             if selected_option == "Yes":
                 return linux_distro_id
@@ -148,138 +137,128 @@ class PackageManagerApp:
                 while True:
                     input_prompt = "Please enter the distro: "
                     linux_distribution = self.user_input.get_user_input_string(
-                        self.use_dark_mode,
-                        input_prompt,
-                        self.height // 2 + 3,
-                        self.width // 2 - len(input_prompt) // 2,
+                        input_prompt, self.height // 2 - 4
                     )
                     linux_distribution_lower = linux_distribution.lower()
 
-                    self.clean_line.clean_line(0, self.height // 2 - 3)
-
-                    entered_message = "Entered Linux Distro: {}".format(
-                        linux_distribution
-                    )
-                    self.stdscr.addstr(
-                        self.height // 2 - 3,
-                        self.width // 2 - len(entered_message) // 2,
-                        entered_message,
-                        curses.color_pair(2),
+                    self.clean_line.clean_line(
+                        0,
+                        self.height // 2 - 5,
                     )
 
-                    for distro, keywords in self.known_distros.items():
-                        if any(
-                            keyword in linux_distribution_lower for keyword in keywords
-                        ):
-                            self.clean_line.clean_line(
-                                0,
-                                warning_line,
+                    if linux_distribution_lower in KNOWN_DISTROS:
+                        entered_message = "Entered Linux Distro: {}".format(
+                            linux_distribution
+                        )
+                        self.stdscr.addstr(
+                            self.height // 2 - 5,
+                            self.width // 2 - len(entered_message) // 2,
+                            entered_message,
+                            self.color_pair_cyan | curses.A_BOLD,
+                        )
+
+                        return linux_distribution_lower
+
+                    else:
+                        warning_message = (
+                            "{} distro not found. Please try again.".format(
+                                linux_distribution
                             )
-                            return distro
-
-                    warning_message = "{} distro not found. Please try again.".format(
-                        linux_distribution
-                    )
-                    self.clean_line.clean_line(0, warning_line)
-                    self.stdscr.addstr(
-                        warning_line,
-                        self.width // 2 - len(warning_message) // 2,
-                        warning_message,
-                        curses.color_pair(2) | curses.A_BOLD,
-                    )
-                    self.clean_line.clean_line(0, self.height // 2 + 3)
+                        )
+                        self.stdscr.addstr(
+                            self.height // 2 - 5,
+                            self.width // 2 - len(warning_message) // 2,
+                            warning_message,
+                            self.color_pair_red | curses.A_BOLD,
+                        )
+                        self.stdscr.refresh()
 
         except curses.error:
-            self.errors.terminal_size_error(MIN_LINES, MIN_COLS)
+            self.errors.terminal_size_error()
 
     def initialize_selected_status(self, length):
         # Initialize selected status array
         return [False] * length
 
     def packages(self, linux_distro):
-        handler = PackagesJSONHandler()
-        instructions_data = handler.load_json_data()
+        instructions_data = self.instructions_data
 
         if linux_distro in instructions_data:
             package_list = instructions_data[linux_distro]
-            relevant_packages = [package.get("name", "") for package in package_list]
-            return relevant_packages
+            return package_list
         else:
             return []
 
-    def main(self):
+    def main(self, log_stream, verbose, dry_run):
         try:
             curses.curs_set(0)
-            if curses.LINES < MIN_LINES or curses.COLS < MIN_COLS:
-                self.errors.terminal_size_error(MIN_LINES, MIN_COLS)
-
-            self.header.display(self.use_dark_mode)
-            self.footer.display(self.use_dark_mode)
+            self.resize_handler.resize_handler()
 
             linux_distribution = self.get_linux_distro()
-            output = self.get_output_choice()
-
-            self.cmd.clear_middle_section()
             action = self.install_or_remove()
 
-            relevant_packages = self.packages(linux_distribution)
-            self.selected_status_array = self.initialize_selected_status(
-                len(relevant_packages)
-            )
+            package_list = self.packages(linux_distribution)
 
             AppSelector(
                 self.stdscr,
-                relevant_packages,
-                self.width,
-                self.height,
-                self.use_dark_mode,
+                package_list,
                 self.cmd,
                 self.selections,
+                self.helper_keys,
                 self.header,
-                self.footer,
-                self.resize_handler,
             ).select_app(
-                relevant_packages,
-                self.selected_status_array,
+                package_list,
+                self.initialize_selected_status(len(package_list)),
                 action,
                 linux_distribution,
-                output,
-                OPTIONS_YES_NO,
-                MIN_COLS,
-                MIN_LINES,
-                MAX_DISPLAYED_PACKAGES
+                log_stream,
+                verbose,
+                dry_run,
             )
 
-
         except curses.error:
-            self.errors.terminal_size_error(MIN_LINES, MIN_COLS)
+            self.errors.terminal_size_error()
 
         except Exception as e:
             curses.reset_prog_mode()
             self.stdscr.clear()
-            self.stdscr.addstr(1, 1, str(e), curses.color_pair(3) | curses.A_BOLD)
+            self.stdscr.addstr(1, 1, str(e), self.color_pair_red | curses.A_BOLD)
             self.stdscr.addstr(2, 1, "[Press any key to exit program]")
             self.stdscr.getch()
             curses.reset_shell_mode()
-            sys.exit(0)
+            exit(0)
 
 
-def start_terminal_ui():
+def start_terminal_ui(
+    linux_distro_id,
+    linux_distro_pretty_name,
+    instructions_data,
+    log_stream,
+    verbose,
+    dry_run,
+):
     try:
-        curses.wrapper(lambda stdscr: PackageManagerApp(stdscr).main())
+        curses.wrapper(
+            lambda stdscr: PackageManagerApp(
+                stdscr,
+                linux_distro_id=linux_distro_id,
+                linux_distro_pretty_name=linux_distro_pretty_name,
+                instructions_data=instructions_data,
+            ).main(log_stream, verbose, dry_run)
+        )
     except KeyboardInterrupt:
+        from TUI.core.static.__data__ import DARK_MODE  # type: ignore
+
         stdscr = curses.initscr()
-        curses.start_color()
-        curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
         stdscr.clear()
         stdscr.addstr(
             curses.LINES // 2 - 2,
             curses.COLS // 2 - 14,
             "Ctrl + C pressed. Exiting...",
-            curses.color_pair(3) | curses.A_BOLD,
+            curses.color_pair(3 if DARK_MODE else 12) | curses.A_BOLD,
         )
         stdscr.addstr(curses.LINES // 2, curses.COLS // 2 - 3, "Bye 👋")
         stdscr.refresh()
-        curses.napms(1500)
+        curses.napms(1000)
         curses.endwin()
-        sys.exit(0)
+        exit(0)

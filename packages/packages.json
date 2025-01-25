@@ -43,9 +43,9 @@
         },
         {
           "name": "Virtual Box Extensions",
-          "type": "get-keys",
+          "type": "run-command",
           "install_script": [
-            "wget https://download.virtualbox.org/virtualbox/7.0.14/Oracle_VM_VirtualBox_Extension_Pack-7.0.14.vbox-extpack",
+            "wget -q https://download.virtualbox.org/virtualbox/7.0.14/Oracle_VM_VirtualBox_Extension_Pack-7.0.14.vbox-extpack",
             "echo 'y' | sudo vboxmanage extpack install Oracle_VM_VirtualBox_Extension_Pack-7.0.14.vbox-extpack"
           ],
           "check_script": [""],
@@ -93,7 +93,7 @@
           "remove_value": "docker"
         },
         {
-          "name": "Wget",
+          "name": "Wget ",
           "type": "package",
           "install_value": "wget",
           "check_value": "wget",
@@ -134,7 +134,7 @@
           "remove_value": ""
         },
         {
-          "name": "Flathub",
+          "name": "flathub",
           "type": "repo-flathub",
           "install_value": "https://dl.flathub.org/repo/flathub.flatpakrepo"
         },
@@ -278,13 +278,108 @@
   "debian": [
     {
       "name": "VMware_Workstation",
+      "description": "VMware Workstation is a hosted hypervisor that runs on x64 versions of Windows and Linux operating systems; it enables users to set up virtual machines on a single physical machine and use them simultaneously along with the actual machine.",
       "values": [
+        {
+          "name": "VMware Workstation Dependencies",
+          "type": "package",
+          "install_value": "linux-headers-$(uname -r) build-essential gcc make dkms git wget patch net-tools",
+          "check_value": "linux-headers-$(uname -r) build-essential gcc make dkms git wget patch net-tools",
+          "remove_value": ""
+        },
         {
           "name": "VMware Workstation",
           "type": "special-package",
-          "install_value": "vmware-workstation",
-          "check_value": "vmware-workstation",
-          "remove_value": "vmware-workstation"
+          "special_values": [
+            {
+              "app_name": "VMware",
+              "version": "17.6.2"
+            }
+          ],
+          "install_script": [
+            "mkdir -p $CACHE_PATH/$app_name",
+            "wget -q https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.6.2/24409262/linux/core/VMware-Workstation-17.6.2-24409262.x86_64.bundle.tar -O $CACHE_PATH/$app_name/VMware-Workstation-17.6.2-24409262.x86_64.bundle.tar",
+            "wget -q https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.6.2/24409262/linux/packages/vmware-tools-windows-12.4.5-23787635.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-windows-12.4.5-23787635.x86_64.component.tar",
+            "wget -q https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.6.2/24409262/linux/packages/vmware-tools-windows-x86-12.4.5-23787635.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-windows-x86-12.4.5-23787635.x86_64.component.tar",
+            "wget -q https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-winPreVista-12.4.0-23259341.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-winPreVista-12.4.0-23259341.x86_64.component.tar",
+            "wget -q https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-linux-12.4.0-23259341.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-linux-12.4.0-23259341.x86_64.component.tar",
+            "wget -q https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-linuxPreGlibc25-12.4.0-23259341.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-linuxPreGlibc25-12.4.0-23259341.x86_64.component.tar",
+            "wget -q https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-netware-12.4.0-23259341.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-netware-12.4.0-23259341.x86_64.component.tar",
+            "wget -q https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-solaris-12.4.0-23259341.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-solaris-12.4.0-23259341.x86_64.component.tar",
+            "wget -q https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-winPre2k-12.4.0-23259341.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-winPre2k-12.4.0-23259341.x86_64.component.tar",
+            "tar -xf $CACHE_PATH/$app_name/VMware-Workstation-17.6.2-24409262.x86_64.bundle.tar -C $CACHE_PATH/$app_name",
+            "tar -xf $CACHE_PATH/$app_name/vmware-tools-windows-12.4.5-23787635.x86_64.component.tar -C $CACHE_PATH/$app_name",
+            "tar -xf $CACHE_PATH/$app_name/vmware-tools-windows-x86-12.4.5-23787635.x86_64.component.tar -C $CACHE_PATH/$app_name",
+            "tar -xf $CACHE_PATH/$app_name/vmware-tools-winPreVista-12.4.0-23259341.x86_64.component.tar -C $CACHE_PATH/$app_name",
+            "tar -xf $CACHE_PATH/$app_name/vmware-tools-linux-12.4.0-23259341.x86_64.component.tar -C $CACHE_PATH/$app_name",
+            "tar -xf $CACHE_PATH/$app_name/vmware-tools-linuxPreGlibc25-12.4.0-23259341.x86_64.component.tar -C $CACHE_PATH/$app_name",
+            "tar -xf $CACHE_PATH/$app_name/vmware-tools-netware-12.4.0-23259341.x86_64.component.tar -C $CACHE_PATH/$app_name",
+            "tar -xf $CACHE_PATH/$app_name/vmware-tools-solaris-12.4.0-23259341.x86_64.component.tar -C $CACHE_PATH/$app_name",
+            "tar -xf $CACHE_PATH/$app_name/vmware-tools-winPre2k-12.4.0-23259341.x86_64.component.tar -C $CACHE_PATH/$app_name",
+            "sudo systemctl mask vmware.service",
+            "sudo chmod +x $CACHE_PATH/$app_name/VMware-Workstation-17.6.2-24409262.x86_64.bundle",
+            "sudo $CACHE_PATH/$app_name/VMware-Workstation-17.6.2-24409262.x86_64.bundle --console --required --eulas-agreed --install-component=$CACHE_PATH/$app_name/vmware-tools-windows-12.4.5-23787635.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-windows-x86-12.4.5-23787635.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-winPreVista-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-linux-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-linuxPreGlibc25-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-netware-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-solaris-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-winPre2k-12.4.0-23259341.x86_64.component",
+            "sudo systemctl unmask vmware.service"
+          ],
+          "check_script": ["/usr/bin/vmware-installer"],
+          "remove_script": [
+            "sudo systemctl stop vmware; sudo systemctl disable vmware;echo \"yes\" | sudo /usr/bin/vmware-installer --uninstall-product vmware-workstation"
+          ]
+        },
+        {
+          "name": "VMware Workstation DKMS Modules",
+          "type": "special-package",
+          "special_values": [
+            {
+              "app_name": "VMware",
+              "version": "17.6.2",
+              "dkms_name": "VMware-Host-Modules"
+            }
+          ],
+          "install_script": [
+            "sudo mkdir -p /usr/src/$dkms_name-$version",
+            "sudo tar -xf /usr/lib/vmware/modules/source/vmmon.tar -C /usr/src/$dkms_name-$version",
+            "sudo tar -xf /usr/lib/vmware/modules/source/vmnet.tar -C /usr/src/$dkms_name-$version",
+            "sudo wget -q https://aur.archlinux.org/cgit/aur.git/plain/Makefile?h=vmware-workstation -O /usr/src/$dkms_name-$version/Makefile",
+            "sudo wget -q https://aur.archlinux.org/cgit/aur.git/plain/dkms.conf.in?h=vmware-workstation -O /usr/src/$dkms_name-$version/dkms.conf",
+            "sudo sed -i 's/@PKGNAME@/$dkms_name/' /usr/src/$dkms_name-$version/dkms.conf",
+            "sudo sed -i 's/@PKGVER@/$version/' /usr/src/$dkms_name-$version/dkms.conf",
+            "wget -q https://aur.archlinux.org/cgit/aur.git/plain/vmmon.patch?h=vmware-workstation -O $CACHE_PATH/$app_name/vmmon.patch",
+            "wget -q https://aur.archlinux.org/cgit/aur.git/plain/vmnet.patch?h=vmware-workstation -O $CACHE_PATH/$app_name/vmnet.patch",
+            "sudo patch -N -p2 -d /usr/src/$dkms_name-$version/vmmon-only < $CACHE_PATH/$app_name/vmmon.patch",
+            "sudo patch -N -p2 -d /usr/src/$dkms_name-$version/vmnet-only < $CACHE_PATH/$app_name/vmnet.patch",
+            "sudo dkms add --force -m $dkms_name -v $version",
+            "sudo dkms build --force -m $dkms_name -v $version",
+            "sudo dkms install --force -m $dkms_name -v $version",
+            "sudo vmware-modconfig --console --install-all"
+          ],
+          "check_script": ["dkms status | grep $dkms_name"],
+          "remove_script": [
+            "sudo dkms remove -m $dkms_name -v $version --all",
+            "sudo rm -rf /usr/src/$dkms_name-$version",
+            "sudo rm -rf /var/lib/dkms/$dkms_name"
+          ]
+        },
+        {
+          "name": "VMware Workstation Service Files",
+          "type": "run-command",
+          "install_script": [
+            "sudo wget -q https://aur.archlinux.org/cgit/aur.git/plain/vmware-networks-configuration.service?h=vmware-workstation -O /etc/systemd/system/vmware-networks-configuration.service",
+            "sudo wget -q https://aur.archlinux.org/cgit/aur.git/plain/vmware-networks.path?h=vmware-workstation -O /etc/systemd/system/vmware-networks.path",
+            "sudo wget -q https://aur.archlinux.org/cgit/aur.git/plain/vmware-usbarbitrator.path?h=vmware-workstation -O /etc/systemd/system/vmware-usbarbitrator.path",
+            "sudo systemctl enable vmware",
+            "sudo systemctl enable vmware-networks-configuration"
+          ],
+          "check_script": [
+            "/etc/systemd/system/vmware-networks-configuration.service",
+            "/etc/systemd/system/vmware-networks.path",
+            "/etc/systemd/system/vmware-usbarbitrator.path"
+          ],
+          "remove_script": [
+            "sudo rm -rf /etc/systemd/system/vmware-networks-configuration.service",
+            "sudo rm -rf /etc/systemd/system/vmware-networks.path",
+            "sudo rm -rf /etc/systemd/system/vmware-usbarbitrator.path"
+          ]
         }
       ]
     },
@@ -293,12 +388,12 @@
       "values": [
         {
           "name": "VirtualBox Repository",
-          "type": "get-keys",
+          "type": "run-command",
           "install_script": [
             "sudo apt-get update",
             "sudo apt install wget gnupg2 lsb-release -y",
-            "curl -fsSL https://www.virtualbox.org/download/oracle_vbox_2016.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/vbox.gpg",
-            "curl -fsSL https://www.virtualbox.org/download/oracle_vbox.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/oracle_vbox.gpg",
+            "sudo wget -q https://www.virtualbox.org/download/oracle_vbox.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/oracle_vbox.gpg",
+            "sudo wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/vbox.gpg",
             "echo \"deb [arch=amd64] http://download.virtualbox.org/virtualbox/debian $(lsb_release -cs) contrib\" | sudo tee /etc/apt/sources.list.d/virtualbox.list",
             "sudo apt update",
             "sudo apt install linux-headers-$(uname -r) dkms -y"
@@ -328,9 +423,9 @@
         },
         {
           "name": "Virtual Box Extensions",
-          "type": "get-keys",
+          "type": "run-command",
           "install_script": [
-            "wget https://download.virtualbox.org/virtualbox/7.0.14/Oracle_VM_VirtualBox_Extension_Pack-7.0.14.vbox-extpack",
+            "wget -q https://download.virtualbox.org/virtualbox/7.0.14/Oracle_VM_VirtualBox_Extension_Pack-7.0.14.vbox-extpack",
             "echo 'y' | sudo vboxmanage extpack install Oracle_VM_VirtualBox_Extension_Pack-7.0.14.vbox-extpack"
           ],
           "check_script": [""],
@@ -372,12 +467,12 @@
       "values": [
         {
           "name": "Docker Repository",
-          "type": "get-keys",
+          "type": "run-command",
           "install_script": [
             "sudo apt-get update",
-            "sudo apt-get install ca-certificates curl -y",
+            "sudo apt-get install ca-certificates wget -y",
             "sudo install -d -m 0755 /etc/apt/keyrings",
-            "sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc",
+            "wget -q https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.asc",
             "sudo chmod a+r /etc/apt/keyrings/docker.asc",
             "echo \"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian $(. /etc/os-release && echo \"$VERSION_CODENAME\") stable\" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null",
             "sudo apt-get update"
@@ -440,7 +535,7 @@
           "remove_value": ""
         },
         {
-          "name": "Flathub",
+          "name": "flathub",
           "type": "repo-flathub",
           "install_value": "https://dl.flathub.org/repo/flathub.flatpakrepo"
         },
@@ -465,11 +560,11 @@
       "values": [
         {
           "name": "Visual Studio Code Repository",
-          "type": "get-keys",
+          "type": "run-command",
           "install_script": [
             "sudo apt-get update",
             "sudo apt-get install wget gpg -y",
-            "wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg",
+            "wget -q https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg",
             "sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg",
             "sudo sh -c 'echo \"deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main\" > /etc/apt/sources.list.d/vscode.list'",
             "rm -f packages.microsoft.gpg",
@@ -492,11 +587,11 @@
       "values": [
         {
           "name": "GitHub Desktop Repository",
-          "type": "get-keys",
+          "type": "run-command",
           "install_script": [
             "sudo apt-get update",
             "sudo apt install wget software-properties-common -y",
-            "wget -qO - https://apt.packages.shiftkey.dev/gpg.key | gpg --dearmor | sudo tee /usr/share/keyrings/shiftkey-packages.gpg > /dev/null",
+            "wget -q https://apt.packages.shiftkey.dev/gpg.key | gpg --dearmor | sudo tee /usr/share/keyrings/shiftkey-packages.gpg > /dev/null",
             "sudo sh -c 'echo \"deb [arch=amd64 signed-by=/usr/share/keyrings/shiftkey-packages.gpg] https://apt.packages.shiftkey.dev/ubuntu/ any main\" > /etc/apt/sources.list.d/shiftkey-packages-desktop.list'",
             "sudo apt-get update"
           ],
@@ -520,6 +615,7 @@
   "fedora": [
     {
       "name": "VMware_Workstation",
+      "description": "VMware Workstation is a hosted hypervisor that runs on x64 versions of Windows and Linux operating systems; it enables users to set up virtual machines on a single physical machine and use them simultaneously along with the actual machine.",
       "values": [
         {
           "name": "VMware Workstation Dependencies",
@@ -529,7 +625,7 @@
           "remove_value": ""
         },
         {
-          "name": "VMware Workstation",
+          "name": "VMware_Workstation",
           "type": "special-package",
           "special_values": [
             {
@@ -538,15 +634,16 @@
             }
           ],
           "install_script": [
-            "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.6.2/24409262/linux/core/VMware-Workstation-17.6.2-24409262.x86_64.bundle.tar -O $CACHE_PATH/$app_name/VMware-Workstation-17.6.2-24409262.x86_64.bundle.tar",
-            "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.6.2/24409262/linux/packages/vmware-tools-windows-12.4.5-23787635.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-windows-12.4.5-23787635.x86_64.component.tar",
-            "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.6.2/24409262/linux/packages/vmware-tools-windows-x86-12.4.5-23787635.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-windows-x86-12.4.5-23787635.x86_64.component.tar",
-            "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-winPreVista-12.4.0-23259341.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-winPreVista-12.4.0-23259341.x86_64.component.tar",
-            "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-linux-12.4.0-23259341.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-linux-12.4.0-23259341.x86_64.component.tar",
-            "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-linuxPreGlibc25-12.4.0-23259341.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-linuxPreGlibc25-12.4.0-23259341.x86_64.component.tar",
-            "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-netware-12.4.0-23259341.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-netware-12.4.0-23259341.x86_64.component.tar",
-            "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-solaris-12.4.0-23259341.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-solaris-12.4.0-23259341.x86_64.component.tar",
-            "wget https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-winPre2k-12.4.0-23259341.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-winPre2k-12.4.0-23259341.x86_64.component.tar",
+            "mkdir -p $CACHE_PATH/$app_name",
+            "wget -q https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.6.2/24409262/linux/core/VMware-Workstation-17.6.2-24409262.x86_64.bundle.tar -O $CACHE_PATH/$app_name/VMware-Workstation-17.6.2-24409262.x86_64.bundle.tar",
+            "wget -q https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.6.2/24409262/linux/packages/vmware-tools-windows-12.4.5-23787635.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-windows-12.4.5-23787635.x86_64.component.tar",
+            "wget -q https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.6.2/24409262/linux/packages/vmware-tools-windows-x86-12.4.5-23787635.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-windows-x86-12.4.5-23787635.x86_64.component.tar",
+            "wget -q https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-winPreVista-12.4.0-23259341.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-winPreVista-12.4.0-23259341.x86_64.component.tar",
+            "wget -q https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-linux-12.4.0-23259341.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-linux-12.4.0-23259341.x86_64.component.tar",
+            "wget -q https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-linuxPreGlibc25-12.4.0-23259341.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-linuxPreGlibc25-12.4.0-23259341.x86_64.component.tar",
+            "wget -q https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-netware-12.4.0-23259341.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-netware-12.4.0-23259341.x86_64.component.tar",
+            "wget -q https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-solaris-12.4.0-23259341.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-solaris-12.4.0-23259341.x86_64.component.tar",
+            "wget -q https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-winPre2k-12.4.0-23259341.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-winPre2k-12.4.0-23259341.x86_64.component.tar",
             "tar -xf $CACHE_PATH/$app_name/VMware-Workstation-17.6.2-24409262.x86_64.bundle.tar -C $CACHE_PATH/$app_name",
             "tar -xf $CACHE_PATH/$app_name/vmware-tools-windows-12.4.5-23787635.x86_64.component.tar -C $CACHE_PATH/$app_name",
             "tar -xf $CACHE_PATH/$app_name/vmware-tools-windows-x86-12.4.5-23787635.x86_64.component.tar -C $CACHE_PATH/$app_name",
@@ -561,9 +658,9 @@
             "sudo $CACHE_PATH/$app_name/VMware-Workstation-17.6.2-24409262.x86_64.bundle --console --required --eulas-agreed --install-component=$CACHE_PATH/$app_name/vmware-tools-windows-12.4.5-23787635.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-windows-x86-12.4.5-23787635.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-winPreVista-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-linux-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-linuxPreGlibc25-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-netware-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-solaris-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-winPre2k-12.4.0-23259341.x86_64.component",
             "sudo systemctl unmask vmware.service"
           ],
-          "check_script": ["/usr/bin/vmware-installer --version"],
+          "check_script": ["/usr/bin/vmware-installer"],
           "remove_script": [
-            "sudo sytemctl stop vmware; sudo systemctl disable vmware;echo \"yes\" | sudo /usr/bin/vmware-installer --uninstall-product vmware-workstation"
+            "sudo systemctl stop vmware; sudo systemctl disable vmware;echo \"yes\" | sudo /usr/bin/vmware-installer --uninstall-product vmware-workstation"
           ]
         },
         {
@@ -580,12 +677,12 @@
             "sudo mkdir -p /usr/src/$dkms_name-$version",
             "sudo tar -xf /usr/lib/vmware/modules/source/vmmon.tar -C /usr/src/$dkms_name-$version",
             "sudo tar -xf /usr/lib/vmware/modules/source/vmnet.tar -C /usr/src/$dkms_name-$version",
-            "sudo wget https://aur.archlinux.org/cgit/aur.git/plain/Makefile?h=vmware-workstation -O /usr/src/$dkms_name-$version/Makefile",
-            "sudo wget https://aur.archlinux.org/cgit/aur.git/plain/dkms.conf.in?h=vmware-workstation -O /usr/src/$dkms_name-$version/dkms.conf",
+            "sudo wget -q https://aur.archlinux.org/cgit/aur.git/plain/Makefile?h=vmware-workstation -O /usr/src/$dkms_name-$version/Makefile",
+            "sudo wget -q https://aur.archlinux.org/cgit/aur.git/plain/dkms.conf.in?h=vmware-workstation -O /usr/src/$dkms_name-$version/dkms.conf",
             "sudo sed -i 's/@PKGNAME@/$dkms_name/' /usr/src/$dkms_name-$version/dkms.conf",
             "sudo sed -i 's/@PKGVER@/$version/' /usr/src/$dkms_name-$version/dkms.conf",
-            "wget https://aur.archlinux.org/cgit/aur.git/plain/vmmon.patch?h=vmware-workstation -O $CACHE_PATH/$app_name/vmmon.patch",
-            "wget https://aur.archlinux.org/cgit/aur.git/plain/vmnet.patch?h=vmware-workstation -O $CACHE_PATH/$app_name/vmnet.patch",
+            "wget -q https://aur.archlinux.org/cgit/aur.git/plain/vmmon.patch?h=vmware-workstation -O $CACHE_PATH/$app_name/vmmon.patch",
+            "wget -q https://aur.archlinux.org/cgit/aur.git/plain/vmnet.patch?h=vmware-workstation -O $CACHE_PATH/$app_name/vmnet.patch",
             "sudo patch -N -p2 -d /usr/src/$dkms_name-$version/vmmon-only < $CACHE_PATH/$app_name/vmmon.patch",
             "sudo patch -N -p2 -d /usr/src/$dkms_name-$version/vmnet-only < $CACHE_PATH/$app_name/vmnet.patch",
             "sudo dkms add --force -m $dkms_name -v $version",
@@ -602,11 +699,11 @@
         },
         {
           "name": "VMware Workstation Service Files",
-          "type": "get-keys",
+          "type": "run-command",
           "install_script": [
-            "sudo wget https://aur.archlinux.org/cgit/aur.git/plain/vmware-networks-configuration.service?h=vmware-workstation -O /etc/systemd/system/vmware-networks-configuration.service",
-            "sudo wget https://aur.archlinux.org/cgit/aur.git/plain/vmware-networks.path?h=vmware-workstation -O /etc/systemd/system/vmware-networks.path",
-            "sudo wget https://aur.archlinux.org/cgit/aur.git/plain/vmware-usbarbitrator.path?h=vmware-workstation -O /etc/systemd/system/vmware-usbarbitrator.path",
+            "sudo wget -q https://aur.archlinux.org/cgit/aur.git/plain/vmware-networks-configuration.service?h=vmware-workstation -O /etc/systemd/system/vmware-networks-configuration.service",
+            "sudo wget -q https://aur.archlinux.org/cgit/aur.git/plain/vmware-networks.path?h=vmware-workstation -O /etc/systemd/system/vmware-networks.path",
+            "sudo wget -q https://aur.archlinux.org/cgit/aur.git/plain/vmware-usbarbitrator.path?h=vmware-workstation -O /etc/systemd/system/vmware-usbarbitrator.path",
             "sudo systemctl enable vmware",
             "sudo systemctl enable vmware-networks-configuration"
           ],
@@ -625,6 +722,7 @@
     },
     {
       "name": "VirtualBox-7.0",
+      "description": "VirtualBox is a powerful x86 and AMD64/Intel64 virtualization product for enterprise as well as home use. Not only is VirtualBox an extremely feature rich, high performance product for enterprise customers, it is also the only professional solution that is freely available as Open Source Software under the terms of the GNU General Public License (GPL) version 2.",
       "values": [
         {
           "name": "DNF repository manager",
@@ -666,9 +764,9 @@
         },
         {
           "name": "Virtual Box Extensions",
-          "type": "get-keys",
+          "type": "run-command",
           "install_script": [
-            "wget https://download.virtualbox.org/virtualbox/7.0.14/Oracle_VM_VirtualBox_Extension_Pack-7.0.14.vbox-extpack",
+            "wget -q https://download.virtualbox.org/virtualbox/7.0.14/Oracle_VM_VirtualBox_Extension_Pack-7.0.14.vbox-extpack",
             "echo 'y' | sudo vboxmanage extpack install Oracle_VM_VirtualBox_Extension_Pack-7.0.14.vbox-extpack"
           ],
           "check_script": [""],
@@ -678,13 +776,14 @@
     },
     {
       "name": "Qemu_and_VM_Manager",
+      "description": "QEMU is a generic and open source machine emulator and virtualizer. When used as a machine emulator, QEMU can run OSes and programs made for one machine (e.g. an ARM board) on a different machine (e.g. your own PC). When used as a virtualizer, QEMU achieves near native performance by executing the guest code directly on the host CPU.",
       "values": [
         {
           "name": "Qemu package group",
           "type": "package",
           "install_value": "@virtualization",
           "check_value": "virt-manager qemu-common libvirt",
-          "remove_value": "@virtualization"
+          "remove_value":  "virt-manager qemu-common libvirt"
         },
         {
           "name": "libvirtd.service for qemu",
@@ -700,12 +799,13 @@
     },
     {
       "name": "Docker_CLI_and_Docker_Desktop",
+      "description": "Docker is a set of platform as a service products that use OS-level virtualization to deliver software in packages called containers. Containers are isolated from one another and bundle their own software, libraries and configuration files; they can communicate with each other through well-defined channels.",
       "values": [
         {
           "name": "Docker Repository",
-          "type": "get-keys",
+          "type": "run-command",
           "install_script": [
-            "sudo wget https://download.docker.com/linux/fedora/docker-ce.repo -P /etc/yum.repos.d/"
+            "sudo wget -q https://download.docker.com/linux/fedora/docker-ce.repo -P /etc/yum.repos.d/"
           ],
           "check_script": ["/etc/yum.repos.d/docker-ce.repo"],
           "remove_script": ["sudo rm -rf /etc/yum.repos.d/docker-ce.repo"]
@@ -750,6 +850,7 @@
     },
     {
       "name": "Podman_and_Podman_Desktop",
+      "description": "Podman is a daemon less container engine for developing, managing, and running OCI Containers on your Linux System. Containers can either be run as root or in rootless mode. Simply put: `alias docker=podman`.",
       "values": [
         {
           "name": "Flatpak",
@@ -759,7 +860,7 @@
           "remove_value": ""
         },
         {
-          "name": "Flathub",
+          "name": "flathub",
           "type": "repo-flathub",
           "install_value": "https://dl.flathub.org/repo/flathub.flatpakrepo"
         },
@@ -781,10 +882,11 @@
     },
     {
       "name": "Visual_Studio_Code",
+      "description": "Visual Studio Code is a source-code editor developed by Microsoft for Windows, Linux and macOS. It includes support for debugging, embedded Git control, syntax highlighting, intelligent code completion, snippets, and code refactoring.",
       "values": [
         {
           "name": "Visual Studio Code Repository",
-          "type": "get-keys",
+          "type": "run-command",
           "install_script": [
             "sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc",
             "echo -e \"[code]\\nname=Visual Studio Code\\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\\nenabled=1\\ngpgcheck=1\\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc\" | sudo tee /etc/yum.repos.d/vscode.repo > /dev/null"
@@ -803,10 +905,11 @@
     },
     {
       "name": "Github_Desktop",
+      "description": "GitHub Desktop is a seamless way to contribute to projects on GitHub and GitHub Enterprise. GitHub Desktop is your springboard for work. You’ll be able to clone repositories, create branches, commit changes, and push code straight from your desktop.",
       "values": [
         {
           "name": "GitHub Desktop Repository",
-          "type": "get-keys",
+          "type": "run-command",
           "install_script": [
             "sudo rpm --import https://rpm.packages.shiftkey.dev/gpg.key",
             "sudo sh -c 'echo -e \"[shiftkey-packages]\\nname=GitHub Desktop\\nbaseurl=https://rpm.packages.shiftkey.dev/rpm/\\nenabled=1\\ngpgcheck=1\\nrepo_gpgcheck=1\\ngpgkey=https://rpm.packages.shiftkey.dev/gpg.key\" > /etc/yum.repos.d/shiftkey-packages.repo'"
@@ -827,6 +930,7 @@
     },
     {
       "name": "Steam",
+      "description": "Steam is a video game digital distribution service by Valve. It was launched as a standalone software client in September 2003 as a way for Valve to provide automatic updates for their games, and expanded to include games from third-party publishers.",
       "values": [
         {
           "name": "Steam",
@@ -839,18 +943,20 @@
     },
     {
       "name": "Discord",
+      "description": "Discord is a proprietary freeware VoIP application and digital distribution platform designed for creating communities ranging from gamers to education and businesses.",
       "values": [
         {
           "name": "Discord",
           "type": "package-flatpak",
-          "install_value": "app/com.discordapp.Discord/x86_64/stable",
-          "check_value": "app/com.discordapp.Discord/x86_64/stable",
-          "remove_value": "app/com.discordapp.Discord/x86_64/stable"
+          "install_value": "com.discordapp.Discord/x86_64/stable",
+          "check_value": "com.discordapp.Discord/x86_64/stable",
+          "remove_value": "com.discordapp.Discord/x86_64/stable"
         }
       ]
     },
     {
       "name": "Google_Chrome_Stable",
+      "description": "Google Chrome is a cross-platform web browser developed by Google. It was first released in 2008 for Microsoft Windows, and was later ported to Linux, macOS, iOS, and Android.",
       "values": [
         {
           "name": "Google Chrome Stable",
@@ -863,10 +969,11 @@
     },
     {
       "name": "Tuxedo",
+      "description": "Tuxedo Computers is a German computer manufacturer that specializes in Linux laptops and desktops.",
       "values": [
         {
           "name": "Tuxedo Repository",
-          "type": "get-keys",
+          "type": "run-command",
           "install_script": [
             "sudo rpm --import https://rpm.tuxedocomputers.com/fedora/41/0x54840598.pub.asc",
             "echo -e '[tuxedo]\\nname=tuxedo\\nbaseurl=https://rpm.tuxedocomputers.com/fedora/41/x86_64/base\\nenabled=1\\ngpgcheck=1\\ngpgkey=https://rpm.tuxedocomputers.com/fedora/40/0x54840598.pub.asc\\nskip_if_unavailable=False' | sudo tee /etc/yum.repos.d/tuxedo.repo"
@@ -885,6 +992,7 @@
     },
     {
       "name": "Optinal_Extenstions_for_Gnome",
+      "description": "Gnome Shell Extensions are small pieces of code written by third party developers that modify the way the GNOME desktop behaves. They are used to add new functionality or change the behavior of the desktop.",
       "values": [
         {
           "name": "Gnome Extensions",
@@ -903,14 +1011,14 @@
           ],
           "install_script": [
             "mkdir -p $CACHE_PATH/$install_dir",
-            "wget https://extensions.gnome.org/extension-data/AlphabeticalAppGridstuarthayhurst.v41.shell-extension.zip -O $CACHE_PATH/$install_dir/AlphabeticalAppGridstuarthayhurst.v41.shell-extension.zip",
-            "wget https://extensions.gnome.org/extension-data/appindicatorsupportrgcjonas.gmail.com.v59.shell-extension.zip -O $CACHE_PATH/$install_dir/appindicatorsupportrgcjonas.gmail.com.v59.shell-extension.zip",
-            "wget https://extensions.gnome.org/extension-data/blur-my-shellaunetx.v67.shell-extension.zip -O $CACHE_PATH/$install_dir/blur-my-shellaunetx.v67.shell-extension.zip",
-            "wget https://extensions.gnome.org/extension-data/clipboard-indicatortudmotu.com.v65.shell-extension.zip -O $CACHE_PATH/$install_dir/clipboard-indicatortudmotu.com.v65.shell-extension.zip",
-            "wget https://extensions.gnome.org/extension-data/gtk4-dingsmedius.gitlab.com.v94.shell-extension.zip -O $CACHE_PATH/$install_dir/gtk4-dingsmedius.gitlab.com.v94.shell-extension.zip",
-            "wget https://extensions.gnome.org/extension-data/light-stylegnome-shell-extensions.gcampax.github.com.v9.shell-extension.zip -O $CACHE_PATH/$install_dir/light-stylegnome-shell-extensions.gcampax.github.com.v9.shell-extension.zip",
-            "wget https://extensions.gnome.org/extension-data/lockkeysvaina.lt.v59.shell-extension.zip -O $CACHE_PATH/$install_dir/lockkeysvaina.lt.v59.shell-extension.zip",
-            "wget https://extensions.gnome.org/extension-data/tiling-assistantleleat-on-github.v49.shell-extension.zip -O $CACHE_PATH/$install_dir/tiling-assistantleleat-on-github.v49.shell-extension.zip",
+            "wget -q https://extensions.gnome.org/extension-data/AlphabeticalAppGridstuarthayhurst.v41.shell-extension.zip -O $CACHE_PATH/$install_dir/AlphabeticalAppGridstuarthayhurst.v41.shell-extension.zip",
+            "wget -q https://extensions.gnome.org/extension-data/appindicatorsupportrgcjonas.gmail.com.v59.shell-extension.zip -O $CACHE_PATH/$install_dir/appindicatorsupportrgcjonas.gmail.com.v59.shell-extension.zip",
+            "wget -q https://extensions.gnome.org/extension-data/blur-my-shellaunetx.v67.shell-extension.zip -O $CACHE_PATH/$install_dir/blur-my-shellaunetx.v67.shell-extension.zip",
+            "wget -q https://extensions.gnome.org/extension-data/clipboard-indicatortudmotu.com.v65.shell-extension.zip -O $CACHE_PATH/$install_dir/clipboard-indicatortudmotu.com.v65.shell-extension.zip",
+            "wget -q https://extensions.gnome.org/extension-data/gtk4-dingsmedius.gitlab.com.v94.shell-extension.zip -O $CACHE_PATH/$install_dir/gtk4-dingsmedius.gitlab.com.v94.shell-extension.zip",
+            "wget -q https://extensions.gnome.org/extension-data/light-stylegnome-shell-extensions.gcampax.github.com.v9.shell-extension.zip -O $CACHE_PATH/$install_dir/light-stylegnome-shell-extensions.gcampax.github.com.v9.shell-extension.zip",
+            "wget -q https://extensions.gnome.org/extension-data/lockkeysvaina.lt.v59.shell-extension.zip -O $CACHE_PATH/$install_dir/lockkeysvaina.lt.v59.shell-extension.zip",
+            "wget -q https://extensions.gnome.org/extension-data/tiling-assistantleleat-on-github.v49.shell-extension.zip -O $CACHE_PATH/$install_dir/tiling-assistantleleat-on-github.v49.shell-extension.zip",
             "gnome-extensions install $CACHE_PATH/$install_dir/AlphabeticalAppGridstuarthayhurst.v41.shell-extension.zip",
             "gnome-extensions install $CACHE_PATH/$install_dir/appindicatorsupportrgcjonas.gmail.com.v59.shell-extension.zip",
             "gnome-extensions install $CACHE_PATH/$install_dir/blur-my-shellaunetx.v67.shell-extension.zip",
@@ -934,10 +1042,11 @@
     },
     {
       "name": "Cloudflare_WARP",
+      "description": "Cloudflare WARP is a free app that makes your Internet more private. It uses Cloudflare’s global network to secure your device’s Internet connection.",
       "values": [
         {
           "name": "Cloudflare WARP repository",
-          "type": "get-keys",
+          "type": "run-command",
           "install_script": [
             "echo -e '[cloudflare-warp-stable]\\nname=cloudflare-warp-stable\\nbaseurl=https://pkg.cloudflareclient.com/rpm\\nenabled=1\\ntype=rpm\\ngpgcheck=1\\ngpgkey=https://pkg.cloudflareclient.com/pubkey.gpg' | sudo tee /etc/yum.repos.d/cloudflare-warp.repo"
           ],
@@ -955,6 +1064,7 @@
     },
     {
       "name": "Oh_My_Posh",
+      "description": "Oh My Posh is a prompt theme engine for any shell. It's highly customizable and extensible.",
       "values": [
         {
           "name": "Oh My Posh",
@@ -979,7 +1089,7 @@
         },
         {
           "name": "Oh My Meslo Nerd Font",
-          "type": "get-keys",
+          "type": "run-command",
           "install_script": ["oh-my-posh font install meslo"],
           "check_script": [""],
           "remove_script": [""]
@@ -989,7 +1099,7 @@
           "type": "special-package",
           "special_values": [
             {
-              "theme_location": "~/Documents/hakanbaban53zav.json"
+              "theme_location": "~/Documents/hakanbaban53.json"
             }
           ],
           "install_script": [
@@ -997,8 +1107,8 @@
             "if [ -f /etc/zshrc ]; then echo 'eval \"$(oh-my-posh --init --shell zsh --config $theme_location)\"' | sudo tee -a /etc/zshrc; fi"
           ],
           "check_script": [
-            "if [ -f /etc/bashrc ]; then grep 'oh-my-posh' /etc/bashrc; fi",
-            "if [ -f /etc/zshrc ]; then grep 'oh-my-posh' /etc/zshrc; fi"
+            "cat /etc/bashrc | grep 'oh-my-posh'",
+            "cat /etc/zshrc | grep 'oh-my-posh'"
           ],
           "remove_script": [
             "if [ -f /etc/bashrc ]; then sudo sed -i '/oh-my-posh/d' /etc/bashrc; fi",
@@ -1009,6 +1119,7 @@
     },
     {
       "name": "Zsh_and_Oh_My_Zsh",
+      "description": "Zsh is a shell designed for interactive use, although it is also a powerful scripting language. Oh My Zsh is an open-source, community-driven framework for managing your Zsh configuration.",
       "values": [
         {
           "name": "Zsh",
@@ -1019,10 +1130,9 @@
         },
         {
           "name": "Oh My Zsh",
-          "type": "get-keys",
+          "type": "run-command",
           "install_script": [
-            "sh -c \"$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)\"",
-            "chsh -s $(which zsh)"
+            "sh -c \"$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)\""
           ],
           "check_script": ["~/.oh-my-zsh"],
           "remove_script": ["rm -rf ~/.oh-my-zsh"]
@@ -1031,6 +1141,7 @@
     },
     {
       "name": "Ani_Cli",
+      "description": "Ani Cli is a command line tool to watch anime.",
       "values": [
         {
           "name": "Ani Cli",
@@ -1043,13 +1154,11 @@
           ],
           "install_script": [
             "mkdir -p $CACHE_PATH/$install_dir",
-            "wget https://github.com/pystardust/ani-cli/releases/download/v4.9/ani-cli -O $CACHE_PATH/$install_dir/ani-cli",
+            "wget -q https://github.com/pystardust/ani-cli/releases/download/v4.9/ani-cli -O $CACHE_PATH/$install_dir/ani-cli",
             "sudo mv $CACHE_PATH/$install_dir/ani-cli /usr/local/bin/ani-cli",
             "sudo chmod +x /usr/local/bin/ani-cli"
           ],
-          "check_script": [
-            "/usr/local/bin/ani-cli"
-          ],
+          "check_script": ["/usr/local/bin/ani-cli"],
           "remove_script": [
             "sudo rm -rf /usr/local/bin/ani-cli",
             "sudo rm -rf $CACHE_PATH/$install_dir"
@@ -1066,6 +1175,7 @@
     },
     {
       "name": "Gnome Configuration Tools",
+      "description": "Gnome Configuration Tools are a set of tools to configure Gnome Desktop Environment.",
       "values": [
         {
           "name": "Gnome Tweaks",
@@ -1092,7 +1202,7 @@
           "name": "Startup Applications",
           "type": "special-package",
           "install_script": [
-            "sudo wget https://download.copr.fedorainfracloud.org/results/gloriouseggroll/nobara-41/fedora-41-x86_64/08286249-gnome-startup-applications/gnome-startup-applications-46.0-1.fc41.x86_64.rpm -O $CACHE_PATH/gnome-startup-applications-46.0-1.fc41.x86_64.rpm",
+            "sudo wget -q https://download.copr.fedorainfracloud.org/results/gloriouseggroll/nobara-41/fedora-41-x86_64/08286249-gnome-startup-applications/gnome-startup-applications-46.0-1.fc41.x86_64.rpm -O $CACHE_PATH/gnome-startup-applications-46.0-1.fc41.x86_64.rpm",
             "sudo dnf install $CACHE_PATH/gnome-startup-applications-46.0-1.fc41.x86_64.rpm -y",
             "sudo rm -rf $CACHE_PATH/gnome-startup-applications-46.0-1.fc41.x86_64.rpm"
           ],
@@ -1111,6 +1221,7 @@
 
     {
       "name": "Microsoft_Core_TTF_Fonts",
+      "description": "Microsoft Core TTF Fonts are a set of TrueType fonts that were developed by Microsoft. These fonts are used in Microsoft products and are also used in many other applications.",
       "values": [
         {
           "name": "Microsoft Core TTF Fonts",
@@ -1122,17 +1233,17 @@
           ],
           "install_script": [
             "mkdir -p $CACHE_PATH/$install_dir",
-            "wget https://downloads.sourceforge.net/project/corefonts/the%20fonts/final/andale32.exe -O $CACHE_PATH/$install_dir/andale32.exe",
-            "wget https://downloads.sourceforge.net/project/corefonts/the%20fonts/final/arial32.exe -O $CACHE_PATH/$install_dir/arial32.exe",
-            "wget https://downloads.sourceforge.net/project/corefonts/the%20fonts/final/arialb32.exe -O $CACHE_PATH/$install_dir/arialb32.exe",
-            "wget https://downloads.sourceforge.net/project/corefonts/the%20fonts/final/comic32.exe -O $CACHE_PATH/$install_dir/comic32.exe",
-            "wget https://downloads.sourceforge.net/project/corefonts/the%20fonts/final/courie32.exe -O $CACHE_PATH/$install_dir/courie32.exe",
-            "wget https://downloads.sourceforge.net/project/corefonts/the%20fonts/final/georgi32.exe -O $CACHE_PATH/$install_dir/georgi32.exe",
-            "wget https://downloads.sourceforge.net/project/corefonts/the%20fonts/final/impact32.exe -O $CACHE_PATH/$install_dir/impact32.exe",
-            "wget https://downloads.sourceforge.net/project/corefonts/the%20fonts/final/times32.exe -O $CACHE_PATH/$install_dir/times32.exe",
-            "wget https://downloads.sourceforge.net/project/corefonts/the%20fonts/final/trebuc32.exe -O $CACHE_PATH/$install_dir/trebuc32.exe",
-            "wget https://downloads.sourceforge.net/project/corefonts/the%20fonts/final/verdan32.exe -O $CACHE_PATH/$install_dir/verdan32.exe",
-            "wget https://downloads.sourceforge.net/project/corefonts/the%20fonts/final/webdin32.exe -O $CACHE_PATH/$install_dir/webdin32.exe",
+            "wget -q https://downloads.sourceforge.net/project/corefonts/the%20fonts/final/andale32.exe -O $CACHE_PATH/$install_dir/andale32.exe",
+            "wget -q https://downloads.sourceforge.net/project/corefonts/the%20fonts/final/arial32.exe -O $CACHE_PATH/$install_dir/arial32.exe",
+            "wget -q https://downloads.sourceforge.net/project/corefonts/the%20fonts/final/arialb32.exe -O $CACHE_PATH/$install_dir/arialb32.exe",
+            "wget -q https://downloads.sourceforge.net/project/corefonts/the%20fonts/final/comic32.exe -O $CACHE_PATH/$install_dir/comic32.exe",
+            "wget -q https://downloads.sourceforge.net/project/corefonts/the%20fonts/final/courie32.exe -O $CACHE_PATH/$install_dir/courie32.exe",
+            "wget -q https://downloads.sourceforge.net/project/corefonts/the%20fonts/final/georgi32.exe -O $CACHE_PATH/$install_dir/georgi32.exe",
+            "wget -q https://downloads.sourceforge.net/project/corefonts/the%20fonts/final/impact32.exe -O $CACHE_PATH/$install_dir/impact32.exe",
+            "wget -q https://downloads.sourceforge.net/project/corefonts/the%20fonts/final/times32.exe -O $CACHE_PATH/$install_dir/times32.exe",
+            "wget -q https://downloads.sourceforge.net/project/corefonts/the%20fonts/final/trebuc32.exe -O $CACHE_PATH/$install_dir/trebuc32.exe",
+            "wget -q https://downloads.sourceforge.net/project/corefonts/the%20fonts/final/verdan32.exe -O $CACHE_PATH/$install_dir/verdan32.exe",
+            "wget -q https://downloads.sourceforge.net/project/corefonts/the%20fonts/final/webdin32.exe -O $CACHE_PATH/$install_dir/webdin32.exe",
             "cabextract -d $CACHE_PATH/$install_dir $CACHE_PATH/$install_dir/*.exe",
             "sudo mkdir -p /usr/share/fonts/TTF",
             "sudo mv $CACHE_PATH/$install_dir/*.{ttf,TTF} /usr/share/fonts/TTF",
@@ -1150,13 +1261,108 @@
   "ubuntu": [
     {
       "name": "VMware_Workstation",
+      "description": "VMware Workstation is a hosted hypervisor that runs on x64 versions of Windows and Linux operating systems; it enables users to set up virtual machines on a single physical machine and use them simultaneously along with the actual machine.",
       "values": [
+        {
+          "name": "VMware Workstation Dependencies",
+          "type": "package",
+          "install_value": "linux-headers-$(uname -r) build-essential gcc make dkms git wget patch net-tools",
+          "check_value": "linux-headers-$(uname -r) build-essential gcc make dkms git wget patch net-tools",
+          "remove_value": ""
+        },
         {
           "name": "VMware Workstation",
           "type": "special-package",
-          "install_value": "vmware-workstation",
-          "check_value": "vmware-workstation",
-          "remove_value": "vmware-workstation"
+          "special_values": [
+            {
+              "app_name": "VMware",
+              "version": "17.6.2"
+            }
+          ],
+          "install_script": [
+            "mkdir -p $CACHE_PATH/$app_name",
+            "wget -q https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.6.2/24409262/linux/core/VMware-Workstation-17.6.2-24409262.x86_64.bundle.tar -O $CACHE_PATH/$app_name/VMware-Workstation-17.6.2-24409262.x86_64.bundle.tar",
+            "wget -q https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.6.2/24409262/linux/packages/vmware-tools-windows-12.4.5-23787635.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-windows-12.4.5-23787635.x86_64.component.tar",
+            "wget -q https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.6.2/24409262/linux/packages/vmware-tools-windows-x86-12.4.5-23787635.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-windows-x86-12.4.5-23787635.x86_64.component.tar",
+            "wget -q https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-winPreVista-12.4.0-23259341.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-winPreVista-12.4.0-23259341.x86_64.component.tar",
+            "wget -q https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-linux-12.4.0-23259341.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-linux-12.4.0-23259341.x86_64.component.tar",
+            "wget -q https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-linuxPreGlibc25-12.4.0-23259341.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-linuxPreGlibc25-12.4.0-23259341.x86_64.component.tar",
+            "wget -q https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-netware-12.4.0-23259341.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-netware-12.4.0-23259341.x86_64.component.tar",
+            "wget -q https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-solaris-12.4.0-23259341.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-solaris-12.4.0-23259341.x86_64.component.tar",
+            "wget -q https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.5.2/23775571/linux/packages/vmware-tools-winPre2k-12.4.0-23259341.x86_64.component.tar -O $CACHE_PATH/$app_name/vmware-tools-winPre2k-12.4.0-23259341.x86_64.component.tar",
+            "tar -xf $CACHE_PATH/$app_name/VMware-Workstation-17.6.2-24409262.x86_64.bundle.tar -C $CACHE_PATH/$app_name",
+            "tar -xf $CACHE_PATH/$app_name/vmware-tools-windows-12.4.5-23787635.x86_64.component.tar -C $CACHE_PATH/$app_name",
+            "tar -xf $CACHE_PATH/$app_name/vmware-tools-windows-x86-12.4.5-23787635.x86_64.component.tar -C $CACHE_PATH/$app_name",
+            "tar -xf $CACHE_PATH/$app_name/vmware-tools-winPreVista-12.4.0-23259341.x86_64.component.tar -C $CACHE_PATH/$app_name",
+            "tar -xf $CACHE_PATH/$app_name/vmware-tools-linux-12.4.0-23259341.x86_64.component.tar -C $CACHE_PATH/$app_name",
+            "tar -xf $CACHE_PATH/$app_name/vmware-tools-linuxPreGlibc25-12.4.0-23259341.x86_64.component.tar -C $CACHE_PATH/$app_name",
+            "tar -xf $CACHE_PATH/$app_name/vmware-tools-netware-12.4.0-23259341.x86_64.component.tar -C $CACHE_PATH/$app_name",
+            "tar -xf $CACHE_PATH/$app_name/vmware-tools-solaris-12.4.0-23259341.x86_64.component.tar -C $CACHE_PATH/$app_name",
+            "tar -xf $CACHE_PATH/$app_name/vmware-tools-winPre2k-12.4.0-23259341.x86_64.component.tar -C $CACHE_PATH/$app_name",
+            "sudo systemctl mask vmware.service",
+            "sudo chmod +x $CACHE_PATH/$app_name/VMware-Workstation-17.6.2-24409262.x86_64.bundle",
+            "sudo $CACHE_PATH/$app_name/VMware-Workstation-17.6.2-24409262.x86_64.bundle --console --required --eulas-agreed --install-component=$CACHE_PATH/$app_name/vmware-tools-windows-12.4.5-23787635.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-windows-x86-12.4.5-23787635.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-winPreVista-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-linux-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-linuxPreGlibc25-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-netware-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-solaris-12.4.0-23259341.x86_64.component --install-component=$CACHE_PATH/$app_name/vmware-tools-winPre2k-12.4.0-23259341.x86_64.component",
+            "sudo systemctl unmask vmware.service"
+          ],
+          "check_script": ["/usr/bin/vmware-installer"],
+          "remove_script": [
+            "sudo systemctl stop vmware; sudo systemctl disable vmware;echo \"yes\" | sudo /usr/bin/vmware-installer --uninstall-product vmware-workstation"
+          ]
+        },
+        {
+          "name": "VMware Workstation DKMS Modules",
+          "type": "special-package",
+          "special_values": [
+            {
+              "app_name": "VMware",
+              "version": "17.6.2",
+              "dkms_name": "VMware-Host-Modules"
+            }
+          ],
+          "install_script": [
+            "sudo mkdir -p /usr/src/$dkms_name-$version",
+            "sudo tar -xf /usr/lib/vmware/modules/source/vmmon.tar -C /usr/src/$dkms_name-$version",
+            "sudo tar -xf /usr/lib/vmware/modules/source/vmnet.tar -C /usr/src/$dkms_name-$version",
+            "sudo wget -q https://aur.archlinux.org/cgit/aur.git/plain/Makefile?h=vmware-workstation -O /usr/src/$dkms_name-$version/Makefile",
+            "sudo wget -q https://aur.archlinux.org/cgit/aur.git/plain/dkms.conf.in?h=vmware-workstation -O /usr/src/$dkms_name-$version/dkms.conf",
+            "sudo sed -i 's/@PKGNAME@/$dkms_name/' /usr/src/$dkms_name-$version/dkms.conf",
+            "sudo sed -i 's/@PKGVER@/$version/' /usr/src/$dkms_name-$version/dkms.conf",
+            "wget -q https://aur.archlinux.org/cgit/aur.git/plain/vmmon.patch?h=vmware-workstation -O $CACHE_PATH/$app_name/vmmon.patch",
+            "wget -q https://aur.archlinux.org/cgit/aur.git/plain/vmnet.patch?h=vmware-workstation -O $CACHE_PATH/$app_name/vmnet.patch",
+            "sudo patch -N -p2 -d /usr/src/$dkms_name-$version/vmmon-only < $CACHE_PATH/$app_name/vmmon.patch",
+            "sudo patch -N -p2 -d /usr/src/$dkms_name-$version/vmnet-only < $CACHE_PATH/$app_name/vmnet.patch",
+            "sudo dkms add --force -m $dkms_name -v $version",
+            "sudo dkms build --force -m $dkms_name -v $version",
+            "sudo dkms install --force -m $dkms_name -v $version",
+            "sudo vmware-modconfig --console --install-all"
+          ],
+          "check_script": ["dkms status | grep $dkms_name"],
+          "remove_script": [
+            "sudo dkms remove -m $dkms_name -v $version --all",
+            "sudo rm -rf /usr/src/$dkms_name-$version",
+            "sudo rm -rf /var/lib/dkms/$dkms_name"
+          ]
+        },
+        {
+          "name": "VMware Workstation Service Files",
+          "type": "run-command",
+          "install_script": [
+            "sudo wget -q https://aur.archlinux.org/cgit/aur.git/plain/vmware-networks-configuration.service?h=vmware-workstation -O /etc/systemd/system/vmware-networks-configuration.service",
+            "sudo wget -q https://aur.archlinux.org/cgit/aur.git/plain/vmware-networks.path?h=vmware-workstation -O /etc/systemd/system/vmware-networks.path",
+            "sudo wget -q https://aur.archlinux.org/cgit/aur.git/plain/vmware-usbarbitrator.path?h=vmware-workstation -O /etc/systemd/system/vmware-usbarbitrator.path",
+            "sudo systemctl enable vmware",
+            "sudo systemctl enable vmware-networks-configuration"
+          ],
+          "check_script": [
+            "/etc/systemd/system/vmware-networks-configuration.service",
+            "/etc/systemd/system/vmware-networks.path",
+            "/etc/systemd/system/vmware-usbarbitrator.path"
+          ],
+          "remove_script": [
+            "sudo rm -rf /etc/systemd/system/vmware-networks-configuration.service",
+            "sudo rm -rf /etc/systemd/system/vmware-networks.path",
+            "sudo rm -rf /etc/systemd/system/vmware-usbarbitrator.path"
+          ]
         }
       ]
     },
@@ -1165,12 +1371,12 @@
       "values": [
         {
           "name": "VirtualBox Repository",
-          "type": "get-keys",
+          "type": "run-command",
           "install_script": [
             "sudo apt-get update",
             "sudo apt install wget gnupg2 lsb-release -y",
-            "curl -fsSL https://www.virtualbox.org/download/oracle_vbox_2016.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/vbox.gpg",
-            "curl -fsSL https://www.virtualbox.org/download/oracle_vbox.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/oracle_vbox.gpg",
+            "sudo wget -q https://www.virtualbox.org/download/oracle_vbox.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/oracle_vbox.gpg",
+            "sudo wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/vbox.gpg",
             "echo \"deb [arch=amd64] http://download.virtualbox.org/virtualbox/debian $(lsb_release -cs) contrib\" | sudo tee /etc/apt/sources.list.d/virtualbox.list",
             "sudo apt update",
             "sudo apt install linux-headers-$(uname -r) dkms -y"
@@ -1200,9 +1406,9 @@
         },
         {
           "name": "Virtual Box Extensions",
-          "type": "get-keys",
+          "type": "run-command",
           "install_script": [
-            "wget https://download.virtualbox.org/virtualbox/7.0.14/Oracle_VM_VirtualBox_Extension_Pack-7.0.14.vbox-extpack",
+            "wget -q https://download.virtualbox.org/virtualbox/7.0.14/Oracle_VM_VirtualBox_Extension_Pack-7.0.14.vbox-extpack",
             "echo 'y' | sudo vboxmanage extpack install Oracle_VM_VirtualBox_Extension_Pack-7.0.14.vbox-extpack"
           ],
           "check_script": [""],
@@ -1249,11 +1455,11 @@
       "values": [
         {
           "name": "Docker Repository",
-          "type": "get-keys",
+          "type": "run-command",
           "install_script": [
-            "sudo apt-get install ca-certificates curl -y",
+            "sudo apt-get install ca-certificates wget -y",
             "sudo install -d -m 0755 /etc/apt/keyrings",
-            "sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc",
+            "wget -q https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor > docker.asc",
             "sudo chmod a+r /etc/apt/keyrings/docker.asc",
             "echo \"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo \"$VERSION_CODENAME\") stable\" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null",
             "sudo apt-get update"
@@ -1316,7 +1522,7 @@
           "remove_value": ""
         },
         {
-          "name": "Flathub",
+          "name": "flathub",
           "type": "repo-flathub",
           "install_value": "https://dl.flathub.org/repo/flathub.flatpakrepo"
         },
@@ -1341,11 +1547,11 @@
       "values": [
         {
           "name": "Visual Studio Code Repository",
-          "type": "get-keys",
+          "type": "run-command",
           "install_script": [
             "sudo apt-get update",
             "sudo apt-get install wget gpg -y",
-            "wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg",
+            "wget -q https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg",
             "sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg",
             "sudo sh -c 'echo \"deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main\" > /etc/apt/sources.list.d/vscode.list'",
             "rm -f packages.microsoft.gpg",
@@ -1368,11 +1574,11 @@
       "values": [
         {
           "name": "GitHub Desktop Repository",
-          "type": "get-keys",
+          "type": "run-command",
           "install_script": [
             "sudo apt-get update",
             "sudo apt install wget software-properties-common -y",
-            "wget -qO - https://apt.packages.shiftkey.dev/gpg.key | gpg --dearmor | sudo tee /usr/share/keyrings/shiftkey-packages.gpg > /dev/null",
+            "wget -q https://apt.packages.shiftkey.dev/gpg.key | gpg --dearmor | sudo tee /usr/share/keyrings/shiftkey-packages.gpg > /dev/null",
             "sudo sh -c 'echo \"deb [arch=amd64 signed-by=/usr/share/keyrings/shiftkey-packages.gpg] https://apt.packages.shiftkey.dev/ubuntu/ any main\" > /etc/apt/sources.list.d/shiftkey-packages-desktop.list'",
             "sudo apt-get update"
           ],

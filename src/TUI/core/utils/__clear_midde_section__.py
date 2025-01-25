@@ -1,13 +1,15 @@
 class ClearMiddleSection:
-    def __init__(self, stdscr, width, height):
+    def __init__(self, stdscr):
         """
         Initialize the ClearMiddleSection class with the stdscr object and dimensions.
         """
         self.stdscr = stdscr
-        self.width = width
-        self.height = height
     
     def clear_middle_section(self):
-        for y in range(1, self.height - 1):
+        """
+        Clear the middle section of the terminal.
+        """
+        height, _ = self.stdscr.getmaxyx()
+        for y in range(1, height - 1):
             self.stdscr.move(y, 0)
             self.stdscr.clrtoeol()
