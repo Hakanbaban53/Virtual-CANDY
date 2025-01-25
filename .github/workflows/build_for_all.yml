@@ -137,7 +137,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          
       - name: Extract Release Info
         id: release_info
         shell: bash
@@ -183,9 +182,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.VCGITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.release_info.outputs.TAG }}
-          release_name: Release ${{ steps.release_info.outputs.TAG }}
-          body: ${{ steps.release_info.outputs.BODY }}
+          tag_name: ${{ env.TAG }}
+          release_name: Release ${{ env.VERSION }}
+          body: ${{ env.BODY }}
           draft: false
           prerelease: false
 
