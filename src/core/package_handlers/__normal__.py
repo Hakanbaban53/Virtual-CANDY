@@ -43,7 +43,7 @@ def handle_standard_package(distro, package, package_type, check_value, action, 
                 handle_local_package(distro, package.get("install_value", ""), verbose)
             elif package_type == "AUR-package":
                 handle_aur_package(not_installed, verbose)
-    elif action == "remove" and package.get("remove_value", "") != "":
+    elif action == "remove" and package.get("remove_value", "") != "" and package.get("remove_value", "") in installed:
         info(f"Removing {package.get('remove_value', '')}...")
         if not dry_run:
             command = f"{PACKAGE_MANAGER_REMOVE[distro]} {package.get('remove_value', '')}"
