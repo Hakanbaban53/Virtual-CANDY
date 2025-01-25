@@ -3,7 +3,7 @@
 set -e  # Exit immediately if a command fails
 
 # Global variables
-VERSION="2.2.8"
+VERSION="3.0"
 PACKAGE_NAME="vcandy"
 SOURCE_DIR="$PACKAGE_NAME-$VERSION"
 RPMS_DIR=~/rpmbuild/RPMS

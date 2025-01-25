@@ -1,6 +1,13 @@
 name: 🐛 Bug Report
 description: File a bug report
 body:
+  - type: checkboxes
+    attributes:
+      label: Is there an existing issue for this?
+      description: Please search to see if an issue already exists for the bug you encountered.
+      options:
+      - label: I searched the existing issues and did not find anything similar.
+        required: true
   - type: textarea
     id: the-problem
     attributes:

@@ -64,7 +64,7 @@ class ArgumentHandler:
             "--version",
             action="version",
             version=(
-                "Virtual Candy (VCANDY) Version 2.2.8\n"
+                "Virtual Candy (VCANDY) Version 3.0\n"
                 "License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.\n"
                 "This is free software: you are free to change and redistribute it.\n"
                 "There is NO WARRANTY, to the extent permitted by law.\n"
