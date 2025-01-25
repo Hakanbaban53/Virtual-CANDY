@@ -150,9 +150,15 @@ jobs:
 
           # Format the release notes
           if [ -z "$EXTENDED_DESCRIPTION" ]; then
-            BODY="### Release Notes:\n\n**$COMMIT_MESSAGE**"
+            BODY="### Release Notes:
+            
+              **$COMMIT_MESSAGE**"
           else
-            BODY="### Release Notes:\n\n**$COMMIT_MESSAGE**\n\n$EXTENDED_DESCRIPTION"
+            BODY="### Release Notes:
+              
+              **$COMMIT_MESSAGE**
+              
+              $EXTENDED_DESCRIPTION"
           fi
 
           # Write outputs to GITHUB_OUTPUT for later steps
