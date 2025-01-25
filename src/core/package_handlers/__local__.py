@@ -14,9 +14,6 @@ def handle_local_package(distro, install_value, verbose):
         install_value (str): URL or file path for the package.
         verbose (file-like): Verbose output.
     """
-    if distro not in PACKAGE_MANAGER_INSTALL_LOCAL:
-        raise ValueError(f"Unsupported distribution: {distro}")
-
     CACHE_PATH.mkdir(parents=True, exist_ok=True)  # Ensure the cache directory exists
     package_ext = PACKAGE_TYPES[distro]
     local_path = CACHE_PATH / f"local.package.{package_ext}"
@@ -24,7 +21,7 @@ def handle_local_package(distro, install_value, verbose):
     try:
         # Download the package
         run_command(
-            f"wget --progress=bar:force -O {local_path} {install_value}",
+            f"wget -q {local_path} -O {install_value}",
             cwd=str(CACHE_PATH),
             verbose=verbose,
         )
