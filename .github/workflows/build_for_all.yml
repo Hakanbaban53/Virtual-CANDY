@@ -26,7 +26,7 @@ jobs:
         run: pip3 install --no-cache-dir requests pyinstaller setuptools
 
       - name: Build the Python project with PyInstaller
-        run: pyinstaller --onefile ~/work/Virtual-CANDY/Virtual-CANDY/app.py --name=vcandy
+        run: pyinstaller --onefile ~/work/Virtual-CANDY/Virtual-CANDY/src/app.py --name=vcandy
 
       - name: Create RPM spec file
         run: |
@@ -102,7 +102,7 @@ jobs:
         run: pip3 install --no-cache-dir requests pyinstaller setuptools
 
       - name: Build the Python project with PyInstaller
-        run: pyinstaller --onefile ~/work/Virtual-CANDY/Virtual-CANDY/app.py --name=vcandy
+        run: pyinstaller --onefile ~/work/Virtual-CANDY/Virtual-CANDY/src/app.py --name=vcandy
 
       - name: Create DEB control file
         run: |
@@ -133,55 +133,72 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build-rpm, build-deb]
     steps:
-      - name: Checkout
+      - name: Checkout Repository
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
 
-      - name: Read info
-        id: tags
+      - name: Extract Release Info
+        id: release_info
         shell: bash
         run: |
-          echo ::set-output name=VERSION::$(echo ${GITHUB_REF#refs/tags/} | sed 's/^[Vv]//')
-          echo ::set-output name=TAG::${GITHUB_REF/refs\/tags\//}
+          # Extract version number from the tag
+          VERSION=$(echo ${GITHUB_REF#refs/tags/} | sed 's/^[Vv]//')
+          TAG=${GITHUB_REF/refs\/tags\//}
+          
+          # Extract commit message and extended description
+          COMMIT_MESSAGE=$(git log -1 --pretty=format:%s)
+          EXTENDED_DESCRIPTION=$(git log -1 --pretty=format:%b)
+
+          # Format the release notes
+          if [ -z "$EXTENDED_DESCRIPTION" ]; then
+            BODY="### Release Notes:
+            **$COMMIT_MESSAGE**"
+          else
+            BODY="### Release Notes:
+            **$COMMIT_MESSAGE**
+            $EXTENDED_DESCRIPTION"
+          fi
+
+          # Write outputs to GITHUB_OUTPUT for later steps
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "TAG=$TAG" >> $GITHUB_OUTPUT
+          echo "BODY<<EOF" >> $GITHUB_OUTPUT
+          echo "$BODY" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Download RPM Artifact
         uses: actions/download-artifact@v3
         with:
           name: vcandy.rpm
           path: ./
-
+  
       - name: Download DEB Artifact
         uses: actions/download-artifact@v3
         with:
           name: vcandy.deb
           path: ./
-
+  
       - name: Create Release
         id: create_release
         uses: actions/create-release@master
         env:
           GITHUB_TOKEN: ${{ secrets.VCGITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.tags.outputs.TAG }}
-          release_name: Release ${{ steps.tags.outputs.TAG }}
-          body: |
-            Release ${{ steps.tags.outputs.TAG }}
-            Debian and RPM packages are attached to this release.
+          tag_name: ${{ steps.release_info.outputs.TAG }}
+          release_name: Release ${{ steps.release_info.outputs.TAG }}
+          body: ${{ steps.release_info.outputs.BODY }}
           draft: false
           prerelease: false
-
+  
       - name: Upload RPM to Release
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.VCGITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: /home/runner/work/Virtual-CANDY/Virtual-CANDY/x86_64/vcandy-${{ steps.tags.outputs.VERSION }}-1.x86_64.rpm
-
-          asset_name: vcandy-${{ steps.tags.outputs.VERSION }}.rpm
+          asset_path: /home/runner/work/Virtual-CANDY/Virtual-CANDY/x86_64/vcandy-${{ steps.release_info.outputs.VERSION }}-1.x86_64.rpm
+          asset_name: vcandy-${{ steps.release_info.outputs.VERSION }}.rpm
           asset_content_type: application/x-rpm
-
+  
       - name: Upload DEB to Release
         uses: actions/upload-release-asset@v1
         env:
@@ -189,5 +206,6 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: /home/runner/work/Virtual-CANDY/Virtual-CANDY/vcandy.deb
-          asset_name: vcandy-${{ steps.tags.outputs.VERSION }}.deb
+          asset_name: vcandy-${{ steps.release_info.outputs.VERSION }}.deb
           asset_content_type: application/x-debian-package
+
