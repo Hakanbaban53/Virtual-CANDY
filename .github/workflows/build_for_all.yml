@@ -128,20 +128,7 @@ jobs:
         with:
           name: vcandy.deb
           path: ~/vcandy.deb
-
-name: Build and Deploy RPM, DEB
-
-on:
-  push:
-    tags:
-      - 'v*'
-      - 'V*'
-
-jobs:
-  build-rpm:
-    ...
-  build-deb:
-    ...
+          
   create-release:
     runs-on: ubuntu-latest
     needs: [build-rpm, build-deb]
