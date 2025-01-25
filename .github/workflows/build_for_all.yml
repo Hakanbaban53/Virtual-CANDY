@@ -26,7 +26,7 @@ jobs:
         run: pip3 install --no-cache-dir requests pyinstaller setuptools
 
       - name: Build the Python project with PyInstaller
-        run: pyinstaller --onefile ~/work/Virtual-CANDY/Virtual-CANDY/app.py --name=vcandy
+        run: pyinstaller --onefile ~/work/Virtual-CANDY/Virtual-CANDY/src/app.py --name=vcandy
 
       - name: Create RPM spec file
         run: |
@@ -102,7 +102,7 @@ jobs:
         run: pip3 install --no-cache-dir requests pyinstaller setuptools
 
       - name: Build the Python project with PyInstaller
-        run: pyinstaller --onefile ~/work/Virtual-CANDY/Virtual-CANDY/app.py --name=vcandy
+        run: pyinstaller --onefile ~/work/Virtual-CANDY/Virtual-CANDY/src/app.py --name=vcandy
 
       - name: Create DEB control file
         run: |
