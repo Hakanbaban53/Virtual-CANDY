@@ -138,12 +138,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Read info
-        id: tags
+      - name: Extract Release Info
+        id: release_info
         shell: bash
         run: |
+          # Extract version number from the tag
           echo ::set-output name=VERSION::$(echo ${GITHUB_REF#refs/tags/} | sed 's/^[Vv]//')
           echo ::set-output name=TAG::${GITHUB_REF/refs\/tags\//}
+          
+          # Get the commit message associated with the tag
+          COMMIT_MESSAGE=$(git log -1 --pretty=format:%s)
+          echo ::set-output name=BODY::"Release Notes:\n\n$COMMIT_MESSAGE"
 
       - name: Download RPM Artifact
         uses: actions/download-artifact@v3
@@ -163,11 +168,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.VCGITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.tags.outputs.TAG }}
-          release_name: Release ${{ steps.tags.outputs.TAG }}
-          body: |
-            Release ${{ steps.tags.outputs.TAG }}
-            Debian and RPM packages are attached to this release.
+          tag_name: ${{ steps.release_info.outputs.TAG }}
+          release_name: Release ${{ steps.release_info.outputs.TAG }}
+          body: ${{ steps.release_info.outputs.BODY }}
           draft: false
           prerelease: false
 
@@ -177,9 +180,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.VCGITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: /home/runner/work/Virtual-CANDY/Virtual-CANDY/x86_64/vcandy-${{ steps.tags.outputs.VERSION }}-1.x86_64.rpm
-
-          asset_name: vcandy-${{ steps.tags.outputs.VERSION }}.rpm
+          asset_path: /home/runner/work/Virtual-CANDY/Virtual-CANDY/x86_64/vcandy-${{ steps.release_info.outputs.VERSION }}-1.x86_64.rpm
+          asset_name: vcandy-${{ steps.release_info.outputs.VERSION }}.rpm
           asset_content_type: application/x-rpm
 
       - name: Upload DEB to Release
@@ -189,5 +191,5 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: /home/runner/work/Virtual-CANDY/Virtual-CANDY/vcandy.deb
-          asset_name: vcandy-${{ steps.tags.outputs.VERSION }}.deb
+          asset_name: vcandy-${{ steps.release_info.outputs.VERSION }}.deb
           asset_content_type: application/x-debian-package
