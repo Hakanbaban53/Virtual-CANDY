@@ -21,7 +21,7 @@ def handle_local_package(distro, install_value, verbose):
     try:
         # Download the package
         run_command(
-            f"wget -q {local_path} -O {install_value}",
+            f"wget -q {install_value} -O {local_path}",
             cwd=str(CACHE_PATH),
             verbose=verbose,
         )
