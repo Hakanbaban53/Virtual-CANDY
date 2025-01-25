@@ -78,18 +78,18 @@ Here’s how to add a new package called `MyApp` for the `arch` distribution:
 }
 ```
 
-**Special Case Example:**
+**Command Run Example:**
 
-For complex setups requiring custom scripts, use `install_script`, `check_script`, or `remove_script`:
+Here’s how to add a **command-run** entry in the `packages.json`. Below is an example:
 
 ```json
 {
-  "name": "SpecialApp",
-  "description": "SpecialApp is a special application.",
+  "name": "Command Run",
+  "description": "Command Run is a special application.",
   "values": [
     {
       "name": "Special App",
-      "type": "get-keys",
+      "type": "run_command",
       "install_script": [
         "wget -O- https://example.com/key.asc | sudo apt-key add -",
         "sudo add-apt-repository 'deb https://example.com/repo stable main'"
@@ -104,11 +104,9 @@ For complex setups requiring custom scripts, use `install_script`, `check_script
 }
 ```
 
-Here’s how to add a **special-package** entry with a `special_values` field in the `packages.json`. Below is an example:
-
----
-
 ### Example: Adding a Special Package with `special_values`
+
+Here’s how to add a **special-package** entry with a `special_values` field in the `packages.json`. Below is an example:
 
 ```json
 {

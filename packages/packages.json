@@ -948,9 +948,9 @@
         {
           "name": "Discord",
           "type": "package-flatpak",
-          "install_value": "app/com.discordapp.Discord/x86_64/stable",
-          "check_value": "app/com.discordapp.Discord/x86_64/stable",
-          "remove_value": "app/com.discordapp.Discord/x86_64/stable"
+          "install_value": "com.discordapp.Discord/x86_64/stable",
+          "check_value": "com.discordapp.Discord/x86_64/stable",
+          "remove_value": "com.discordapp.Discord/x86_64/stable"
         }
       ]
     },

@@ -33,7 +33,7 @@ jobs:
           cat <<EOF > ~/rpmbuild/SPECS/vcandy.spec
           %global debug_package %{nil}
 
-          Summary: A Python CLI application that installs automatic container and virtualization tools for Linux systems
+          Summary: VCANDY is a Python CLI and TUI application package manager that handles the json files installing packages.
           Name: vcandy
           Version: $(echo ${GITHUB_REF#refs/tags/} | sed 's/^[Vv]//')
           Release: 1%{?dist}
@@ -42,7 +42,7 @@ jobs:
           Source0: %{name}-%{version}.tar.gz
 
           %description
-          VCANDY is a command-line tool that simplifies the installation of container and virtualization tools on Linux systems.
+          VCANDY is a Python CLI and TUI application package manager that handles the json files installing packages.
 
           %prep
           %setup -q
@@ -114,7 +114,7 @@ jobs:
           Priority: optional
           Maintainer: Hakan İSMAİL <hakanismail53@gmail.com>
           Homepage: https://github.com/Hakanbaban53/Virtual-CANDY
-          Description: A Python CLI application that installs automatic container and virtualization tools for many Linux systems.
+          Description: VCANDY is a Python CLI and TUI application package manager that handles the json files installing packages.
           EOF
 
       - name: Move the binary file to the build directory
