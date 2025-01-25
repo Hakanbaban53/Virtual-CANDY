@@ -30,7 +30,7 @@ Before running the tests, ensure you have the following installed:
 3. **Install Dependencies:**
 
     ```sh
-    pip install -r requirements.txt
+    pip install -r test/requirements.txt
     ```
 
 ## Running Tests
