@@ -1256,6 +1256,41 @@
           ]
         }
       ]
+    },
+    {
+      "name": "Flutter",
+      "description": "Flutter is Google’s UI toolkit for building natively compiled applications for mobile, web, and desktop from a single codebase.",
+      "values": [
+        {
+          "name": "Flutter",
+          "type": "special-package",
+          "special_values": [
+            {
+              "install_dir": "Flutter"
+            }
+          ],
+          "install_script": [
+            "mkdir -p $CACHE_PATH/$install_dir",
+            "wget -q https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.27.3-stable.tar.xz -O $CACHE_PATH/$install_dir/flutter_linux_3.27.3-stable.tar.xz",
+            "tar -xf $CACHE_PATH/$install_dir/flutter_linux_3.27.3-stable.tar.xz -C $HOME/Documents",
+            "echo 'export PATH=\"$PATH:$HOME/Documents/flutter/bin\"' >> ~/.bashrc",
+            "echo 'export PATH=\"$PATH:$HOME/Documents/flutter/bin\"' >> ~/.zshrc"
+          ],
+          "check_script": ["~/Documents/flutter/bin/flutter"],
+          "remove_script": [
+            "rm -rf ~/Documents/flutter",
+            "sed -i '/export PATH=\"$PATH:~/Documents/flutter/bin\"/d' ~/.bashrc",
+            "sed -i '/export PATH=\"$PATH:~/Documents/flutter/bin\"/d' ~/.zshrc"
+          ]
+        },
+        {
+          "name": "Flutter Dependencies",
+          "type": "package",
+          "install_value": "clang cmake ninja-build",
+          "check_value": "clang cmake ninja-build",
+          "remove_value": "clang cmake ninja-build"
+        }
+      ]
     }
   ],
   "ubuntu": [
