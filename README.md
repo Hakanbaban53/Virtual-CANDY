@@ -200,7 +200,7 @@ Thank you for helping us improve VCANDY!
 ├── 🖿 packages
 │   └── 🗎 packages.json
 ├── 🖿 src
-│   ├── app.py
+│   ├── ⚙️ app.py
 │   ├── 🖿 TUI
 │   │   ├── 🖿 core
 │   │   │   ├── 🖿 components

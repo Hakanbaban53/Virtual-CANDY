@@ -3,8 +3,7 @@ name: Build and Deploy RPM, DEB
 on:
   push:
     tags:
-      - 'v*'
-      - 'V*'
+      - "[vV][0-9]+.*"
 
 jobs:
   build-rpm:
@@ -77,8 +76,7 @@ jobs:
       - name: Build RPM package
         run: rpmbuild -bb ~/rpmbuild/SPECS/vcandy.spec
 
-      - name: Upload RPM package as artifact
-        uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: vcandy.rpm
           path: ~/rpmbuild/RPMS/**/*.rpm
@@ -123,8 +121,7 @@ jobs:
       - name: Build DEB package
         run: dpkg-deb --root-owner-group --build ~/vcandy
 
-      - name: Upload DEB package as artifact
-        uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: vcandy.deb
           path: ~/vcandy.deb
@@ -165,14 +162,12 @@ jobs:
           echo "$BODY" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
-      - name: Download RPM Artifact
-        uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: vcandy.rpm
           path: ./
   
-      - name: Download DEB Artifact
-        uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: vcandy.deb
           path: ./
