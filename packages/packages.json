@@ -403,15 +403,15 @@
           ],
           "install_script": [
             "if [ -f /etc/bash.bashrc ]; then echo 'eval \"$(oh-my-posh --init --shell bash --config $theme_location)\"' | sudo tee -a /etc/bash.bashrc; fi",
-            "if [ -f /etc/zsh/zprofile ]; then echo 'eval \"$(oh-my-posh --init --shell zsh --config $theme_location)\"' | sudo tee -a /etc/zsh/zprofile; fi"
+            "if [ -f ~/.zshrc ]; then echo 'eval \"$(oh-my-posh --init --shell zsh --config $theme_location)\"' | sudo tee -a ~/.zshrc; fi"
           ],
           "check_script": [
             "cat /etc/bash.bashrc | grep 'oh-my-posh'",
-            "cat /etc/zsh/zprofile | grep 'oh-my-posh'"
+            "cat ~/.zshrc | grep 'oh-my-posh'"
           ],
           "remove_script": [
             "if [ -f /etc/bash.bashrc ]; then sudo sed -i '/oh-my-posh/d' /etc/bash.bashrc; fi",
-            "if [ -f /etc/zsh/zprofile ]; then sudo sed -i '/oh-my-posh/d' /etc/zsh/zprofile; fi"
+            "if [ -f ~/.zshrc ]; then sudo sed -i '/oh-my-posh/d' ~/.zshrc; fi"
           ]
         }
       ]
