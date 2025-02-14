@@ -415,8 +415,55 @@
           ]
         }
       ]
+    },
+    {
+      "name": "Nvidia_Open_Drivers",
+      "description": "Nvidia Open Drivers are open-source drivers for Nvidia graphics cards. They are designed to provide better performance and compatibility than the proprietary drivers.",
+      "values": [
+        {
+          "name": "Nvidia Open Drivers Dependencies",
+          "type": "package",
+          "install_value": "linux-headers dkms",
+          "check_value": "linux-headers dkms",
+          "remove_value": "linux-headers dkms"
+        },
+        {
+          "name": "Nvidia Open Drivers",
+          "type": "package",
+          "install_value": "nvidia-open-dkms nvidia-settings nvidia-utils lib32-nvidia-utils",
+          "check_value": "nvidia-open-dkms nvidia-settings nvidia-utils lib32-nvidia-utils",
+          "remove_value": "nvidia-open-dkms nvidia-settings nvidia-utils lib32-nvidia-utils"
+        },
+        {
+          "name": "Other Dependencies",
+          "install_value": "gamemode lib32-gamemode lib32-gnutls lib32-vkd3d vkd3d lib32-vulkan-icd-loader vulkan-headers",
+          "check_value": "gamemode lib32-gamemode lib32-gnutls lib32-vkd3d vkd3d lib32-vulkan-icd-loader vulkan-headers",
+          "remove_value": "gamemode lib32-gamemode lib32-gnutls lib32-vkd3d vkd3d lib32-vulkan-icd-loader vulkan-headers"
+        },
+        {
+          "name": "Enable Nvidia Open Drivers",
+          "type": "run-command",
+          "install_script": [
+            "sudo systemctl enable nvidia-persistenced.service",
+            "sudo systemctl enable nvidia-suspend.service",
+            "sudo systemctl enable nvidia-hibernate.service",
+            "sudo systemctl enable nvidia-resume.service"
+          ],
+          "check_script": [
+            "systemctl is-enabled nvidia-persistenced.service",
+            "systemctl is-enabled nvidia-suspend.service",
+            "systemctl is-enabled nvidia-hibernate.service",
+            "systemctl is-enabled nvidia-resume.service"
+          ],
+          "remove_script": [
+            "sudo systemctl disable nvidia-persistenced.service",
+            "sudo systemctl disable nvidia-suspend.service",
+            "sudo systemctl disable nvidia-hibernate.service",
+            "sudo systemctl disable nvidia-resume.service"
+          ]
+        }
+      ] 
     }
-
   ],
   "debian": [
     {
