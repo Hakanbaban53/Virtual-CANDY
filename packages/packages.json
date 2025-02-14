@@ -71,6 +71,13 @@
           "remove_value": "virt-manager"
         },
         {
+          "name": "Qemu dependencies",
+          "type": "package",
+          "install_value": "dnsmasq dmidecode",
+          "check_value": "dnsmasq dmidecode",
+          "remove_value": "dnsmasq dmidecode"
+        },
+        {
           "name": "Start and Enable libvirtd.service",
           "type": "service",
           "install_value": "libvirtd.service"
@@ -251,14 +258,23 @@
       ]
     },
     {
-      "name": "Wine",
+      "name": "Bottles",
       "values": [
         {
-          "name": "Wine",
-          "type": "package",
-          "install_value": "wine",
-          "check_value": "wine",
-          "remove_value": "wine"
+          "name": "Bottles",
+          "type": "package-flatpak",
+          "install_value": "com.usebottles.bottles",
+          "check_value": "com.usebottles.bottles",
+          "remove_value": "com.usebottles.bottles"
+        },
+        {
+          "name": "Bottles XDG Desktop Portal Override",
+          "type": "run-command",
+          "install_script": [
+            "flatpak override com.usebottles.bottles --user --filesystem=xdg-data/applications"
+          ],
+          "check_script": [""],
+          "remove_script": [""]
         }
       ]
     },
@@ -273,7 +289,134 @@
           "remove_value": "google-chrome"
         }
       ]
+    },
+    {
+      "name": "Optinal_Extenstions_for_Gnome",
+      "description": "Gnome Shell Extensions are small pieces of code written by third party developers that modify the way the GNOME desktop behaves. They are used to add new functionality or change the behavior of the desktop.",
+      "values": [
+        {
+          "name": "Extensions",
+          "type": "special-package",
+          "special_values": [
+            {
+              "install_dir": "Gnome_Extensions"
+            }
+          ],
+          "install_script": [
+            "mkdir -p $CACHE_PATH/$install_dir",
+            "wget -q https://extensions.gnome.org/extension-data/AlphabeticalAppGridstuarthayhurst.v41.shell-extension.zip -O $CACHE_PATH/$install_dir/AlphabeticalAppGridstuarthayhurst.v41.shell-extension.zip",
+            "wget -q https://extensions.gnome.org/extension-data/appindicatorsupportrgcjonas.gmail.com.v59.shell-extension.zip -O $CACHE_PATH/$install_dir/appindicatorsupportrgcjonas.gmail.com.v59.shell-extension.zip",
+            "wget -q https://extensions.gnome.org/extension-data/blur-my-shellaunetx.v67.shell-extension.zip -O $CACHE_PATH/$install_dir/blur-my-shellaunetx.v67.shell-extension.zip",
+            "wget -q https://extensions.gnome.org/extension-data/clipboard-indicatortudmotu.com.v65.shell-extension.zip -O $CACHE_PATH/$install_dir/clipboard-indicatortudmotu.com.v65.shell-extension.zip",
+            "wget -q https://extensions.gnome.org/extension-data/gtk4-dingsmedius.gitlab.com.v94.shell-extension.zip -O $CACHE_PATH/$install_dir/gtk4-dingsmedius.gitlab.com.v94.shell-extension.zip",
+            "wget -q https://extensions.gnome.org/extension-data/light-stylegnome-shell-extensions.gcampax.github.com.v9.shell-extension.zip -O $CACHE_PATH/$install_dir/light-stylegnome-shell-extensions.gcampax.github.com.v9.shell-extension.zip",
+            "wget -q https://extensions.gnome.org/extension-data/lockkeysvaina.lt.v59.shell-extension.zip -O $CACHE_PATH/$install_dir/lockkeysvaina.lt.v59.shell-extension.zip",
+            "wget -q https://extensions.gnome.org/extension-data/tiling-assistantleleat-on-github.v49.shell-extension.zip -O $CACHE_PATH/$install_dir/tiling-assistantleleat-on-github.v49.shell-extension.zip",
+            "gnome-extensions install $CACHE_PATH/$install_dir/AlphabeticalAppGridstuarthayhurst.v41.shell-extension.zip",
+            "gnome-extensions install $CACHE_PATH/$install_dir/appindicatorsupportrgcjonas.gmail.com.v59.shell-extension.zip",
+            "gnome-extensions install $CACHE_PATH/$install_dir/blur-my-shellaunetx.v67.shell-extension.zip",
+            "gnome-extensions install $CACHE_PATH/$install_dir/clipboard-indicatortudmotu.com.v65.shell-extension.zip",
+            "gnome-extensions install $CACHE_PATH/$install_dir/gtk4-dingsmedius.gitlab.com.v94.shell-extension.zip",
+            "gnome-extensions install $CACHE_PATH/$install_dir/light-stylegnome-shell-extensions.gcampax.github.com.v9.shell-extension.zip",
+            "gnome-extensions install $CACHE_PATH/$install_dir/lockkeysvaina.lt.v59.shell-extension.zip",
+            "gnome-extensions install $CACHE_PATH/$install_dir/tiling-assistantleleat-on-github.v49.shell-extension.zip"
+          ],
+          "check_script": [""],
+          "remove_script": [""]
+        },
+        {
+          "name": "App Indicator libappindicator",
+          "type": "package",
+          "install_value": "libappindicator-gtk3",
+          "check_value": "libappindicator-gtk3",
+          "remove_value": "libappindicator-gtk3"
+        }
+      ]
+    },
+    {
+      "name": "Zsh_and_Oh_My_Zsh",
+      "description": "Zsh is a shell designed for interactive use, although it is also a powerful scripting language. Oh My Zsh is an open-source, community-driven framework for managing your Zsh configuration.",
+      "values": [
+        {
+          "name": "Zsh",
+          "type": "package",
+          "install_value": "zsh",
+          "check_value": "zsh",
+          "remove_value": "zsh"
+        },
+        {
+          "name": "Oh My Zsh",
+          "type": "run-command",
+          "install_script": [
+            "sh -c \"$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)\""
+          ],
+          "check_script": ["~/.oh-my-zsh"],
+          "remove_script": ["rm -rf ~/.oh-my-zsh"]
+        }
+      ]
+    },
+    {
+      "name": "Tuxedo_Control_Center",
+      "description": "This package installs the Tuxedo Control Center, which is a graphical user interface for managing Tuxedo computers.",
+      "values": [
+        {
+          "name": "Tuxedo Drivers",
+          "type": "AUR-package",
+          "install_value": "tuxedo-drivers-dkms",
+          "check_value": "tuxedo-drivers-dkms",
+          "remove_value": "tuxedo-drivers-dkms"
+        },
+        {
+          "name": "Tuxedo Control Center",
+          "type": "AUR-package",
+          "install_value": "tuxedo-control-center-bin",
+          "check_value": "tuxedo-control-center-bin",
+          "remove_value": "tuxedo-control-center-bin"
+        }
+      ]
+    },
+    {
+      "name": "Oh_My_Posh",
+      "description": "Oh My Posh is a prompt theme engine for any shell that supports prompt customization. It is designed to be easy to install and use, and it comes with a variety of themes to choose from.",
+      "values": [
+        {
+          "name": "Oh My Posh",
+          "type": "AUR-package",
+          "install_value": "oh-my-posh-git",
+          "check_value": "oh-my-posh-git",
+          "remove_value": "oh-my-posh-git"
+        },
+        {
+          "name": "Oh My Meslo Nerd Font",
+          "type": "run-command",
+          "install_script": ["oh-my-posh font install meslo"],
+          "check_script": [""],
+          "remove_script": [""]
+        },
+        {
+          "name": "Enable Oh My Posh",
+          "type": "special-package",
+          "special_values": [
+            {
+              "theme_location": "~/Documents/hakanbaban53.json"
+            }
+          ],
+          "install_script": [
+            "if [ -f /etc/bash.bashrc ]; then echo 'eval \"$(oh-my-posh --init --shell bash --config $theme_location)\"' | sudo tee -a /etc/bash.bashrc; fi",
+            "if [ -f /etc/zsh/zprofile ]; then echo 'eval \"$(oh-my-posh --init --shell zsh --config $theme_location)\"' | sudo tee -a /etc/zsh/zprofile; fi"
+          ],
+          "check_script": [
+            "cat /etc/bash.bashrc | grep 'oh-my-posh'",
+            "cat /etc/zsh/zprofile | grep 'oh-my-posh'"
+          ],
+          "remove_script": [
+            "if [ -f /etc/bash.bashrc ]; then sudo sed -i '/oh-my-posh/d' /etc/bash.bashrc; fi",
+            "if [ -f /etc/zsh/zprofile ]; then sudo sed -i '/oh-my-posh/d' /etc/zsh/zprofile; fi"
+          ]
+        }
+      ]
     }
+
   ],
   "debian": [
     {
@@ -984,9 +1127,9 @@
         {
           "name": "Tuxedo",
           "type": "package",
-          "install_value": "tuxedo-control-center",
-          "check_value": "tuxedo-control-center",
-          "remove_value": "tuxedo-control-center"
+          "install_value": "tuxedo-control-center-bin",
+          "check_value": "tuxedo-control-center-bin",
+          "remove_value": "tuxedo-control-center-bin"
         }
       ]
     },
